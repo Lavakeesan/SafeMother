@@ -1,29 +1,89 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Shield, Mail, Lock, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Shield, Mail, Lock, CheckCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 import heroIllustration from "@/assets/hero-illustration.png";
 
 type UserRole = "midwife" | "patient" | "admin";
 
 export default function LoginPage() {
+  const location = useLocation();
+  // Default to true if not /register
+  const [isLogin, setIsLogin] = useState(location.pathname !== "/register");
   const [selectedRole, setSelectedRole] = useState<UserRole>("midwife");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate based on role
-    if (selectedRole === "midwife") {
-      navigate("/midwife");
-    } else if (selectedRole === "patient") {
-      navigate("/patient");
-    } else {
-      navigate("/admin");
+    setIsLoading(true);
+
+    try {
+      if (isLogin) {
+        // Login API Call
+        const response = await fetch("http://localhost:5001/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast.success("Logged in successfully");
+          // Store token (todo: use context/localstorage)
+          localStorage.setItem("userInfo", JSON.stringify(data));
+
+          if (data.role === "midwife") navigate("/midwife");
+          else if (data.role === "patient") navigate("/patient");
+          else navigate("/admin");
+        } else {
+          toast.error(data.message || "Invalid email or password");
+        }
+      } else {
+        // Register API Call
+        const response = await fetch("http://localhost:5001/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            role: selectedRole,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast.success("Registration successful! Please login.");
+          setIsLogin(true); // Switch to login mode
+          setPassword(""); // Clear password
+        } else {
+          toast.error(data.message || "Registration failed");
+        }
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +109,7 @@ export default function LoginPage() {
               Professional Maternal & Newborn Care
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Access SafeMother's professional evidence-based resources and clinical tools 
+              Access SafeMother's professional evidence-based resources and clinical tools
               designed for modern maternal healthcare practitioners.
             </p>
 
@@ -71,7 +131,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Right Panel - Login Form */}
+      {/* Right Panel - Login/Register Form */}
       <div className="flex flex-col justify-center p-8 lg:p-12">
         <div className="lg:hidden flex items-center gap-2 mb-8">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
@@ -82,17 +142,19 @@ export default function LoginPage() {
 
         <div className="max-w-md mx-auto w-full">
           <div className="text-center mb-8">
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Clinical Portal</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+              {isLogin ? "Clinical Portal" : "create Account"}
+            </h1>
             <p className="mt-2 text-muted-foreground">
-              Welcome to SafeMother. Please sign in to your account.
+              {isLogin ? "Welcome to SafeMother. Please sign in to your account." : "Join SafeMother to access clinical resources."}
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleAuth} className="space-y-6">
             {/* Role Selector */}
             <div>
               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Accessing As:
+                {isLogin ? "Accessing As:" : "Registering As:"}
               </Label>
               <div className="mt-2 grid grid-cols-3 gap-2 p-1 bg-muted rounded-lg">
                 {(["midwife", "patient", "admin"] as UserRole[]).map((role) => (
@@ -100,17 +162,35 @@ export default function LoginPage() {
                     key={role}
                     type="button"
                     onClick={() => setSelectedRole(role)}
-                    className={`py-2.5 px-4 rounded-md text-sm font-medium transition-colors capitalize ${
-                      selectedRole === role
-                        ? "bg-card text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
+                    className={`py-2.5 px-4 rounded-md text-sm font-medium transition-colors capitalize ${selectedRole === role
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
                   >
                     {role}
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Name (Register Only) */}
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Dr. Sarah Smith"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10"
+                    required={!isLogin}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Email */}
             <div className="space-y-2">
@@ -124,6 +204,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
+                  required
                 />
               </div>
             </div>
@@ -132,9 +213,9 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                {isLogin && <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                   Forgot?
-                </Link>
+                </Link>}
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -145,26 +226,44 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
+                  required
                 />
               </div>
             </div>
 
             {/* Remember Me */}
-            <div className="flex items-center gap-2">
+            {isLogin && <div className="flex items-center gap-2">
               <Checkbox id="remember" />
               <Label htmlFor="remember" className="text-sm font-normal">
                 Keep me logged in
               </Label>
-            </div>
+            </div>}
 
             {/* Submit */}
-            <Button type="submit" className="w-full" size="lg">
-              SIGN IN TO SAFEMOTHER
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? "Processing..." : (isLogin ? "SIGN IN TO SAFEMOTHER" : "CREATE ACCOUNT")}
             </Button>
+
+            {/* Toggle Login/Register */}
+            <div className="text-center text-sm">
+              <span className="text-muted-foreground">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+              </span>{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  navigate(isLogin ? "/register" : "/login");
+                }}
+                className="font-medium text-primary hover:underline"
+              >
+                {isLogin ? "Register" : "Sign in"}
+              </button>
+            </div>
 
             {/* Legal */}
             <p className="text-xs text-center text-muted-foreground">
-              This is a secure clinical environment. Unauthorized access is strictly 
+              This is a secure clinical environment. Unauthorized access is strictly
               prohibited and subject to legal action. By signing in, you agree to our{" "}
               <Link to="/terms" className="text-primary hover:underline">
                 Terms of Service
