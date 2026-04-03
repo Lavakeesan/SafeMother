@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
 import { StatCard } from "@/components/StatCard";
@@ -5,48 +6,113 @@ import { PatientCard } from "@/components/PatientCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Baby, AlertTriangle, Zap, Search, Calendar, Edit, Upload, FileText, ChevronRight } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Users, Baby, AlertTriangle, Zap, Search, Calendar, Edit, Upload, FileText, ChevronRight, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
-const patients = [
-  {
-    id: "PC-2044",
-    name: "Sarah Jenkins",
-    gestationWeeks: 34,
-    status: "normal" as const,
-    nextVisit: "Tomorrow, 10:00 AM",
-  },
-  {
-    id: "PC-1982",
-    name: "Maria Gonzalez",
-    gestationWeeks: 28,
-    status: "high-risk" as const,
-    nextVisit: "Pending Review",
-  },
-  {
-    id: "PC-2103",
-    name: "Li Wei",
-    gestationWeeks: 39,
-    status: "normal" as const,
-    nextVisit: "Today, 2:30 PM",
-  },
-  {
-    id: "PC-3021",
-    name: "Amara Okafor",
-    gestationWeeks: 36,
-    status: "emergency" as const,
-    urgency: "STABILIZING",
-  },
-];
-
-const schedule = [
-  { name: "Li Wei", time: "02:30 PM", type: "Routine Checkup", active: true },
-  { name: "Jane Doe", time: "04:00 PM", type: "Initial Consultation" },
-  { name: "Sarah Jenkins", time: "Tomorrow, 10:00 AM", type: "Scan Review" },
-];
+import { toast } from "sonner";
 
 export default function MidwifeDashboard() {
   const navigate = useNavigate();
+  const [patients, setPatients] = useState<any[]>([]);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: "",
+    mrn: "",
+    age: "",
+    gestationWeeks: "",
+    phoneNumber: "",
+    status: "normal",
+    nextVisit: "",
+  });
+
+  const fetchPatients = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/patients", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPatients(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch patients:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients();
+  }, []);
+
+  const handleRegisterPatient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5001/api/patients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...formData,
+          age: Number(formData.age),
+          gestationWeeks: Number(formData.gestationWeeks),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Patient registered successfully");
+        setIsRegisterModalOpen(false);
+        setFormData({
+          name: "",
+          mrn: "",
+          age: "",
+          gestationWeeks: "",
+          phoneNumber: "",
+          status: "normal",
+          nextVisit: "",
+        });
+        fetchPatients(); // Refresh list
+      } else {
+        toast.error(data.message || "Failed to register patient");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const schedule = [
+    { name: "Li Wei", time: "02:30 PM", type: "Routine Checkup", active: true },
+    { name: "Jane Doe", time: "04:00 PM", type: "Initial Consultation" },
+    { name: "Sarah Jenkins", time: "Tomorrow, 10:00 AM", type: "Scan Review" },
+  ];
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -57,6 +123,7 @@ export default function MidwifeDashboard() {
           title="Midwife Dashboard"
           subtitle="Care management for St. Jude Maternal Ward • Oct 24, 2023"
           showRegisterPatient
+          onRegisterPatient={() => setIsRegisterModalOpen(true)}
         />
 
         <main className="flex-1 p-8 overflow-auto">
@@ -65,7 +132,7 @@ export default function MidwifeDashboard() {
             <div className="xl:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 title="Active Patients"
-                value={128}
+                value={patients.length}
                 trend={{ value: "+4% vs last month", positive: true }}
                 icon={Users}
               />
@@ -77,7 +144,7 @@ export default function MidwifeDashboard() {
               />
               <StatCard
                 title="High Risk"
-                value={12}
+                value={patients.filter(p => p.status === 'high-risk').length}
                 trend={{ value: "+2 since yesterday", positive: false }}
                 icon={AlertTriangle}
                 iconColor="text-warning"
@@ -97,9 +164,13 @@ export default function MidwifeDashboard() {
                 Quick Actions
               </h3>
               <div className="space-y-2">
-                <Button variant="outline" className="w-full justify-start gap-2 text-primary border-primary/20 hover:bg-primary/5">
-                  <Edit className="h-4 w-4" />
-                  Log New Observation
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2 text-primary border-primary/20 hover:bg-primary/5"
+                  onClick={() => setIsRegisterModalOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Register New Patient
                 </Button>
                 <Button variant="outline" className="w-full justify-start gap-2 text-primary border-primary/20 hover:bg-primary/5">
                   <Upload className="h-4 w-4" />
@@ -136,19 +207,32 @@ export default function MidwifeDashboard() {
               </div>
 
               <div className="space-y-3">
-                {patients.map((patient) => (
-                  <PatientCard
-                    key={patient.id}
-                    name={patient.name}
-                    id={patient.id}
-                    gestationWeeks={patient.gestationWeeks}
-                    status={patient.status}
-                    nextVisit={patient.nextVisit}
-                    urgency={patient.urgency}
-                    isHighlighted={patient.status === "emergency"}
-                    onClick={() => navigate("/midwife/patients/1")}
-                  />
-                ))}
+                {patients.length > 0 ? (
+                  patients.map((patient) => (
+                    <PatientCard
+                      key={patient._id}
+                      name={patient.name}
+                      id={patient.mrn}
+                      gestationWeeks={patient.gestationWeeks}
+                      status={patient.status}
+                      nextVisit={patient.nextVisit}
+                      isHighlighted={patient.status === "emergency"}
+                      onClick={() => navigate(`/midwife/patients/${patient._id}`)}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center py-12 bg-muted/20 rounded-xl border border-dashed">
+                    <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
+                    <p className="text-muted-foreground font-medium">No patients registered yet</p>
+                    <Button
+                      variant="link"
+                      className="text-primary mt-2"
+                      onClick={() => setIsRegisterModalOpen(true)}
+                    >
+                      Register your first patient
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -195,6 +279,111 @@ export default function MidwifeDashboard() {
             </div>
           </div>
         </main>
+
+        {/* Register Patient Dialog */}
+        <Dialog open={isRegisterModalOpen} onOpenChange={setIsRegisterModalOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Register New Patient</DialogTitle>
+              <DialogDescription>
+                Enter the patient's clinical and personal details to create a new record.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRegisterPatient} className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    placeholder="Patient name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mrn">MRN (Medical Record Number)</Label>
+                  <Input
+                    id="mrn"
+                    placeholder="e.g. PC-2044"
+                    value={formData.mrn}
+                    onChange={(e) => setFormData({ ...formData, mrn: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="age">Age</Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    placeholder="Age"
+                    value={formData.age}
+                    onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weeks">Gestation Weeks</Label>
+                  <Input
+                    id="weeks"
+                    type="number"
+                    placeholder="e.g. 28"
+                    value={formData.gestationWeeks}
+                    onChange={(e) => setFormData({ ...formData, gestationWeeks: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  placeholder="+94 7X XXX XXXX"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="status">Initial Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="high-risk">High Risk</SelectItem>
+                      <SelectItem value="emergency">Emergency</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="visit">Next Visit</Label>
+                  <Input
+                    id="visit"
+                    placeholder="e.g. Tomorrow, 10:00 AM"
+                    value={formData.nextVisit}
+                    onChange={(e) => setFormData({ ...formData, nextVisit: e.target.value })}
+                  />
+                </div>
+              </div>
+              <DialogFooter className="pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsRegisterModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? "Registering..." : "Complete Registration"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

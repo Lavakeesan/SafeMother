@@ -8,9 +8,10 @@ interface HeaderProps {
   subtitle?: string;
   showSearch?: boolean;
   showRegisterPatient?: boolean;
+  onRegisterPatient?: () => void;
 }
 
-export function Header({ title, subtitle, showSearch = true, showRegisterPatient = false }: HeaderProps) {
+export function Header({ title, subtitle, showSearch = true, showRegisterPatient = false, onRegisterPatient }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-card border-b">
       <div>
@@ -41,7 +42,7 @@ export function Header({ title, subtitle, showSearch = true, showRegisterPatient
         </Button>
 
         {showRegisterPatient && (
-          <Button className="gap-2">
+          <Button onClick={onRegisterPatient} className="gap-2">
             <Plus className="h-4 w-4" />
             Register Patient
           </Button>

@@ -1,76 +1,96 @@
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Search, Bell, MessageSquare, Check, AlertTriangle, 
-  Info, Plus, Calendar, Stethoscope, User 
+import {
+  Search, Bell, MessageSquare, Check, AlertTriangle,
+  Info, Plus, Calendar, Stethoscope, User, ChevronLeft
 } from "lucide-react";
-import { Link } from "react-router-dom";
-
-const symptoms = [
-  { 
-    type: "severe", 
-    icon: AlertTriangle, 
-    title: "Visual Disturbances", 
-    time: "Today, 09:15 AM",
-    iconBg: "bg-emergency/10",
-    iconColor: "text-emergency"
-  },
-  { 
-    type: "moderate", 
-    icon: Info, 
-    title: "Severe Headache", 
-    time: "Today, 08:30 AM",
-    iconBg: "bg-warning/10",
-    iconColor: "text-warning"
-  },
-  { 
-    type: "mild", 
-    icon: Info, 
-    title: "Mild Edema (Ankles)", 
-    time: "Yesterday, 04:20 PM",
-    iconBg: "bg-primary/10",
-    iconColor: "text-primary"
-  },
-];
-
-const clinicalNotes = [
-  {
-    date: "SEPT 12, 2023",
-    author: "DR. ARIS",
-    title: "Prescribed Labetalol 100mg BID",
-    content: "Due to persistent elevated BP readings. Instructed patient on signs of worsening preeclampsia. Scheduled follow-up in 48 hours.",
-    active: true,
-  },
-  {
-    date: "SEPT 05, 2023",
-    author: "MIDWIFE SARAH",
-    title: "GTT Screening Completed",
-    content: "Results within normal limits. Patient reports increased fatigue but consistent fetal movement. Advised on iron-rich diet.",
-  },
-  {
-    date: "AUG 22, 2023",
-    author: "MIDWIFE SARAH",
-    title: "Anatomy Scan Review",
-    content: "Normal development confirmed. Growth in 65th percentile. Cervical length stable.",
-  },
-];
 
 export default function PatientProfilePage() {
+  const { id } = useParams();
+  const [patient, setPatient] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        const response = await fetch(`http://localhost:5001/api/patients/${id}`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setPatient(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch patient:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatient();
+  }, [id]);
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center">Loading patient profile...</div>;
+  }
+
+  if (!patient) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4">
+        <h2 className="text-xl font-bold">Patient Not Found</h2>
+        <Link to="/midwife/patients">
+          <Button variant="outline">Back to Patients</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Use real data from DB
+  const symptoms = [
+    {
+      type: "severe",
+      icon: AlertTriangle,
+      title: "Visual Disturbances",
+      time: "Today, 09:15 AM",
+      iconBg: "bg-emergency/10",
+      iconColor: "text-emergency"
+    },
+  ];
+
+  const clinicalNotes = [
+    {
+      date: "Original Record",
+      author: "SYSTEM",
+      title: "Patient Registered",
+      content: `Initial status set to ${patient.status}. MRN: ${patient.mrn}.`,
+      active: true,
+    },
+  ];
+
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar variant="midwife" userName="Sarah Jenkins" userRole="Senior Midwife" />
+      <Sidebar variant="midwife" userName="Dr. Elena Ross" userRole="Senior Midwife" />
 
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="flex items-center justify-between px-8 py-4 bg-card border-b">
-          <div className="relative flex-1 max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search patients, MRN, or symptoms..."
-              className="pl-10 bg-muted/50 border-0"
-            />
+          <div className="flex items-center gap-4 flex-1">
+            <Link to="/midwife/patients">
+              <Button variant="ghost" size="icon">
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <div className="relative flex-1 max-w-xl">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search symptoms or notes..."
+                className="pl-10 bg-muted/50 border-0"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-4 ml-4">
             <Button variant="ghost" size="icon" className="relative">
@@ -93,34 +113,34 @@ export default function PatientProfilePage() {
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-bold text-foreground">Elena Rodriguez</h1>
-                  <StatusBadge variant="high-risk">High Risk: Preeclampsia</StatusBadge>
+                  <h1 className="text-2xl font-bold text-foreground">{patient.name}</h1>
+                  <StatusBadge variant={patient.status}>{patient.status.toUpperCase()}</StatusBadge>
                 </div>
                 <p className="text-muted-foreground mb-3">
-                  32 Weeks 4 Days Gestation • EDD: Oct 24, 2023
+                  {patient.gestationWeeks} Weeks Gestation • Next Visit: {patient.nextVisit || "Not Scheduled"}
                 </p>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Stethoscope className="h-4 w-4" />
-                    MRN: 884-291
+                    MRN: {patient.mrn}
                   </span>
                   <span className="flex items-center gap-1">
                     <User className="h-4 w-4" />
-                    Age: 29
+                    Age: {patient.age}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    G2 P1
+                    <MessageSquare className="h-4 w-4" />
+                    Phone: {patient.phoneNumber}
                   </span>
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <Button className="gap-2">
-                  <Stethoscope className="h-4 w-4" />
-                  Log Vitals
+                  <Plus className="h-4 w-4" />
+                  Log Observation
                 </Button>
-                <Button variant="outline">Transfer Care</Button>
+                <Button variant="outline">Clinical Chart</Button>
               </div>
             </div>
           </div>
@@ -130,9 +150,7 @@ export default function PatientProfilePage() {
               {/* Gestational Progress */}
               <div className="bg-card rounded-xl border p-6">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
-                  <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M2 12h4l3-9 3 18 3-9h5" />
-                  </svg>
+                  <Activity className="h-4 w-4 text-primary" />
                   Gestational Progress
                 </h3>
 
@@ -140,22 +158,21 @@ export default function PatientProfilePage() {
                   {[
                     { label: "1st Trimester", sublabel: "Weeks 1-12", completed: true },
                     { label: "2nd Trimester", sublabel: "Weeks 13-26", completed: true },
-                    { label: "3rd Trimester", sublabel: "Wk 32 (Current)", current: true },
+                    { label: "3rd Trimester", sublabel: `Wk ${patient.gestationWeeks}`, current: true },
                     { label: "Delivery", sublabel: "Week 40", icon: Calendar },
                     { label: "Postnatal", sublabel: "Weeks 40+", icon: User },
                   ].map((step, i) => (
                     <div key={i} className="flex flex-col items-center relative">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        step.completed ? "bg-primary text-primary-foreground" :
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${step.completed ? "bg-primary text-primary-foreground" :
                         step.current ? "border-2 border-primary bg-card text-primary" :
-                        "border border-muted-foreground/30 bg-muted text-muted-foreground"
-                      }`}>
+                          "border border-muted-foreground/30 bg-muted text-muted-foreground"
+                        }`}>
                         {step.completed ? (
                           <Check className="h-5 w-5" />
                         ) : step.current ? (
                           <div className="relative">
                             <User className="h-4 w-4" />
-                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-emergency rounded-full" />
+                            {patient.status === 'emergency' && <span className="absolute -top-1 -right-1 w-2 h-2 bg-emergency rounded-full" />}
                           </div>
                         ) : step.icon ? (
                           <step.icon className="h-4 w-4" />
@@ -168,9 +185,8 @@ export default function PatientProfilePage() {
                         {step.sublabel}
                       </p>
                       {i < 4 && (
-                        <div className={`absolute top-5 left-full w-full h-0.5 -translate-x-1/2 ${
-                          step.completed ? "bg-primary" : "bg-muted-foreground/20"
-                        }`} style={{ width: "calc(100% - 2.5rem)" }} />
+                        <div className={`absolute top-5 left-full w-full h-0.5 -translate-x-1/2 ${step.completed ? "bg-primary" : "bg-muted-foreground/20"
+                          }`} style={{ width: "calc(100% - 2.5rem)" }} />
                       )}
                     </div>
                   ))}
@@ -184,24 +200,12 @@ export default function PatientProfilePage() {
                     Blood Pressure
                   </p>
                   <p className="text-2xl font-bold">
-                    <span className="text-emergency">142</span>
+                    <span className="text-foreground">--</span>
                     <span className="text-foreground">/</span>
-                    <span className="text-emergency">92</span>
+                    <span className="text-foreground">--</span>
                     <span className="text-sm text-muted-foreground font-normal ml-1">mmHg</span>
                   </p>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="h-8 w-16">
-                      <svg viewBox="0 0 64 32" className="w-full h-full">
-                        <path d="M0 16 L10 20 L20 12 L30 24 L40 8 L50 20 L64 16" fill="none" stroke="hsl(var(--emergency))" strokeWidth="2" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-emergency font-medium flex items-center gap-1">
-                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M2 12h4l3-9 3 18 3-9h5" />
-                      </svg>
-                      High
-                    </span>
-                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 italic text-center">No data today</p>
                 </div>
 
                 <div className="bg-card rounded-xl border p-5">
@@ -209,21 +213,8 @@ export default function PatientProfilePage() {
                     Weight
                   </p>
                   <p className="text-2xl font-bold text-foreground">
-                    74.5 <span className="text-sm text-muted-foreground font-normal">kg</span>
+                    -- <span className="text-sm text-muted-foreground font-normal">kg</span>
                   </p>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="h-8 w-16">
-                      <svg viewBox="0 0 64 32" className="w-full h-full">
-                        <path d="M0 24 L16 20 L32 16 L48 12 L64 8" fill="none" stroke="hsl(var(--success))" strokeWidth="2" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-success font-medium flex items-center gap-1">
-                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M2 12h4l3-9 3 18 3-9h5" />
-                      </svg>
-                      +1.2kg
-                    </span>
-                  </div>
                 </div>
 
                 <div className="bg-card rounded-xl border p-5">
@@ -231,18 +222,8 @@ export default function PatientProfilePage() {
                     Fetal Heart Rate
                   </p>
                   <p className="text-2xl font-bold text-foreground">
-                    145 <span className="text-sm text-muted-foreground font-normal">bpm</span>
+                    -- <span className="text-sm text-muted-foreground font-normal">bpm</span>
                   </p>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="h-8 w-16">
-                      <svg viewBox="0 0 64 32" className="w-full h-full">
-                        <path d="M0 16 L8 16 L12 8 L16 24 L20 8 L24 24 L28 16 L64 16" fill="none" stroke="hsl(var(--foreground))" strokeWidth="2" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-muted-foreground font-medium">
-                      Stable
-                    </span>
-                  </div>
                 </div>
               </div>
 
@@ -257,25 +238,9 @@ export default function PatientProfilePage() {
                 </div>
 
                 <div className="space-y-3">
-                  {symptoms.map((symptom, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full ${symptom.iconBg} flex items-center justify-center`}>
-                          <symptom.icon className={`h-4 w-4 ${symptom.iconColor}`} />
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">{symptom.title}</p>
-                          <p className="text-sm text-muted-foreground">Reported: {symptom.time}</p>
-                        </div>
-                      </div>
-                      <StatusBadge variant={
-                        symptom.type === "severe" ? "emergency" :
-                        symptom.type === "moderate" ? "high-risk" : "normal"
-                      }>
-                        {symptom.type}
-                      </StatusBadge>
-                    </div>
-                  ))}
+                  <div className="text-center py-4 bg-muted/20 rounded-lg">
+                    <p className="text-sm text-muted-foreground italic">No symptoms reported by patient today.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -284,12 +249,7 @@ export default function PatientProfilePage() {
             <div className="bg-card rounded-xl border p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                  <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                  </svg>
+                  <FileText className="h-4 w-4 text-primary" />
                   Clinical Notes
                 </h3>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -325,3 +285,6 @@ export default function PatientProfilePage() {
     </div>
   );
 }
+
+// Add missing icons
+import { Activity, FileText } from "lucide-react";
