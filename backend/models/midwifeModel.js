@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const midwifeSchema = mongoose.Schema(
     {
-        user: {
+        user_id: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'User',
         },
-        contactNumber: {
+        contact_number: {
             type: String,
             required: true,
         },
-        assignedArea: {
+        assigned_area: {
             type: String,
             required: true,
         },

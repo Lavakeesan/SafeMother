@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import heroIllustration from "@/assets/hero-illustration.png";
+import midwifeAuthImg from "@/assets/mid-wife-3.jpeg";
 
 type UserRole = "midwife" | "patient" | "admin";
 
@@ -18,6 +18,8 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [assignedArea, setAssignedArea] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -28,7 +30,7 @@ export default function LoginPage() {
     try {
       if (isLogin) {
         // Login API Call
-        const response = await fetch("http://localhost:5001/api/users/login", {
+        const response = await fetch("http://192.168.1.93:5001/api/users/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +57,7 @@ export default function LoginPage() {
         }
       } else {
         // Register API Call
-        const response = await fetch("http://localhost:5001/api/users", {
+        const response = await fetch("http://192.168.1.93:5001/api/users", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -66,6 +68,8 @@ export default function LoginPage() {
             email,
             password,
             role: selectedRole,
+            contact_number: contactNumber,
+            assigned_area: assignedArea,
           }),
         });
 
@@ -92,18 +96,18 @@ export default function LoginPage() {
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex flex-col justify-between bg-muted/30 p-8 lg:p-12">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-            <Shield className="h-4 w-4" />
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden border bg-background">
+            <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-bold text-lg">SafeMother</span>
+          <span className="font-bold text-xl tracking-tight">SafeMother</span>
         </div>
 
         <div className="flex-1 flex items-center justify-center">
           <div className="max-w-md">
             <img
-              src={heroIllustration}
+              src={midwifeAuthImg}
               alt="Maternal care illustration"
-              className="w-full max-w-sm mx-auto mb-8"
+              className="w-full max-w-sm mx-auto mb-8 rounded-2xl shadow-xl border-4 border-white"
             />
             <h2 className="text-2xl lg:text-3xl font-bold text-foreground">
               Professional Maternal & Newborn Care
@@ -134,10 +138,10 @@ export default function LoginPage() {
       {/* Right Panel - Login/Register Form */}
       <div className="flex flex-col justify-center p-8 lg:p-12">
         <div className="lg:hidden flex items-center gap-2 mb-8">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-            <Shield className="h-4 w-4" />
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden border bg-background">
+            <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-bold text-lg">SafeMother</span>
+          <span className="font-bold text-xl tracking-tight">SafeMother</span>
         </div>
 
         <div className="max-w-md mx-auto w-full">
@@ -175,21 +179,48 @@ export default function LoginPage() {
 
             {/* Name (Register Only) */}
             {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Dr. Sarah Smith"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="pl-10"
-                    required={!isLogin}
-                  />
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="Dr. Sarah Smith"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="pl-10"
+                      required={!isLogin}
+                    />
+                  </div>
                 </div>
-              </div>
+
+                {selectedRole === 'midwife' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="contact">Contact Number</Label>
+                      <Input
+                        id="contact"
+                        placeholder="+94 7X XXX XXXX"
+                        value={contactNumber}
+                        onChange={(e) => setContactNumber(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="area">Assigned Area</Label>
+                      <Input
+                        id="area"
+                        placeholder="e.g. Colombo North"
+                        value={assignedArea}
+                        onChange={(e) => setAssignedArea(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+              </>
             )}
 
             {/* Email */}

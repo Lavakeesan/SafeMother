@@ -1,6 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LucideIcon, LayoutDashboard, Users, Calendar, FileText, Settings, BookOpen, AlertTriangle, MessageSquare, ShieldCheck, Activity, HelpCircle, UserCog } from "lucide-react";
+import { LucideIcon, LayoutDashboard, Users, Calendar, FileText, Settings, BookOpen, AlertTriangle, MessageSquare, ShieldCheck, Activity, HelpCircle, UserCog, LogOut } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -45,28 +45,34 @@ const navConfigs = {
 };
 
 const brandConfigs = {
-  midwife: { name: "MaternalCare", subtitle: "Midwife Portal" },
-  patient: { name: "MaternalCare", subtitle: "Patient Portal" },
-  admin: { name: "MidwifeLink", subtitle: "Admin Control" },
+  midwife: { name: "SafeMother", subtitle: "Midwife Portal" },
+  patient: { name: "SafeMother", subtitle: "Patient Portal" },
+  admin: { name: "SafeMother", subtitle: "Admin Control" },
 };
 
 export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const navItems = navConfigs[variant];
   const brand = brandConfigs[variant];
+
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
+  };
 
   return (
     <aside className="flex flex-col w-60 min-h-screen bg-sidebar border-r border-sidebar-border">
       {/* Brand */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground">
-          <ShieldCheck className="h-5 w-5" />
+      <Link to="/" className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border hover:bg-sidebar-accent/50 transition-colors group">
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg overflow-hidden border bg-background flex-shrink-0 group-hover:scale-105 transition-transform">
+          <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
         </div>
         <div>
-          <h1 className="font-bold text-foreground">{brand.name}</h1>
+          <h1 className="font-bold text-foreground group-hover:text-primary transition-colors">{brand.name}</h1>
           <p className="text-xs text-muted-foreground">{brand.subtitle}</p>
         </div>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -151,6 +157,17 @@ export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProp
             {userRole || "Staff"}
           </p>
         </div>
+      </div>
+
+      {/* Logout Button */}
+      <div className="px-3 py-2 border-t border-sidebar-border mb-2">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-emergency/10 hover:text-emergency transition-colors"
+        >
+          <LogOut className="h-5 w-5" />
+          Logout
+        </button>
       </div>
     </aside>
   );

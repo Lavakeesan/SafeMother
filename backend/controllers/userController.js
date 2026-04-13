@@ -27,23 +27,23 @@ const registerUser = async (req, res) => {
         if (user) {
             // Create role-specific profile
             if (role === 'admin') {
-                await Admin.create({ user: user._id, permissions: profileData.permissions || [] });
+                await Admin.create({ user_id: user._id, permissions: profileData.permissions || [] });
             } else if (role === 'midwife') {
                 await Midwife.create({ 
-                    user: user._id, 
-                    contactNumber: profileData.contactNumber, 
-                    assignedArea: profileData.assignedArea 
+                    user_id: user._id, 
+                    contact_number: profileData.contactNumber || profileData.contact_number, 
+                    assigned_area: profileData.assignedArea || profileData.assigned_area
                 });
             } else if (role === 'patient') {
                 await Patient.create({
-                    user: user._id,
+                    user_id: user._id,
                     name: user.name,
                     age: profileData.age,
                     address: profileData.address,
-                    contactNumber: profileData.contactNumber,
-                    medicalHistory: profileData.medicalHistory,
-                    riskLevel: profileData.riskLevel || 'Low',
-                    midwife: profileData.midwifeId
+                    contact_number: profileData.contactNumber || profileData.contact_number,
+                    medical_history: profileData.medicalHistory || profileData.medical_history,
+                    risk_level: profileData.riskLevel || profileData.risk_level || 'Low',
+                    midwife_id: profileData.midwifeId || profileData.midwife_id
                 });
             }
 

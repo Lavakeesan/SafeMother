@@ -6,21 +6,31 @@ const User = require('../models/userModel');
 // @access  Private/Admin/Midwife
 const createPatient = async (req, res) => {
     try {
-        const { userId, name, age, address, contactNumber, medicalHistory, riskLevel, midwifeId } = req.body;
+        console.log('Registering patient with data:', req.body);
+        const { user_id, name, age, address, contact_number, medical_history, risk_level, midwife_id, mrn, delivery_date } = req.body;
+
+        // Check if MRN already exists
+        const mrnExists = await Patient.findOne({ mrn });
+        if (mrnExists) {
+            return res.status(400).json({ message: 'A patient with this MRN already exists' });
+        }
 
         const patient = await Patient.create({
-            user: userId,
+            user_id: user_id || null,
             name,
             age,
             address,
-            contactNumber,
-            medicalHistory,
-            riskLevel,
-            midwife: midwifeId,
+            contact_number,
+            medical_history,
+            delivery_date: delivery_date ? new Date(delivery_date) : null,
+            risk_level: risk_level || 'Low',
+            midwife_id: midwife_id || (req.user ? req.user._id : null),
+            mrn,
         });
 
         res.status(201).json(patient);
     } catch (error) {
+        console.error('Create Patient Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -36,10 +46,14 @@ const updatePatient = async (req, res) => {
             patient.name = req.body.name || patient.name;
             patient.age = req.body.age || patient.age;
             patient.address = req.body.address || patient.address;
-            patient.contactNumber = req.body.contactNumber || patient.contactNumber;
-            patient.medicalHistory = req.body.medicalHistory || patient.medicalHistory;
-            patient.riskLevel = req.body.riskLevel || patient.riskLevel;
-            patient.midwife = req.body.midwifeId || patient.midwife;
+            patient.contact_number = req.body.contact_number || patient.contact_number;
+            patient.medical_history = req.body.medical_history || patient.medical_history;
+            if (req.body.delivery_date) {
+                patient.delivery_date = new Date(req.body.delivery_date);
+            }
+            patient.risk_level = req.body.risk_level || patient.risk_level;
+            patient.midwife_id = req.body.midwife_id || patient.midwife_id;
+            patient.mrn = req.body.mrn || patient.mrn;
 
             const updatedPatient = await patient.save();
             res.json(updatedPatient);
@@ -47,6 +61,7 @@ const updatePatient = async (req, res) => {
             res.status(404).json({ message: 'Patient profile not found' });
         }
     } catch (error) {
+        console.error('Update Patient Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -57,16 +72,14 @@ const updatePatient = async (req, res) => {
 const getPatients = async (req, res) => {
     try {
         let filter = {};
-        if (req.user.role === 'midwife') {
-            // Need to find the midwife profile ID first, but for simplicity assuming we filter by User ID or similar
-            // Better: find Midwife profile where user = req.user._id
-            // Then filter patients by midwife: midwifeProfile._id
-            filter = { midwife: req.user._id }; // Simplified for now
+        if (req.user && req.user.role === 'midwife') {
+            filter = { midwife_id: req.user._id };
         }
 
-        const patients = await Patient.find(filter).populate('midwife');
+        const patients = await Patient.find(filter).populate('midwife_id');
         res.json(patients);
     } catch (error) {
+        console.error('Get Patients Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -76,10 +89,10 @@ const getPatients = async (req, res) => {
 // @access  Private
 const getPatientById = async (req, res) => {
     try {
-        const patient = await Patient.findById(req.params.id).populate('midwife');
+        const patient = await Patient.findById(req.params.id).populate('midwife_id');
         if (patient) {
             // Check if patient belongs to midwife or is the patient themselves
-            if (req.user.role === 'patient' && patient.user.toString() !== req.user._id.toString()) {
+            if (req.user && req.user.role === 'patient' && patient.user_id && patient.user_id.toString() !== req.user._id.toString()) {
                 return res.status(403).json({ message: 'Not authorized to view this profile' });
             }
             res.json(patient);
@@ -87,6 +100,7 @@ const getPatientById = async (req, res) => {
             res.status(404).json({ message: 'Patient profile not found' });
         }
     } catch (error) {
+        console.error('Get Patient By ID Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -104,6 +118,7 @@ const deletePatient = async (req, res) => {
             res.status(404).json({ message: 'Patient profile not found' });
         }
     } catch (error) {
+        console.error('Delete Patient Error:', error);
         res.status(500).json({ message: error.message });
     }
 };

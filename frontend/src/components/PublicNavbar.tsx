@@ -16,10 +16,10 @@ export function PublicNavbar({ showAuth = true }: PublicNavbarProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-              <Shield className="h-4 w-4" />
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden border bg-background">
+              <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-bold text-lg text-foreground">SafeMother</span>
+            <span className="font-bold text-xl text-foreground tracking-tight">SafeMother</span>
           </Link>
 
           {/* Desktop Nav */}

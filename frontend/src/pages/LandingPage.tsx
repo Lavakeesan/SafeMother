@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import { Shield, CheckCircle, Users, BookOpen, AlertTriangle, ArrowRight, Lock, Cloud, Clock, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PublicNavbar } from "@/components/PublicNavbar";
-import heroIllustration from "@/assets/hero-illustration.png";
+import clinicRoom from "@/assets/clinic-room.png";
+import midwifeImg from "@/assets/mid-wife.jpg";
+import midwifeImg_2 from "@/assets/mid-wife-2.jpeg";
+import midwifeImg_3 from "@/assets/mid-wife-3.jpeg";
 
-export default function LandingPage() {
+export default function LandingPage() {   
   return (
     <div className="min-h-screen bg-background">
       <PublicNavbar />
@@ -23,7 +26,7 @@ export default function LandingPage() {
                 <span className="text-primary">Protecting Mothers</span>
               </h1>
               <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-                A comprehensive clinical support system designed to streamline maternal care, 
+                A comprehensive clinical support system designed to streamline maternal care,
                 track patient health, and provide instant expert guidance when it matters most.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
@@ -39,12 +42,24 @@ export default function LandingPage() {
                   </Button>
                 </Link>
               </div>
+              <div className="mt-4 flex flex-wrap gap-4">
+                <Link to="/patient">
+                  <Button size="lg" variant="secondary" className="bg-blue-600 text-white hover:bg-blue-700">
+                    Patient
+                  </Button>
+                </Link>
+                <Link to="/midwife">
+                  <Button size="lg" variant="secondary" className="bg-pink-600 text-white hover:bg-pink-700">
+                    Midwife
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             <div className="relative animate-fade-in lg:animate-slide-in-left">
               <div className="relative">
                 <img
-                  src={heroIllustration}
+                  src={midwifeImg}
                   alt="Midwife caring for newborn"
                   className="w-full max-w-lg mx-auto rounded-2xl"
                 />
@@ -111,6 +126,66 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Community Section */}
+      <section className="py-24 relative bg-background overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row gap-20 items-center">
+            <div className="lg:w-1/2 order-2 lg:order-1">
+              <div className="relative group">
+                <div className="absolute -inset-6 bg-primary/5 rounded-[3rem] rotate-3 transition-transform group-hover:rotate-1" />
+                <img
+                  src={midwifeImg_2}
+                  alt="Midwife providing care"
+                  className="relative rounded-[2.5rem] shadow-2xl border-8 border-white w-full object-cover aspect-[4/5] object-center transition-transform duration-500"
+                />
+                <div className="absolute -bottom-8 -right-8 bg-card p-6 rounded-3xl shadow-xl flex items-center gap-4 max-w-sm border backdrop-blur-sm bg-card/90">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Users className="h-7 w-7 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-base font-bold text-foreground">Midwife Community</p>
+                    <p className="text-sm text-muted-foreground">Linking 1,200+ practitioners</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="lg:w-1/2 order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6">
+                Our Mission
+              </div>
+              <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-8 leading-tight">
+                Supporting the heroes of <span className="text-primary italic">maternal health</span>
+              </h2>
+              <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-xl">
+                SafeMother is built by understanding the daily challenges midwives face. We provide the digital infrastructure so you can focus on the physical and emotional support mothers need.
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-6 mb-12">
+                {[
+                  "Digital Health Records",
+                  "Automated Risk Assessment",
+                  "Specialist Communication",
+                  "Clinical Guidance"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                    </div>
+                    <span className="font-semibold text-foreground">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Button size="lg" className="rounded-full px-10 h-16 text-lg shadow-xl shadow-primary/20 group">
+                Join the Global Network
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Workflow Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -173,6 +248,44 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Visual Impact Section */}
+      <section className="py-24 bg-background overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[2.5rem] bg-muted/50 overflow-hidden border shadow-sm group hover:shadow-md transition-shadow">
+            <div className="grid lg:grid-cols-2 items-stretch">
+              <div className="p-12 lg:p-20 order-2 lg:order-1 flex flex-col justify-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6 w-fit">
+                  Clinical Excellence
+                </div>
+                <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-6 leading-[1.15]">
+                  Compassionate care, <br />
+                  <span className="text-primary font-serif italic">backed by technology</span>
+                </h2>
+                <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
+                  SafeMother isn't just about data; it's about the lives we touch. Our platform ensures that clinical teams can focus on the patient, while we take care of the record-keeping and high-risk monitoring.
+                </p>
+                <div className="flex gap-5 items-start">
+                  <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+                    <Stethoscope className="h-7 w-7 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-foreground text-lg">Hospital-Grade Reliability</p>
+                    <p className="text-sm text-muted-foreground mt-1">Designed to function flawlessly in busy clinical environments, from city hospitals to rural health centers.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="order-1 lg:order-2 relative overflow-hidden h-[400px] lg:h-auto">
+                <img
+                  src={midwifeImg_3}
+                  alt="Clinical care context"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Security Section */}
       <section className="py-20 bg-foreground text-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -182,7 +295,7 @@ export default function LandingPage() {
                 Security that patients and providers trust
               </h2>
               <p className="text-lg opacity-80 mb-8">
-                We understand that medical data is sensitive. SafeMother is built with enterprise-grade 
+                We understand that medical data is sensitive. SafeMother is built with enterprise-grade
                 security protocols to ensure every byte of information remains confidential and protected.
               </p>
 
@@ -229,7 +342,7 @@ export default function LandingPage() {
             Ready to transform your practice?
           </h2>
           <p className="text-lg text-primary-foreground/80 mb-8">
-            Join thousands of midwives around the world using SafeMother to provide better, safer care 
+            Join thousands of midwives around the world using SafeMother to provide better, safer care
             for mothers and newborns.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
@@ -251,13 +364,13 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-5 gap-8">
             <div className="md:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-                  <Shield className="h-4 w-4" />
+                <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden border bg-background">
+                  <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
                 </div>
-                <span className="font-bold text-lg">SafeMother</span>
+                <span className="font-bold text-xl tracking-tight">SafeMother</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-xs">
-                Professional healthcare platform for maternal and newborn care. 
+                Professional healthcare platform for maternal and newborn care.
                 Empowering those who care for life.
               </p>
             </div>

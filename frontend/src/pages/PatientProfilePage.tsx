@@ -17,7 +17,7 @@ export default function PatientProfilePage() {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/patients/${id}`, {
+        const response = await fetch(`http://192.168.1.93:5001/api/patients/${id}`, {
           credentials: 'include'
         });
         if (response.ok) {
@@ -114,7 +114,7 @@ export default function PatientProfilePage() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-2xl font-bold text-foreground">{patient.name}</h1>
-                  <StatusBadge variant={patient.status}>{patient.status.toUpperCase()}</StatusBadge>
+                  <StatusBadge variant={patient.riskLevel === 'High' ? 'high-risk' : (patient.riskLevel === 'Medium' ? 'pending' : 'normal')}>{patient.riskLevel.toUpperCase()}</StatusBadge>
                 </div>
                 <p className="text-muted-foreground mb-3">
                   {patient.gestationWeeks} Weeks Gestation • Next Visit: {patient.nextVisit || "Not Scheduled"}
@@ -130,7 +130,7 @@ export default function PatientProfilePage() {
                   </span>
                   <span className="flex items-center gap-1">
                     <MessageSquare className="h-4 w-4" />
-                    Phone: {patient.phoneNumber}
+                    Phone: {patient.contactNumber}
                   </span>
                 </div>
               </div>

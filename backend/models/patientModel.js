@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const patientSchema = mongoose.Schema(
     {
-        user: {
+        user_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            required: true,
+            required: false,
         },
         name: {
             type: String,
@@ -19,22 +19,40 @@ const patientSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-        contactNumber: {
+        contact_number: {
             type: String,
             required: true,
         },
-        medicalHistory: {
+        medical_history: {
             type: String,
         },
-        riskLevel: {
+        delivery_date: {
+            type: Date,
+        },
+        risk_level: {
             type: String,
             enum: ['Low', 'Medium', 'High'],
             default: 'Low',
         },
-        midwife: {
+        midwife_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Midwife',
         },
+        mrn: {
+            type: String,
+            unique: true,
+        },
+        medical_reports: [
+            {
+                original_name: String,
+                mime_type: String,
+                data: Buffer, // Binary data stored in database
+                uploaded_at: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
     },
     {
         timestamps: true,
