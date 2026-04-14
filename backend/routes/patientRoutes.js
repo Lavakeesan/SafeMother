@@ -4,6 +4,7 @@ const {
     createPatient,
     getPatients,
     getPatientById,
+    getPatientProfile,
     updatePatient,
     deletePatient
 } = require('../controllers/patientController');
@@ -12,6 +13,9 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 router.route('/')
     .get(protect, authorize('admin', 'midwife'), getPatients)
     .post(protect, authorize('admin', 'midwife'), createPatient);
+
+router.route('/profile')
+    .get(protect, authorize('patient'), getPatientProfile);
 
 router.route('/:id')
     .get(protect, getPatientById)

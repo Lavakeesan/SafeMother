@@ -11,6 +11,10 @@ const patientSchema = mongoose.Schema(
             type: String,
             required: true,
         },
+        email: {
+            type: String,
+            required: false, // Optional for patients without email
+        },
         age: {
             type: Number,
             required: true,

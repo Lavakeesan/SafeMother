@@ -20,6 +20,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [assignedArea, setAssignedArea] = useState("");
+  const [qualification, setQualification] = useState("");
+  const [experienceYears, setExperienceYears] = useState("");
+  const [hospitalName, setHospitalName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -30,7 +33,7 @@ export default function LoginPage() {
     try {
       if (isLogin) {
         // Login API Call
-        const response = await fetch("http://192.168.1.93:5001/api/users/login", {
+        const response = await fetch(`http://${window.location.hostname}:5001/api/users/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -57,7 +60,7 @@ export default function LoginPage() {
         }
       } else {
         // Register API Call
-        const response = await fetch("http://192.168.1.93:5001/api/users", {
+        const response = await fetch(`http://${window.location.hostname}:5001/api/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -70,6 +73,9 @@ export default function LoginPage() {
             role: selectedRole,
             contact_number: contactNumber,
             assigned_area: assignedArea,
+            qualification,
+            experience_years: Number(experienceYears),
+            hospital_name: hospitalName,
           }),
         });
 
@@ -209,14 +215,34 @@ export default function LoginPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="area">Assigned Area</Label>
+                      <Label htmlFor="qualification">Qualification</Label>
                       <Input
-                        id="area"
-                        placeholder="e.g. Colombo North"
-                        value={assignedArea}
-                        onChange={(e) => setAssignedArea(e.target.value)}
-                        required
+                        id="qualification"
+                        placeholder="e.g. BSc in Midwifery"
+                        value={qualification}
+                        onChange={(e) => setQualification(e.target.value)}
                       />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="experience">Experience (Years)</Label>
+                        <Input
+                          id="experience"
+                          type="number"
+                          placeholder="e.g. 5"
+                          value={experienceYears}
+                          onChange={(e) => setExperienceYears(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="hospital">Hospital Appt.</Label>
+                        <Input
+                          id="hospital"
+                          placeholder="e.g. St. Peters"
+                          value={hospitalName}
+                          onChange={(e) => setHospitalName(e.target.value)}
+                        />
+                      </div>
                     </div>
                   </>
                 )}

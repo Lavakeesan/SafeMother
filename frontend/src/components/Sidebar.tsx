@@ -25,9 +25,8 @@ const midwifeNav: NavItem[] = [
 
 const patientNav: NavItem[] = [
   { label: "My Dashboard", href: "/patient", icon: LayoutDashboard },
-  { label: "Care Plan", href: "/patient/care-plan", icon: FileText },
-  { label: "Midwife Advice", href: "/patient/advice", icon: MessageSquare },
-  { label: "Resources", href: "/patient/resources", icon: BookOpen },
+  { label: "Care Plans", href: "/patient/advice", icon: MessageSquare },
+  { label: "Midwife Alert", href: "/patient/alert", icon: AlertTriangle },
 ];
 
 const adminNav: NavItem[] = [

@@ -21,6 +21,21 @@ const userSchema = mongoose.Schema(
             enum: ['midwife', 'patient', 'admin'],
             required: true,
         },
+        contact_number: {
+            type: String,
+        },
+        assigned_area: {
+            type: String,
+        },
+        qualification: {
+            type: String,
+        },
+        experience_years: {
+            type: Number,
+        },
+        hospital_name: {
+            type: String,
+        },
     },
     {
         timestamps: true,

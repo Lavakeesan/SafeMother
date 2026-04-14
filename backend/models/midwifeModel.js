@@ -7,13 +7,31 @@ const midwifeSchema = mongoose.Schema(
             required: true,
             ref: 'User',
         },
-        contact_number: {
+        name: {
             type: String,
             required: true,
         },
-        assigned_area: {
+        email: {
             type: String,
             required: true,
+        },
+        contact_number: {
+            type: String,
+        },
+        assigned_area: {
+            type: String,
+        },
+        qualification: {
+            type: String,
+        },
+        experience_years: {
+            type: Number,
+        },
+        hospital_name: {
+            type: String,
+        },
+        password: {
+            type: String,
         },
     },
     {

@@ -41,6 +41,7 @@ const App = () => (
           <Route path="/patient" element={<PatientDashboard />} />
           <Route path="/patient/care-plan" element={<PatientDashboard />} />
           <Route path="/patient/advice" element={<PatientDashboard />} />
+          <Route path="/patient/alert" element={<PatientDashboard />} />
           <Route path="/patient/resources" element={<ResourceLibrary />} />
 
           {/* Admin Routes */}

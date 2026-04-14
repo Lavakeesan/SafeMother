@@ -17,7 +17,7 @@ export default function PatientProfilePage() {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const response = await fetch(`http://192.168.1.93:5001/api/patients/${id}`, {
+        const response = await fetch(`http://${window.location.hostname}:5001/api/patients/${id}`, {
           credentials: 'include'
         });
         if (response.ok) {

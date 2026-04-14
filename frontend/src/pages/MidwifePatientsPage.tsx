@@ -39,10 +39,11 @@ export default function MidwifePatientsPage() {
     const [uploadTarget, setUploadTarget] = useState<any | null>(null);
     const [uploadFile, setUploadFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [user, setUser] = useState<any>(null);
 
-    // Form State
     const [formData, setFormData] = useState({
         name: "",
+        email: "",
         mrn: "",
         age: "",
         gestationWeeks: "",
@@ -53,7 +54,7 @@ export default function MidwifePatientsPage() {
 
     const fetchPatients = async () => {
         try {
-            const response = await fetch("http://192.168.1.93:5001/api/patients", {
+            const response = await fetch(`http://${window.location.hostname}:5001/api/patients`, {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -71,7 +72,7 @@ export default function MidwifePatientsPage() {
         if (!emergencyTarget) return;
         setIsSendingAlert(true);
         try {
-            const response = await fetch("http://192.168.1.93:5001/api/alerts", {
+            const response = await fetch(`http://${window.location.hostname}:5001/api/alerts`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',
@@ -104,7 +105,7 @@ export default function MidwifePatientsPage() {
         try {
             const formData = new FormData();
             formData.append('report', uploadFile);
-            const response = await fetch(`http://192.168.1.93:5001/api/reports/upload/${uploadTarget._id}`, {
+            const response = await fetch(`http://${window.location.hostname}:5001/api/reports/upload/${uploadTarget._id}`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,
@@ -126,6 +127,12 @@ export default function MidwifePatientsPage() {
     };
 
     useEffect(() => {
+        const userInfo = localStorage.getItem("userInfo");
+        if (userInfo) {
+            setUser(JSON.parse(userInfo));
+        } else {
+            navigate("/login");
+        }
         fetchPatients();
     }, []);
 
@@ -151,7 +158,7 @@ export default function MidwifePatientsPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch("http://192.168.1.93:5001/api/patients", {
+            const response = await fetch(`http://${window.location.hostname}:5001/api/patients`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -169,6 +176,7 @@ export default function MidwifePatientsPage() {
                 setIsRegisterModalOpen(false);
                 setFormData({
                     name: "",
+                    email: "",
                     mrn: "",
                     age: "",
                     gestationWeeks: "",
@@ -190,7 +198,11 @@ export default function MidwifePatientsPage() {
 
     return (
         <div className="flex min-h-screen bg-background">
-            <Sidebar variant="midwife" userName="Dr. Elena Ross" userRole="Senior Midwife" />
+            <Sidebar 
+                variant="midwife" 
+                userName={user?.name || "Midwife User"} 
+                userRole={user?.role === 'midwife' ? 'Senior Midwife' : 'Clinical Administrator'} 
+            />
 
             <div className="flex-1 flex flex-col">
                 <Header
@@ -374,7 +386,7 @@ export default function MidwifePatientsPage() {
                                                             {patient.medical_reports.map((report: any, index: number) => (
                                                                 <a 
                                                                     key={index}
-                                                                    href={`http://192.168.1.93:5001/api/reports/view/${patient._id}/${report._id}`}
+                                                                    href={`http://${window.location.hostname}:5001/api/reports/view/${patient._id}/${report._id}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="flex items-center gap-2 p-2 rounded-lg border bg-background hover:bg-muted/50 transition-colors group"
@@ -440,6 +452,16 @@ export default function MidwifePatientsPage() {
                                         required
                                     />
                                 </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="p-email">Email Address</Label>
+                                <Input
+                                    id="p-email"
+                                    type="email"
+                                    placeholder="patient@gmail.com"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
