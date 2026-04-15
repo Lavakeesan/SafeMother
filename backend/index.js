@@ -11,7 +11,8 @@ connectDB();
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 const allowedOrigins = [
     'http://localhost:8080',
@@ -44,6 +45,7 @@ app.use('/api/guidelines', require('./routes/medicalGuidelineRoutes'));
 app.use('/api/consultations', require('./routes/consultationRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/alerts', require('./routes/alertRoutes'));
+app.use('/api/clinical-reports', require('./routes/clinicalReportRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 
 const PORT = process.env.PORT || 5000;

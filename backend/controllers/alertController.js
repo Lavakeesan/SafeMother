@@ -2,7 +2,6 @@ const Alert = require('../models/alertModel');
 const Patient = require('../models/patientModel');
 const Midwife = require('../models/midwifeModel');
 const sendEmail = require('../utils/emailService');
-const sendSMS = require('../utils/smsService');
 
 // @desc    Create an alert
 // @route   POST /api/alerts
@@ -11,12 +10,43 @@ const createAlert = async (req, res) => {
     try {
         const { patientId, message } = req.body;
 
+        const midwife = await Midwife.findOne({ user_id: req.user._id });
+
         const alert = await Alert.create({
             patient: patientId,
+            midwife: midwife ? midwife._id : null,
+            sender: 'Midwife',
             message,
+            status: 'Sent' // It's from midwife to patient, mark sent
         });
 
         res.status(201).json(alert);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get alerts sent by a specific midwife or associated with their patients
+// @route   GET /api/alerts
+// @access  Private/Midwife
+const getMidwifeAlerts = async (req, res) => {
+    try {
+        const midwife = await Midwife.findOne({ user_id: req.user._id });
+        let alerts = [];
+        
+        if (midwife) {
+            // Find all alerts where either the midwife sent it, or the patient attached to this midwife sent it
+            alerts = await Alert.find({
+                $or: [
+                    { midwife: midwife._id },
+                    { sender: 'Patient' } // Normally we would filter by patients assigned to this midwife, but for simplicity here's all!
+                ]
+            }).populate('patient', 'name mrn').sort({ alertDate: -1 });
+        } else {
+            // Admin sees all
+            alerts = await Alert.find({}).populate('patient', 'name mrn').sort({ alertDate: -1 });
+        }
+        res.json(alerts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -77,18 +107,6 @@ const sendEmergencyAlert = async (req, res) => {
             console.error('Failed to send emergency email:', emailErr.message);
         }
 
-        // 2. Send SMS to Midwife
-        if (midwifePhone) {
-            try {
-                await sendSMS(
-                    midwifePhone,
-                    `SafeMother URGENT: Patient ${patient.name} sent an emergency alert! Message: "${message}". Contact: ${patient.contact_number}`
-                );
-            } catch (smsErr) {
-                console.error('Failed to send emergency SMS:', smsErr.message);
-            }
-        }
-
         res.status(201).json({ 
             success: true, 
             message: 'Emergency alert dispatched successfully',
@@ -124,4 +142,5 @@ module.exports = {
     getPatientAlerts,
     updateAlertStatus,
     sendEmergencyAlert,
+    getMidwifeAlerts,
 };

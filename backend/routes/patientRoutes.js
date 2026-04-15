@@ -5,6 +5,7 @@ const {
     getPatients,
     getPatientById,
     getPatientProfile,
+    updatePatientProfile,
     updatePatient,
     deletePatient
 } = require('../controllers/patientController');
@@ -15,7 +16,8 @@ router.route('/')
     .post(protect, authorize('admin', 'midwife'), createPatient);
 
 router.route('/profile')
-    .get(protect, authorize('patient'), getPatientProfile);
+    .get(protect, authorize('patient'), getPatientProfile)
+    .put(protect, authorize('patient'), updatePatientProfile);
 
 router.route('/:id')
     .get(protect, getPatientById)

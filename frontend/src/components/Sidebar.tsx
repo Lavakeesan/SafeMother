@@ -18,7 +18,7 @@ interface SidebarProps {
 const midwifeNav: NavItem[] = [
   { label: "Dashboard", href: "/midwife", icon: LayoutDashboard },
   { label: "Patients", href: "/midwife/patients", icon: Users },
-  { label: "Calendar", href: "/midwife/calendar", icon: Calendar },
+  { label: "Medical Alerts", href: "/midwife/calendar", icon: AlertTriangle },
   { label: "Clinical Reports", href: "/midwife/reports", icon: FileText },
   { label: "Settings", href: "/midwife/settings", icon: Settings },
 ];
@@ -26,6 +26,7 @@ const midwifeNav: NavItem[] = [
 const patientNav: NavItem[] = [
   { label: "My Dashboard", href: "/patient", icon: LayoutDashboard },
   { label: "Care Plans", href: "/patient/advice", icon: MessageSquare },
+  { label: "Clinic Reports", href: "/patient/reports", icon: FileText },
   { label: "Midwife Alert", href: "/patient/alert", icon: AlertTriangle },
 ];
 
@@ -137,26 +138,28 @@ export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProp
         </div>
       )}
 
-      {/* User Profile */}
-      <div className="flex items-center gap-3 px-5 py-4 border-t border-sidebar-border">
-        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-          {userAvatar ? (
-            <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-sm font-medium text-muted-foreground">
-              {userName?.charAt(0) || "U"}
-            </span>
-          )}
+      {/* User Profile - Hidden for patients per request */}
+      {variant !== "patient" && (
+        <div className="flex items-center gap-3 px-5 py-4 border-t border-sidebar-border">
+          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+            {userAvatar ? (
+              <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-sm font-medium text-muted-foreground">
+                {userName?.charAt(0) || "U"}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground truncate">
+              {userName || "User"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {userRole || "Staff"}
+            </p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground truncate">
-            {userName || "User"}
-          </p>
-          <p className="text-xs text-muted-foreground truncate">
-            {userRole || "Staff"}
-          </p>
-        </div>
-      </div>
+      )}
 
       {/* Logout Button */}
       <div className="px-3 py-2 border-t border-sidebar-border mb-2">

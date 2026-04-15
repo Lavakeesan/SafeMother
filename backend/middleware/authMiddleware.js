@@ -24,8 +24,16 @@ const protect = async (req, res, next) => {
 
 const authorize = (...roles) => {
     return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
-            return res.status(403).json({ message: `Not authorized as ${roles.join(' or ')}` });
+        if (!req.user || !req.user.role) {
+            return res.status(403).json({ message: "Not authorized (No role assigned)" });
+        }
+        
+        const userRole = req.user.role.toLowerCase();
+        const allowedRoles = roles.map(r => r.toLowerCase());
+
+        if (!allowedRoles.includes(userRole)) {
+            console.error(`403 Forbidden: User ${req.user.email} has role '${req.user.role}' but route requires ${roles.join('/')}`);
+            return res.status(403).json({ message: `Not authorized. You are logged in as a ${req.user.role}, but this action requires ${roles.join(' or ')} access.` });
         }
         next();
     };

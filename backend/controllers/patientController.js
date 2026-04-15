@@ -3,7 +3,6 @@ const User = require('../models/userModel');
 const mongoose = require('mongoose');
 const Midwife = require('../models/midwifeModel');
 const sendEmail = require('../utils/emailService');
-const sendSMS = require('../utils/smsService');
 const crypto = require('crypto');
 
 // @desc    Create a patient profile
@@ -45,17 +44,6 @@ const createPatient = async (req, res) => {
                     message: `Hello ${name},\n\nYou have been registered on the SafeMother platform by your midwife.\n\nYou can access your Patient Portal using the following credentials:\n\nEmail: ${email}\nPassword: ${generatedPassword}\n\nPlease stay safe and healthy!\n\nBest regards,\nThe SafeMother Team`
                 });
 
-                // Send SMS with credentials
-                if (contact_number) {
-                    try {
-                        await sendSMS(
-                            contact_number, 
-                            `SafeMother: Hello ${name}, your portal is ready. Login with Email: ${email} and Password: ${generatedPassword}. Stay safe!`
-                        );
-                    } catch (smsError) {
-                        console.error('SMS notification failed, but registration continued:', smsError.message);
-                    }
-                }
             } else {
                 finalUserId = existingUser._id;
             }
@@ -217,11 +205,36 @@ const deletePatient = async (req, res) => {
     }
 };
 
+// @desc    Update logged in patient profile
+// @route   PUT /api/patients/profile
+// @access  Private/Patient
+const updatePatientProfile = async (req, res) => {
+    try {
+        const patient = await Patient.findOne({ user_id: req.user._id });
+        if (patient) {
+            patient.name = req.body.name || patient.name;
+            patient.email = req.body.email || patient.email;
+            patient.address = req.body.address || patient.address;
+            patient.contact_number = req.body.contact_number || patient.contact_number;
+            patient.profile_photo = req.body.profile_photo || patient.profile_photo;
+
+            const updatedPatient = await patient.save();
+            res.json(updatedPatient);
+        } else {
+            res.status(404).json({ message: 'Patient profile not found' });
+        }
+    } catch (error) {
+        console.error('Update Patient Profile Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     createPatient,
     updatePatient,
     getPatients,
     getPatientById,
     getPatientProfile,
+    updatePatientProfile,
     deletePatient,
 };

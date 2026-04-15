@@ -191,9 +191,41 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
+// @desc    Update user password
+// @route   PUT /api/users/update-password
+// @access  Private
+const updatePassword = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const { currentPassword, newPassword } = req.body;
+
+        if (user && (await user.matchPassword(currentPassword))) {
+            user.password = newPassword;
+            await user.save();
+            
+            // Sync with midwife if applicable
+            if (user.role === 'midwife') {
+                const midwife = await Midwife.findOne({ user_id: user._id });
+                if (midwife) {
+                    midwife.password = user.password;
+                    await midwife.save();
+                }
+            }
+
+            res.json({ message: 'Password updated successfully' });
+        } else {
+            res.status(401).json({ message: 'Invalid current password' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
     logoutUser,
     updateUserProfile,
+    updatePassword,
 };

@@ -4,8 +4,23 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Calendar, AlertTriangle, MessageSquare, Heart, 
-  Utensils, Baby, Home, BookOpen, Send
+  Utensils, Baby, Home, BookOpen, Send, FileText, User, LogOut, Settings, Bell, ChevronDown, Camera, Lock
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -59,6 +74,31 @@ export default function PatientDashboard() {
   const isCarePlanMode = location.pathname.includes('/care-plan');
   const isAdviceMode = location.pathname.includes('/advice');
   const isAlertMode = location.pathname.includes('/alert');
+  const isReportsMode = location.pathname.includes('/reports');
+
+  const [reports, setReports] = useState<any[]>([]);
+  const [isReportsLoading, setIsReportsLoading] = useState(false);
+
+  // Profile Modal State
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [profileFormData, setProfileFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+    contact_number: "",
+    profile_photo: "",
+  });
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Password State
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -89,6 +129,137 @@ export default function PatientDashboard() {
     };
     fetchProfile();
   }, [navigate]);
+  const [patientAlerts, setPatientAlerts] = useState<any[]>([]);
+
+  const fetchPatientAlerts = async (patientId: string) => {
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/alerts/patient/${patientId}`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const sortedData = data.sort((a: any, b: any) => new Date(b.alertDate).getTime() - new Date(a.alertDate).getTime());
+        setPatientAlerts(sortedData);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (patient?._id && isAlertMode) {
+      fetchPatientAlerts(patient._id);
+    }
+    if (isReportsMode) {
+      fetchReports();
+    }
+  }, [patient?._id, isAlertMode, isReportsMode]);
+
+  const fetchReports = async () => {
+    setIsReportsLoading(true);
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/clinical-reports/my-reports`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setReports(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsReportsLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdatingProfile(true);
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/patients/profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(profileFormData)
+      });
+      if (response.ok) {
+        const updated = await response.json();
+        setPatient(updated);
+        toast.success("Profile updated successfully");
+        setIsProfileModalOpen(false);
+      } else {
+        toast.error("Failed to update profile");
+      }
+    } catch {
+      toast.error("An error occurred");
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  const openProfileModal = (edit: boolean = false) => {
+    setIsEditMode(edit);
+    setProfileFormData({
+      name: patient?.name || "",
+      email: patient?.email || "",
+      address: patient?.address || "",
+      contact_number: patient?.contact_number || "",
+      profile_photo: patient?.profile_photo || "",
+    });
+    setIsProfileModalOpen(true);
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileFormData(prev => ({ ...prev, profile_photo: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/users/update-password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Password updated successfully");
+        setIsPasswordModalOpen(false);
+        setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      } else {
+        toast.error(data.message || "Failed to update password");
+      }
+    } catch {
+      toast.error("An error occurred");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   const handleSendEmergencyMessage = async () => {
     if (!emergencyMessage.trim()) {
@@ -109,11 +280,12 @@ export default function PatientDashboard() {
 
       if (response.ok) {
         toast.success("Emergency message sent to your midwife team", {
-          description: "A clinician will contact you shortly via email and SMS.",
+          description: "A clinician will contact you shortly via email.",
           duration: 5000,
         });
         setIsEmergencyModalOpen(false);
         setEmergencyMessage("");
+        if (patient?._id) fetchPatientAlerts(patient._id);
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to send alert");
@@ -202,16 +374,60 @@ export default function PatientDashboard() {
               </p>
             </div>
 
-            <div className="text-right bg-card border rounded-xl px-6 py-4">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Due Date</p>
-              <p className="text-xl font-bold text-foreground">
-                {deliveryDate ? deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'}) : "Not set"}
-              </p>
+            <div className="flex items-center gap-4 mt-2 sm:mt-0">
+              {/* Delivery Date block */}
+              <div className="text-right bg-primary/5 border border-primary/20 rounded-xl px-5 py-3 flex items-center gap-4">
+                <div className="bg-primary/20 p-2 rounded-full hidden sm:block">
+                  <Calendar className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] text-primary uppercase tracking-wider font-bold">Delivery Date</p>
+                  <p className="text-lg font-black text-foreground">
+                    {deliveryDate ? deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'}) : "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-12 w-12 rounded-full p-0 border border-primary/10 hover:bg-primary/5 focus-visible:ring-primary focus-visible:ring-offset-2 overflow-hidden">
+                    <Avatar className="h-full w-full">
+                      <AvatarImage src={patient.profile_photo} alt={patient.name} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
+                        {patient.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-64 p-2 mr-4 mt-1 border border-primary/10 shadow-xl rounded-xl" align="end">
+                  <DropdownMenuLabel className="p-3">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-bold text-foreground leading-none">{patient.name}</p>
+                      <p className="text-xs font-medium text-muted-foreground leading-none mt-1">{patient.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-primary/5" />
+                  <DropdownMenuItem onClick={() => openProfileModal(false)} className="cursor-pointer gap-2 py-2.5 rounded-lg hover:bg-primary/5">
+                    <User className="h-4 w-4 text-primary" />
+                    <span>View Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => openProfileModal(true)} className="cursor-pointer gap-2 py-2.5 rounded-lg hover:bg-primary/5">
+                    <Settings className="h-4 w-4 text-primary" />
+                    <span>Edit Details</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-primary/5" />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer gap-2 py-2.5 rounded-lg text-emergency bg-emergency/5 hover:bg-emergency/10 focus:bg-emergency/10 focus:text-emergency">
+                    <LogOut className="h-4 w-4" />
+                    <span className="font-bold">Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
           {/* Emergency Banner — only on main overview */}
-          {!isAdviceMode && !isCarePlanMode && !isAlertMode && (
+          {!isAdviceMode && !isCarePlanMode && !isAlertMode && !isReportsMode && (
             <div className="bg-emergency/5 border border-emergency/20 rounded-xl p-6 mb-8 flex items-center gap-6">
               <div className="w-16 h-16 rounded-full bg-emergency/10 flex items-center justify-center">
                 <AlertTriangle className="h-8 w-8 text-emergency" />
@@ -240,37 +456,42 @@ export default function PatientDashboard() {
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-2">
                 <AlertTriangle className="h-6 w-6 text-emergency" />
-                <h3 className="text-2xl font-bold text-foreground">Send Midwife Alert</h3>
+                <h3 className="text-2xl font-bold text-foreground">Medical Alerts & History</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Use this form to send a priority message directly to your assigned midwife. For life-threatening emergencies, please call triage immediately.
+                View instructions, prescriptions, and warnings sent securely to you by your clinical team.
               </p>
-              <div className="bg-card border rounded-xl p-6 max-w-2xl shadow-sm">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Your Message</label>
-                    <Textarea
-                      placeholder="Describe your symptoms or concerns (e.g., sharp pain, heavy bleeding, reduced fetal movement...)"
-                      className="min-h-[150px] border-emergency/30 focus-visible:ring-emergency"
-                      value={emergencyMessage}
-                      onChange={(e) => setEmergencyMessage(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex gap-3 pt-2">
-                    <Button
-                      className="bg-emergency hover:bg-emergency/90 text-white gap-2 flex-1"
-                      onClick={handleSendEmergencyMessage}
-                      disabled={isSending}
-                    >
-                      {isSending ? "Sending..." : (
-                        <><Send className="h-4 w-4" /> Send Alert to Midwife</>
-                      )}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground flex items-start gap-1.5 pt-1">
-                    <Heart className="h-3 w-3 mt-0.5 text-emergency" />
-                    Your message will be sent via email and SMS to your assigned clinical midwife immediately.
-                  </p>
+
+              {/* Alert History Section */}
+              <div className="mt-4">
+                <div className="space-y-3">
+                  {patientAlerts.length > 0 ? (
+                    patientAlerts.map((alert) => {
+                      const isPatientSender = alert.sender === 'Patient';
+                      const borderClass = isPatientSender ? 'border-emergency/30 bg-emergency/5' : 'border-primary/30 bg-primary/5';
+                      const badgeBg = isPatientSender ? 'bg-emergency/10 text-emergency' : 'bg-primary/10 text-primary';
+                      return (
+                        <div key={alert._id} className={`p-4 rounded-xl border ${borderClass} flex flex-col max-w-3xl`}>
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${badgeBg}`}>
+                                {isPatientSender ? "Me" : "Midwife"}
+                              </span>
+                              {!isPatientSender && <span className="font-semibold text-foreground">Clinical Team</span>}
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(alert.alertDate).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="text-sm font-medium text-foreground whitespace-pre-wrap">{alert.message.replace('EMERGENCY: ', '')}</p>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center p-8 bg-muted/20 border border-dashed rounded-xl max-w-3xl text-muted-foreground">
+                      No messages yet.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -383,6 +604,82 @@ export default function PatientDashboard() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          ) : isReportsMode ? (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 border-b pb-4">
+                <FileText className="h-8 w-8 text-primary" />
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">My Clinical Reports</h2>
+                  <p className="text-muted-foreground text-sm">Review your clinical visit summaries and medical records.</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {reports.length > 0 ? reports.map((rep, index) => {
+                  const clinicNumber = reports.length - index;
+                  return (
+                    <div key={rep._id} className="bg-card border rounded-2xl p-6 shadow-sm flex flex-col gap-6 relative overflow-hidden">
+                      {/* Clinic Visit Badge */}
+                      <div className="absolute top-0 right-0 bg-primary/20 text-primary px-4 py-2 rounded-bl-2xl font-black text-lg">
+                        Clinic Visit #{clinicNumber}
+                      </div>
+                      
+                      {rep.report_photo ? (
+                        <div 
+                          className="w-full h-[600px] bg-black/5 rounded-xl border-2 border-primary/10 overflow-hidden cursor-pointer transition-transform hover:scale-[1.01] hover:shadow-lg relative mt-2"
+                          onClick={() => {
+                            const newTab = window.open();
+                            if (newTab) {
+                              newTab.document.body.innerHTML = `<img src="${rep.report_photo}" style="max-width:100%; height:auto; display:block; margin:auto;" />`;
+                            }
+                          }}
+                          title="Click to enlarge"
+                        >
+                          {rep.report_photo.includes("application/pdf") ? <div className="w-full h-full flex items-center justify-center text-xl font-semibold text-muted-foreground bg-muted/30">📄 View PDF Document</div> : <img src={rep.report_photo} className="w-full h-full object-contain drop-shadow-sm" />}
+                        </div>
+                      ) : (
+                        <div className="w-full h-64 bg-muted/30 rounded-xl border-2 border-dashed flex items-center justify-center text-sm font-medium text-muted-foreground">Report image placeholder</div>
+                      )}
+                      
+                      <div className="w-full">
+                        <div className="flex justify-between items-center mb-4 border-b border-primary/10 pb-3">
+                          <div className="truncate">
+                            <span className="font-bold text-2xl text-primary">Clinic Summary</span>
+                            <span className="ml-2 text-md text-muted-foreground">by {rep.midwife?.name || 'Assigned Midwife'}</span>
+                          </div>
+                          <span className="text-sm font-bold text-muted-foreground shrink-0">{new Date(rep.report_date).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
+                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">Weight</p>
+                            <p className="font-black text-2xl text-foreground">{rep.weight} kg</p>
+                          </div>
+                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
+                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">BP</p>
+                            <p className="font-black text-2xl text-foreground">{rep.blood_pressure}</p>
+                          </div>
+                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
+                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">Sugar</p>
+                            <p className="font-black text-2xl text-foreground truncate">{rep.sugar_level}</p>
+                          </div>
+                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
+                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">BMI</p>
+                            <p className="font-black text-2xl text-foreground">{rep.bmi}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }) : (
+                  <div className="text-center py-20 bg-muted/20 border border-dashed rounded-2xl text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                    <p className="text-lg font-medium">No clinical reports found</p>
+                    <p className="text-sm">Your midwife has not uploaded any reports yet.</p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -578,6 +875,168 @@ export default function PatientDashboard() {
               )}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
+        <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Patient Profile - {isEditMode ? "Edit Mode" : "View Mode"}</DialogTitle>
+            <DialogDescription>View or update your personal clinical contact details here.</DialogDescription>
+          </DialogHeader>
+          <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 p-8 text-white pb-14">
+             <div className="flex items-center gap-6">
+                <div className="relative group">
+                  <div className="h-32 w-32 rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center text-4xl font-black border border-white/30 overflow-hidden shadow-2xl ring-4 ring-white/10">
+                    {profileFormData.profile_photo || patient.profile_photo ? (
+                      <img src={profileFormData.profile_photo || patient.profile_photo} className="h-full w-full object-cover transition-transform group-hover:scale-110" />
+                    ) : (
+                      <span>{patient.name.charAt(0)}</span>
+                    )}
+                  </div>
+                  {isEditMode && (
+                    <label className="absolute -bottom-2 -right-2 h-10 w-10 bg-white text-primary rounded-full flex items-center justify-center shadow-xl border border-primary/10 cursor-pointer hover:scale-110 transition-transform z-10">
+                      <Camera className="h-5 w-5" />
+                      <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+                    </label>
+                  )}
+                </div>
+                <div>
+                   <h2 className="text-3xl font-black mb-1">{patient.name}</h2>
+                   <div className="flex items-center gap-2">
+                     <span className="px-2 py-0.5 bg-white/20 rounded font-bold text-xs uppercase tracking-widest">{patient.mrn}</span>
+                     <span className="text-white/70 font-medium">• Clinical Profile</span>
+                   </div>
+                </div>
+             </div>
+          </div>
+          
+          <form onSubmit={handleUpdateProfile} className="bg-background px-8 pt-0 pb-8 -mt-8">
+            <div className="bg-card border rounded-2xl p-8 shadow-xl space-y-6">
+               <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter ml-1">Full Name</Label>
+                    <Input readOnly={!isEditMode} value={profileFormData.name} onChange={e => setProfileFormData({...profileFormData, name: e.target.value})} className={!isEditMode ? "bg-muted/10 border-none px-0 shadow-none text-xl text-foreground font-black" : "bg-muted/30 h-12 text-lg font-bold"} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter ml-1">Email Address</Label>
+                    <Input readOnly={!isEditMode} value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} className={!isEditMode ? "bg-muted/10 border-none px-0 shadow-none text-xl text-foreground font-black" : "bg-muted/30 h-12 text-lg font-bold"} />
+                  </div>
+               </div>
+               
+               <div className="grid grid-cols-2 gap-6 pt-2">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter ml-1">Contact Number</Label>
+                    <Input readOnly={!isEditMode} value={profileFormData.contact_number} onChange={e => setProfileFormData({...profileFormData, contact_number: e.target.value})} className={!isEditMode ? "bg-muted/10 border-none px-0 shadow-none text-xl text-foreground font-black" : "bg-muted/30 h-12 text-lg font-bold"} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter ml-1">Assigned Midwife</Label>
+                    <div className="bg-muted/10 h-12 flex items-center px-0 text-xl font-black text-primary">
+                       {patient.midwife_id?.user_id?.name || "Senior Clinician"}
+                    </div>
+                  </div>
+               </div>
+
+               <div className="space-y-3 pt-2">
+                  <Label className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter ml-1">Residential Address</Label>
+                  <Input readOnly={!isEditMode} value={profileFormData.address} onChange={e => setProfileFormData({...profileFormData, address: e.target.value})} className={!isEditMode ? "bg-muted/10 border-none px-0 shadow-none text-xl text-foreground font-black" : "bg-muted/30 h-12 text-lg font-bold"} />
+               </div>
+               
+               <div className="pt-6 border-t border-primary/10">
+                  <div className="flex items-center justify-between text-xs px-2">
+                     <span className="text-muted-foreground font-bold flex items-center gap-2"><Heart className="h-4 w-4 text-emergency animate-pulse" /> Verified Maternal Record</span>
+                     <span className="text-muted-foreground italic truncate max-w-[300px]">Electronic Health Record ID: {patient._id}</span>
+                  </div>
+               </div>
+
+               {/* Security Section */}
+               <div className="pt-4 mt-2">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest mb-3 ml-1">Account Security</p>
+                  <Button 
+                    type="button" 
+                    onClick={() => setIsPasswordModalOpen(true)} 
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-2xl h-14 flex items-center justify-center gap-3 font-black shadow-lg shadow-amber-200 transition-all active:scale-95"
+                  >
+                     <Lock className="h-5 w-5" />
+                     Update Account Password
+                  </Button>
+               </div>
+            </div>
+            
+            <div className="flex gap-4 mt-8">
+               <Button type="button" variant="outline" onClick={() => setIsProfileModalOpen(false)} className="flex-1 rounded-2xl h-12 font-bold text-base shadow-sm hover:bg-muted transition-all">
+                 {isEditMode ? "Cancel Changes" : "Close Portal"}
+               </Button>
+               {isEditMode && (
+                 <Button type="submit" disabled={isUpdatingProfile} className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-2xl h-12 font-black text-base shadow-lg shadow-primary/20 transition-all">
+                   {isUpdatingProfile ? "Saving Profile..." : "Submit Updates"}
+                 </Button>
+               )}
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Change Modal */}
+      <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+        <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+           <DialogHeader className="sr-only">
+              <DialogTitle>Change Account Password</DialogTitle>
+              <DialogDescription>Enter your current and new passwords to update your account security.</DialogDescription>
+           </DialogHeader>
+           
+           <div className="bg-amber-500 p-6 text-white text-center pb-8">
+              <div className="h-16 w-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
+                 <Lock className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="text-xl font-black">Security Settings</h2>
+              <p className="text-white/80 text-sm">Update your account password</p>
+           </div>
+           
+           <form onSubmit={handleUpdatePassword} className="p-8 space-y-5 bg-background">
+              <div className="space-y-2">
+                 <Label className="text-xs font-black uppercase text-muted-foreground mr-1">Current Password</Label>
+                 <Input 
+                   type="password" 
+                   required
+                   value={passwordData.currentPassword} 
+                   onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} 
+                   className="h-12 bg-muted/30 rounded-xl"
+                   placeholder="••••••••"
+                 />
+              </div>
+              
+              <div className="space-y-2 pt-2">
+                 <Label className="text-xs font-black uppercase text-muted-foreground mr-1">New Password</Label>
+                 <Input 
+                   type="password" 
+                   required
+                   value={passwordData.newPassword} 
+                   onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} 
+                   className="h-12 bg-muted/30 rounded-xl"
+                   placeholder="Enter new password"
+                 />
+              </div>
+              
+              <div className="space-y-2">
+                 <Label className="text-xs font-black uppercase text-muted-foreground mr-1">Confirm New Password</Label>
+                 <Input 
+                   type="password" 
+                   required
+                   value={passwordData.confirmPassword} 
+                   onChange={e => setPasswordData({...passwordData, confirmPassword: e.target.value})} 
+                   className="h-12 bg-muted/30 rounded-xl"
+                   placeholder="Confirm new password"
+                 />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                 <Button type="button" variant="ghost" onClick={() => setIsPasswordModalOpen(false)} className="flex-1 rounded-xl">Cancel</Button>
+                 <Button type="submit" disabled={isUpdatingPassword} className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl">
+                    {isUpdatingPassword ? "Updating..." : "Update Password"}
+                 </Button>
+              </div>
+           </form>
         </DialogContent>
       </Dialog>
     </div>
