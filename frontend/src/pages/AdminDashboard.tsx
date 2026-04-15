@@ -1,346 +1,246 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
-import { StatusBadge } from "@/components/StatusBadge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Header } from "@/components/Header";
 import { 
-  Search, Bell, HelpCircle, Download, UserPlus, 
-  Users, FileText, Activity, Shield, ChevronLeft, 
-  ChevronRight, Check, Clock, AlertTriangle
+  Users, Calendar, AlertTriangle, Activity, 
+  ArrowUpRight, ArrowDownRight, 
+  TrendingUp, Clock, Shield, CheckCircle2
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
+} from "recharts";
 
-const practitioners = [
-  {
-    initials: "EJ",
-    name: "Elena Jenkins",
-    email: "elena.j@healthcare.com",
-    role: "Certified Midwife",
-    specialty: "Postnatal Care",
-    lastActivity: "2 hours ago",
-    status: "active" as const,
-  },
-  {
-    initials: "MA",
-    name: "Marcus Aris",
-    email: "marcus.aris@midwifelink.org",
-    role: "Guest Admin",
-    specialty: "Labor Support",
-    lastActivity: "2 days ago",
-    status: "pending" as const,
-  },
-  {
-    initials: "SR",
-    name: "Sofia Rodriguez",
-    email: "s.rodriguez@hospital.net",
-    role: "Nurse Specialist",
-    specialty: "Antenatal Screening",
-    lastActivity: "15 mins ago",
-    status: "active" as const,
-  },
-  {
-    initials: "DL",
-    name: "David Lawson",
-    email: "david.l@healthsys.gov",
-    role: "Midwife",
-    specialty: "Home Birth Support",
-    lastActivity: "Offline",
-    status: "offline" as const,
-  },
-];
-
-const tabs = [
-  { id: "users", label: "User Management", icon: Users },
-  { id: "guidelines", label: "Guidelines Editor", icon: FileText },
-  { id: "health", label: "System Health", icon: Activity },
-  { id: "permissions", label: "Role Permissions", icon: Shield },
-];
+const COLORS = ['#10b981', '#f59e0b', '#ef4444']; // Low, Medium, High
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("users");
+  const [stats, setStats] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`http://${window.location.hostname}:5001/api/admin/stats`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const riskData = stats ? [
+    { name: 'Low Risk', value: stats.riskBreakdown.low },
+    { name: 'Medium Risk', value: stats.riskBreakdown.medium },
+    { name: 'High Risk', value: stats.riskBreakdown.high },
+  ] : [];
+
+  const registrationData = [
+    { month: 'Jan', count: 45 },
+    { month: 'Feb', count: 52 },
+    { month: 'Mar', count: 38 },
+    { month: 'Apr', count: 65 },
+    { month: 'May', count: 48 },
+    { month: 'Jun', count: 59 },
+  ];
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar 
-        variant="admin" 
-        userName="Dr. Sarah Chen" 
-        userRole="Chief Administrator" 
-      />
+    <div className="flex min-h-screen bg-background text-foreground overflow-hidden">
+      <Sidebar variant="admin" />
 
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="flex items-center justify-between px-8 py-4 bg-card border-b">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">System</span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">Admin Management</span>
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <Header title="Administration Overview" subtitle="System-wide monitoring and metrics" />
+
+        <main className="flex-1 overflow-auto p-8 space-y-8 bg-muted/20">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatCard 
+              title="Total Patients" 
+              value={stats?.totalPatients || 0} 
+              icon={Users} 
+              trend="+12% from last month" 
+              trendType="up"
+              color="text-primary"
+              bg="bg-primary/10"
+            />
+            <StatCard 
+              title="Total Midwives" 
+              value={stats?.totalMidwives || 0} 
+              icon={Shield} 
+              trend="+2 new this week" 
+              trendType="up"
+              color="text-indigo-600"
+              bg="bg-indigo-100"
+            />
+            <StatCard 
+              title="Total Appointments" 
+              value={stats?.totalAppointments || 0} 
+              icon={Calendar} 
+              trend="-5% from last week" 
+              trendType="down"
+              color="text-amber-600"
+              bg="bg-amber-100"
+            />
+            <StatCard 
+              title="Critical Alerts" 
+              value={stats?.totalAlerts || 0} 
+              icon={AlertTriangle} 
+              trend="3 urgent pending" 
+              trendType="warning"
+              color="text-emergency"
+              bg="bg-emergency/10"
+            />
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search midwi..."
-                className="w-48 pl-10 bg-muted/50 border-0"
-              />
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Graph */}
+            <Card className="lg:col-span-2 border-none shadow-xl bg-card rounded-3xl overflow-hidden">
+              <CardHeader className="p-8 pb-0">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-black tracking-tight">Registration Trends</CardTitle>
+                    <CardDescription className="font-medium">Monthly new user registrations for 2024</CardDescription>
+                  </div>
+                  <div className="p-2 bg-primary/10 rounded-xl">
+                    <TrendingUp className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-8 h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={registrationData}>
+                    <defs>
+                      <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground))" opacity={0.1} />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: 'hsl(var(--muted-foreground))', fontSize: 12, fontWeight: 600}} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{fill: 'hsl(var(--muted-foreground))', fontSize: 12, fontWeight: 600}} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                      itemStyle={{ color: 'hsl(var(--primary))', fontWeight: 700 }}
+                    />
+                    <Area type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={4} fillOpacity={1} fill="url(#colorCount)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5 text-muted-foreground" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-warning rounded-full" />
-            </Button>
-
-            <Button variant="ghost" size="icon">
-              <HelpCircle className="h-5 w-5 text-muted-foreground" />
-            </Button>
-
-            <div className="flex items-center gap-3 pl-4 border-l">
-              <div className="text-right">
-                <p className="font-medium text-foreground text-sm">Dr. Sarah Chen</p>
-                <p className="text-xs text-muted-foreground">Chief Administrator</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary font-medium">SC</span>
-              </div>
-            </div>
+            {/* Risk Distribution */}
+            <Card className="border-none shadow-xl bg-card rounded-3xl overflow-hidden">
+              <CardHeader className="p-8 pb-0">
+                <CardTitle className="text-xl font-black tracking-tight">Patient Risk Distribution</CardTitle>
+                <CardDescription className="font-medium">Active cases by clinical risk level</CardDescription>
+              </CardHeader>
+              <CardContent className="p-8 h-[400px] flex flex-col items-center justify-between">
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={riskData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={8}
+                      dataKey="value"
+                    >
+                      {riskData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                
+                <div className="w-full space-y-4 pt-4">
+                   {riskData.map((item, idx) => (
+                      <div key={item.name} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30">
+                         <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[idx]}} />
+                            <span className="text-sm font-bold">{item.name}</span>
+                         </div>
+                         <span className="text-sm font-black text-primary">{item.value}</span>
+                      </div>
+                   ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </header>
 
-        <main className="flex-1 p-8 overflow-auto">
-          <div className="grid lg:grid-cols-4 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-3">
-              {/* Page Header */}
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">System Administration</h1>
-                  <p className="text-muted-foreground">
-                    Manage maternal care practitioners, clinical guideline protocols, and platform health metrics.
-                  </p>
-                </div>
-
-                <div className="flex gap-3">
-                  <Button variant="outline" className="gap-2">
-                    <Download className="h-4 w-4" />
-                    Export Data
-                  </Button>
-                  <Button className="gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Provision New User
-                  </Button>
-                </div>
-              </div>
-
-              {/* Tabs */}
-              <div className="flex border-b mb-6">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === tab.id
-                        ? "text-primary border-primary"
-                        : "text-muted-foreground border-transparent hover:text-foreground"
-                    }`}
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Filters */}
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-sm text-muted-foreground">Filter By:</span>
-                <select className="px-3 py-2 bg-card border rounded-lg text-sm">
-                  <option>All Roles</option>
-                  <option>Midwife</option>
-                  <option>Nurse</option>
-                  <option>Admin</option>
-                </select>
-                <select className="px-3 py-2 bg-card border rounded-lg text-sm">
-                  <option>Active Status</option>
-                  <option>Active</option>
-                  <option>Pending</option>
-                  <option>Offline</option>
-                </select>
-                <span className="ml-auto text-sm text-muted-foreground">
-                  Displaying 1-12 of 142 Midwives
-                </span>
-              </div>
-
-              {/* User Table */}
-              <div className="bg-card rounded-xl border overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wide px-6 py-4">
-                        Practitioner
-                      </th>
-                      <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wide px-4 py-4">
-                        Clinical Role
-                      </th>
-                      <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wide px-4 py-4">
-                        Specialty
-                      </th>
-                      <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wide px-4 py-4">
-                        Last Activity
-                      </th>
-                      <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wide px-4 py-4">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {practitioners.map((user, i) => (
-                      <tr key={i} className="hover:bg-muted/30 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                              user.status === "active" ? "bg-primary text-primary-foreground" :
-                              user.status === "pending" ? "bg-warning text-warning-foreground" :
-                              "bg-muted text-muted-foreground"
-                            }`}>
-                              {user.initials}
-                            </div>
-                            <div>
-                              <p className="font-medium text-foreground">{user.name}</p>
-                              <p className="text-sm text-muted-foreground">{user.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            user.role === "Guest Admin" 
-                              ? "bg-warning/10 text-warning" 
-                              : "bg-primary/10 text-primary"
-                          }`}>
-                            {user.role}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 text-sm text-muted-foreground">{user.specialty}</td>
-                        <td className="px-4 py-4 text-sm text-muted-foreground">{user.lastActivity}</td>
-                        <td className="px-4 py-4">
-                          <StatusBadge variant={user.status}>{user.status}</StatusBadge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {/* Pagination */}
-                <div className="flex items-center justify-between px-6 py-4 border-t">
-                  <Button variant="outline" size="sm">Previous</Button>
-                  <div className="flex items-center gap-2">
-                    <button className="w-8 h-8 rounded bg-primary text-primary-foreground text-sm font-medium">1</button>
-                    <button className="w-8 h-8 rounded text-muted-foreground hover:bg-muted text-sm">2</button>
-                    <button className="w-8 h-8 rounded text-muted-foreground hover:bg-muted text-sm">3</button>
-                    <span className="text-muted-foreground">...</span>
-                    <button className="w-8 h-8 rounded text-muted-foreground hover:bg-muted text-sm">12</button>
-                  </div>
-                  <Button variant="outline" size="sm">Next</Button>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="bg-card rounded-xl border p-5">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Clock className="h-5 w-5 text-primary" />
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Last 30 Days</span>
-                  </div>
-                  <p className="text-3xl font-bold text-foreground">24 Updates</p>
-                  <p className="text-sm text-muted-foreground">Medical Guidelines revised by Clinical Board</p>
-                </div>
-
-                <div className="bg-card rounded-xl border p-5">
-                  <div className="flex items-center gap-3 mb-2">
-                    <AlertTriangle className="h-5 w-5 text-warning" />
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Review Required</span>
-                  </div>
-                  <p className="text-3xl font-bold text-foreground">7 Protocols</p>
-                  <p className="text-sm text-muted-foreground">Pending peer-review validation</p>
-                </div>
-
-                <div className="bg-card rounded-xl border p-5">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Check className="h-5 w-5 text-success" />
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Integrity Check</span>
-                  </div>
-                  <p className="text-3xl font-bold text-foreground">99.8% Uptime</p>
-                  <p className="text-sm text-muted-foreground">API & Guidelines Database</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="space-y-6">
-              {/* Quick Role Actions */}
-              <div className="bg-card rounded-xl border p-5">
-                <h3 className="font-semibold text-foreground mb-2">Quick Role Actions</h3>
-                <p className="text-sm text-muted-foreground mb-4">Modify global platform constraints</p>
-
-                <div className="bg-muted/50 rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Guidelines Lockdown</span>
-                    <div className="w-10 h-6 rounded-full bg-muted relative cursor-pointer">
-                      <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-muted-foreground" />
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Restrict Editing
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Prevents all guideline edits during maintenance.
-                  </p>
-                </div>
-
-                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
-                  Pending Approvals (3)
-                </h4>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <FileText className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">Protocol #102</p>
-                        <p className="text-xs text-muted-foreground">Review by Jane Doe</p>
-                      </div>
-                    </div>
-                    <Check className="h-5 w-5 text-success" />
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <UserPlus className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">New Specialist</p>
-                        <p className="text-xs text-muted-foreground">Verify Dr. Miller</p>
-                      </div>
-                    </div>
-                    <Check className="h-5 w-5 text-success" />
-                  </div>
-                </div>
-              </div>
-
-              {/* System Status */}
-              <div className="bg-card rounded-xl border p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Check className="h-5 w-5 text-success" />
-                  <span className="font-medium text-success">System Status</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  All European nodes are currently synchronized. Clinical DB Version: 2.4.1-Stable.
-                </p>
-              </div>
-            </div>
+          {/* System Status Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+             <Card className="border-none shadow-lg bg-card rounded-3xl">
+                <CardContent className="p-6 flex items-center gap-4">
+                   <div className="bg-success/10 p-4 rounded-2xl">
+                      <CheckCircle2 className="h-8 w-8 text-success" />
+                   </div>
+                   <div>
+                      <h4 className="font-bold text-foreground">API Integrity</h4>
+                      <p className="text-sm text-muted-foreground font-medium">99.9% uptime - All services active</p>
+                   </div>
+                </CardContent>
+             </Card>
+             <Card className="border-none shadow-lg bg-card rounded-3xl">
+                <CardContent className="p-6 flex items-center gap-4">
+                   <div className="bg-primary/10 p-4 rounded-2xl">
+                      <Activity className="h-8 w-8 text-primary" />
+                   </div>
+                   <div>
+                      <h4 className="font-bold text-foreground">Cloud Sync</h4>
+                      <p className="text-sm text-muted-foreground font-medium">Last sync: 2 mins ago</p>
+                   </div>
+                </CardContent>
+             </Card>
+             <Card className="border-none shadow-lg bg-card rounded-3xl">
+                <CardContent className="p-6 flex items-center gap-4">
+                   <div className="bg-emergency/10 p-4 rounded-2xl">
+                      <Clock className="h-8 w-8 text-emergency" />
+                   </div>
+                   <div>
+                      <h4 className="font-bold text-foreground">Maintenance</h4>
+                      <p className="text-sm text-muted-foreground font-medium">Next window: Sunday 2 AM</p>
+                   </div>
+                </CardContent>
+             </Card>
           </div>
         </main>
       </div>
     </div>
+  );
+}
+
+function StatCard({ title, value, icon: Icon, trend, trendType, color, bg }: any) {
+  return (
+    <Card className="border-none shadow-lg bg-card rounded-3xl transition-transform hover:scale-[1.02] duration-300">
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between">
+          <div className={`p-3 rounded-2xl ${bg}`}>
+            <Icon className={`h-6 w-6 ${color}`} />
+          </div>
+          <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${
+            trendType === 'up' ? 'bg-success/10 text-success' : 
+            trendType === 'down' ? 'bg-emergency/10 text-emergency' : 
+            'bg-warning/10 text-warning'
+          }`}>
+            {trendType === 'up' ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+            {trend}
+          </div>
+        </div>
+        <div className="mt-4">
+          <p className="text-muted-foreground text-xs font-black uppercase tracking-widest leading-none">{title}</p>
+          <h3 className="text-4xl font-black mt-1 text-foreground">{value}</h3>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

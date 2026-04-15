@@ -779,11 +779,13 @@ export default function MidwifeDashboard() {
         <Dialog open={isEmergencySMSModalOpen} onOpenChange={setIsEmergencySMSModalOpen}>
           <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
             <div className="bg-emergency p-6 text-white text-center pb-8">
-              <div className="h-16 w-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
-                <AlertTriangle className="h-8 w-8 text-white" />
-              </div>
-              <h2 className="text-xl font-black italic tracking-tighter">EMERGENCY DISPATCH</h2>
-              <p className="text-white/80 text-sm">Send high-priority SMS to {selectedPatientForSMS?.name}</p>
+              <DialogHeader className="p-0">
+                <div className="h-16 w-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
+                  <AlertTriangle className="h-8 w-8 text-white" />
+                </div>
+                <DialogTitle className="text-xl font-black italic tracking-tighter text-white">EMERGENCY DISPATCH</DialogTitle>
+                <DialogDescription className="text-white/80 text-sm">Send high-priority SMS to {selectedPatientForSMS?.name}</DialogDescription>
+              </DialogHeader>
             </div>
             <div className="p-8 space-y-5 bg-background">
                <div className="space-y-2">

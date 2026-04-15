@@ -53,6 +53,11 @@ export default function LandingPage() {
                     Midwife
                   </Button>
                 </Link>
+                <Link to="/admin">
+                  <Button size="lg" variant="secondary" className="bg-amber-600 text-white hover:bg-amber-700">
+                    Admin
+                  </Button>
+                </Link>
               </div>
             </div>
 

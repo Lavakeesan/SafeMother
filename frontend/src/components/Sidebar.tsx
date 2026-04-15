@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LucideIcon, LayoutDashboard, Users, Calendar, FileText, Settings, BookOpen, AlertTriangle, MessageSquare, ShieldCheck, Activity, HelpCircle, UserCog, LogOut } from "lucide-react";
+import { LucideIcon, LayoutDashboard, Users, Calendar, FileText, Settings, BookOpen, AlertTriangle, MessageSquare, ShieldCheck, Activity, HelpCircle, UserCog, LogOut, Stethoscope, ClipboardList } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -31,10 +31,12 @@ const patientNav: NavItem[] = [
 
 const adminNav: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "System Admin", href: "/admin/system", icon: UserCog },
+  { label: "Users", href: "/admin/users", icon: UserCog },
+  { label: "Midwives", href: "/admin/midwives", icon: Stethoscope },
+  { label: "Patients", href: "/admin/patients", icon: Users },
+  { label: "Appointments", href: "/admin/appointments", icon: Calendar },
+  { label: "Alerts", href: "/admin/alerts", icon: AlertTriangle },
   { label: "Guidelines", href: "/admin/guidelines", icon: BookOpen },
-  { label: "Audit Trail", href: "/admin/audit", icon: Activity },
-  { label: "Config", href: "/admin/config", icon: Settings },
 ];
 
 const navConfigs = {
@@ -98,18 +100,6 @@ export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProp
 
 
 
-      {/* Admin Support Portal */}
-      {variant === "admin" && (
-        <div className="px-3 py-4 border-t border-sidebar-border">
-          <Link
-            to="/admin/support"
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-          >
-            <HelpCircle className="h-4 w-4" />
-            Support Portal
-          </Link>
-        </div>
-      )}
 
 
       {/* Logout Button */}

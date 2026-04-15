@@ -536,7 +536,7 @@ export default function MidwifePatientsPage() {
                 <Dialog open={!!emergencyTarget} onOpenChange={(open) => { if (!open) { setEmergencyTarget(null); setEmergencyMessage(""); } }}>
                     <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden">
                         {/* Red header */}
-                        <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5">
+                        <DialogHeader className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5 space-y-0">
                             <DialogTitle className="text-white text-lg font-bold flex items-center gap-2">
                                 <AlertTriangle className="h-5 w-5" />
                                 Send Emergency SMS
@@ -544,7 +544,7 @@ export default function MidwifePatientsPage() {
                             <DialogDescription className="text-red-100 text-sm mt-1">
                                 This message will be sent directly to <span className="font-semibold">{emergencyTarget?.name}</span>'s phone via SMS.
                             </DialogDescription>
-                        </div>
+                        </DialogHeader>
 
                         <form onSubmit={handleSendEmergency} className="px-6 py-5 space-y-4">
                             <div className="space-y-1.5">
@@ -609,7 +609,7 @@ export default function MidwifePatientsPage() {
                 {/* Upload Medical Report Dialog */}
                 <Dialog open={!!uploadTarget} onOpenChange={(open) => { if (!open) { setUploadTarget(null); setUploadFile(null); } }}>
                     <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden">
-                        <div className="bg-gradient-to-r from-primary to-primary/80 px-6 py-5">
+                        <DialogHeader className="bg-gradient-to-r from-primary to-primary/80 px-6 py-5 space-y-0">
                             <DialogTitle className="text-white text-lg font-bold flex items-center gap-2">
                                 <Upload className="h-5 w-5" />
                                 Upload Medical Report
@@ -617,7 +617,7 @@ export default function MidwifePatientsPage() {
                             <DialogDescription className="text-primary-foreground/70 text-sm mt-1">
                                 Upload a report for <span className="font-semibold">{uploadTarget?.name}</span> (MRN: {uploadTarget?.mrn})
                             </DialogDescription>
-                        </div>
+                        </DialogHeader>
 
                         <form onSubmit={handleUploadReport} className="px-6 py-5 space-y-4">
                             {/* Drop zone */}

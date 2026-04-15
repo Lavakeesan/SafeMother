@@ -10,6 +10,12 @@ import MidwifePatientsPage from "./pages/MidwifePatientsPage";
 import PatientProfilePage from "./pages/PatientProfilePage";
 import PatientDashboard from "./pages/PatientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminMidwivesPage from "./pages/AdminMidwivesPage";
+import AdminPatientsPage from "./pages/AdminPatientsPage";
+import AdminAppointmentsPage from "./pages/AdminAppointmentsPage";
+import AdminAlertsPage from "./pages/AdminAlertsPage";
+import AdminGuidelinesPage from "./pages/AdminGuidelinesPage";
 import ResourceLibrary from "./pages/ResourceLibrary";
 import NotFound from "./pages/NotFound";
 
@@ -46,8 +52,12 @@ const App = () => (
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/system" element={<AdminDashboard />} />
-          <Route path="/admin/guidelines" element={<ResourceLibrary />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/midwives" element={<AdminMidwivesPage />} />
+          <Route path="/admin/patients" element={<AdminPatientsPage />} />
+          <Route path="/admin/appointments" element={<AdminAppointmentsPage />} />
+          <Route path="/admin/alerts" element={<AdminAlertsPage />} />
+          <Route path="/admin/guidelines" element={<AdminGuidelinesPage />} />
           <Route path="/admin/audit" element={<AdminDashboard />} />
           <Route path="/admin/config" element={<AdminDashboard />} />
 

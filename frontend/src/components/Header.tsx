@@ -193,7 +193,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 border border-primary/10 hover:bg-primary/5 focus-visible:ring-primary overflow-hidden ml-2">
               <Avatar className="h-full w-full">
-                <AvatarImage src={profilePhotoUrl} alt={user?.name} />
+                {user?.hasProfilePhoto && <AvatarImage src={profilePhotoUrl} alt={user?.name} />}
                 <AvatarFallback className="bg-primary/10 text-primary font-bold">
                   {user?.name?.charAt(0) || "U"}
                 </AvatarFallback>
@@ -245,7 +245,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
               </div>
               <div className="flex flex-col items-center">
                 <Avatar className="h-24 w-24 border-4 border-white/30 shadow-xl mb-4">
-                   <AvatarImage src={profilePhotoUrl} />
+                   {user?.hasProfilePhoto && <AvatarImage src={profilePhotoUrl} />}
                    <AvatarFallback className="text-3xl font-black bg-white text-primary">
                       {user?.name?.charAt(0)}
                    </AvatarFallback>
@@ -329,7 +329,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
                 <div className="mt-6 flex flex-col items-center">
                    <div className="relative group cursor-pointer" onClick={() => document.getElementById('photo-upload')?.click()}>
                       <Avatar className="h-28 w-28 border-4 border-white shadow-xl group-hover:opacity-80 transition-opacity">
-                         <AvatarImage src={previewUrl || profilePhotoUrl} />
+                         <AvatarImage src={previewUrl || (user?.hasProfilePhoto ? profilePhotoUrl : undefined)} />
                          <AvatarFallback className="bg-primary/10 text-primary text-2xl font-black">
                             {user?.name?.charAt(0)}
                          </AvatarFallback>

@@ -76,6 +76,7 @@ const registerUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                hasProfilePhoto: false,
                 profile: profile
             });
         } else {
@@ -104,8 +105,10 @@ const getUserProfile = async (req, res) => {
                 profile = await Admin.findOne({ user_id: user._id });
             }
 
+            const { profile_photo, ...rest } = user._doc;
             res.json({
-                ...user._doc,
+                ...rest,
+                hasProfilePhoto: !!(profile_photo && profile_photo.data),
                 profile
             });
         } else {
@@ -135,6 +138,7 @@ const authUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                hasProfilePhoto: !!(user.profile_photo && user.profile_photo.data)
             });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
@@ -308,6 +312,99 @@ const getProfilePhoto = async (req, res) => {
     }
 };
 
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private/Admin
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password').lean();
+        
+        // Add flag and remove the heavy photo data if it exists
+        const sanitizedUsers = users.map(user => {
+            const hasPhoto = !!(user.profile_photo && user.profile_photo.data);
+            const { profile_photo, ...rest } = user;
+            return {
+                ...rest,
+                hasProfilePhoto: hasPhoto
+            };
+        });
+
+        res.json(sanitizedUsers);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Delete user
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (user) {
+            // Delete associated profile
+            if (user.role === 'midwife') {
+                await Midwife.deleteOne({ user_id: user._id });
+            } else if (user.role === 'patient') {
+                await Patient.deleteOne({ user_id: user._id });
+            }
+
+            await User.deleteOne({ _id: user._id });
+            res.json({ message: 'User removed' });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Update user by Admin
+// @route   PUT /api/users/:id
+// @access  Private/Admin
+const updateUserByAdmin = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (user) {
+            user.name = req.body.name || user.name;
+            user.email = req.body.email || user.email;
+            user.role = req.body.role || user.role;
+
+            const updatedUser = await user.save();
+
+            // Sync profiles
+            if (updatedUser.role === 'midwife') {
+                const midwife = await Midwife.findOne({ user_id: updatedUser._id });
+                if (midwife) {
+                    midwife.name = updatedUser.name;
+                    midwife.email = updatedUser.email;
+                    await midwife.save();
+                }
+            } else if (updatedUser.role === 'patient') {
+                const patient = await Patient.findOne({ user_id: updatedUser._id });
+                if (patient) {
+                    patient.name = updatedUser.name;
+                    patient.email = updatedUser.email;
+                    await patient.save();
+                }
+            }
+
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role,
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
@@ -317,4 +414,7 @@ module.exports = {
     updatePassword,
     uploadProfilePhoto,
     getProfilePhoto,
+    getAllUsers,
+    deleteUser,
+    updateUserByAdmin,
 };

@@ -50,8 +50,23 @@ const getPatientAppointments = async (req, res) => {
     }
 };
 
+// @desc    Get all appointments
+// @route   GET /api/appointments
+// @access  Private/Admin
+const getAllAppointments = async (req, res) => {
+    try {
+        const appointments = await Appointment.find({})
+            .populate('patient', 'name mrn')
+            .populate('midwife', 'name hospital_name');
+        res.json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     scheduleAppointment,
     updateAppointmentStatus,
     getPatientAppointments,
+    getAllAppointments
 };
