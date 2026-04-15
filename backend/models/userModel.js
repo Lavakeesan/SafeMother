@@ -36,15 +36,19 @@ const userSchema = mongoose.Schema(
         hospital_name: {
             type: String,
         },
+        profile_photo: {
+            data: Buffer,
+            contentType: String,
+        },
     },
     {
         timestamps: true,
     }
 );
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        next();
+        return;
     }
 
     const salt = await bcrypt.genSalt(10);

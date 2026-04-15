@@ -10,7 +10,6 @@ import MidwifePatientsPage from "./pages/MidwifePatientsPage";
 import PatientProfilePage from "./pages/PatientProfilePage";
 import PatientDashboard from "./pages/PatientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import EmergencyPage from "./pages/EmergencyPage";
 import ResourceLibrary from "./pages/ResourceLibrary";
 import NotFound from "./pages/NotFound";
 
@@ -52,8 +51,7 @@ const App = () => (
           <Route path="/admin/audit" element={<AdminDashboard />} />
           <Route path="/admin/config" element={<AdminDashboard />} />
 
-          {/* Emergency */}
-          <Route path="/emergency" element={<EmergencyPage />} />
+
 
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />

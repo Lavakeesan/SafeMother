@@ -87,6 +87,38 @@ const registerUser = async (req, res) => {
     }
 };
 
+// @desc    Get user profile
+// @route   GET /api/users/profile
+// @access  Private
+const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+
+        if (user) {
+            let profile = null;
+            if (user.role === 'midwife') {
+                profile = await Midwife.findOne({ user_id: user._id });
+            } else if (user.role === 'patient') {
+                profile = await Patient.findOne({ user_id: user._id });
+            } else if (user.role === 'admin') {
+                profile = await Admin.findOne({ user_id: user._id });
+            }
+
+            res.json({
+                ...user._doc,
+                profile
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Authenticate a user
+
 // @desc    Authenticate a user
 // @route   POST /api/users/login
 // @access  Public
@@ -222,10 +254,67 @@ const updatePassword = async (req, res) => {
     }
 };
 
+// @desc    Upload profile photo
+// @route   POST /api/users/profile-photo
+// @access  Private
+const uploadProfilePhoto = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.profile_photo = {
+            data: req.file.buffer,
+            contentType: req.file.mimetype
+        };
+        await user.save();
+
+        // Sync with midwife if applicable
+        if (user.role === 'midwife') {
+            const midwife = await Midwife.findOne({ user_id: user._id });
+            if (midwife) {
+                midwife.profile_photo = user.profile_photo;
+                await midwife.save();
+            }
+        }
+
+        res.json({ message: 'Profile photo uploaded successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error during photo upload' });
+    }
+};
+
+// @desc    Get profile photo
+// @route   GET /api/users/profile-photo/:userId
+// @access  Public
+const getProfilePhoto = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user || !user.profile_photo || !user.profile_photo.data) {
+            return res.status(404).json({ message: 'Photo not found' });
+        }
+
+        res.set('Content-Type', user.profile_photo.contentType);
+        res.send(user.profile_photo.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error retrieving photo' });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
+    getUserProfile,
     logoutUser,
     updateUserProfile,
     updatePassword,
+    uploadProfilePhoto,
+    getProfilePhoto,
 };

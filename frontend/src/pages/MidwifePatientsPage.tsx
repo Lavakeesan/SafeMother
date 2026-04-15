@@ -20,7 +20,7 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Search, Users, Plus, Filter, AlertTriangle, Send, Upload, FileText, X } from "lucide-react";
+import { Search, Users, Plus, Filter, AlertTriangle, Send, Upload, FileText, X, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -69,30 +69,28 @@ export default function MidwifePatientsPage() {
 
     const handleSendEmergency = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!emergencyTarget) return;
+        if (!emergencyTarget || !emergencyMessage.trim()) return;
         setIsSendingAlert(true);
         try {
-            const response = await fetch(`http://${window.location.hostname}:5001/api/alerts`, {
+            const response = await fetch(`http://${window.location.hostname}:5001/api/sms/send-to-patient`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',
                 body: JSON.stringify({
-                    patient: emergencyTarget._id,
-                    message: emergencyMessage,
-                    alertDate: new Date().toISOString(),
-                    status: 'Sent',
+                    patientId: emergencyTarget._id,
+                    message: emergencyMessage
                 }),
             });
             if (response.ok) {
-                toast.success(`Emergency alert sent to ${emergencyTarget.name}`);
+                toast.success(`Emergency SMS sent to ${emergencyTarget.name}`);
                 setEmergencyTarget(null);
                 setEmergencyMessage("");
             } else {
                 const data = await response.json();
-                toast.error(data.message || "Failed to send alert");
+                toast.error(data.message || "Failed to send SMS");
             }
         } catch (error) {
-            toast.error("Could not send emergency alert.");
+            toast.error("Could not send emergency SMS.");
         } finally {
             setIsSendingAlert(false);
         }
@@ -541,10 +539,10 @@ export default function MidwifePatientsPage() {
                         <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5">
                             <DialogTitle className="text-white text-lg font-bold flex items-center gap-2">
                                 <AlertTriangle className="h-5 w-5" />
-                                Send Emergency Alert
+                                Send Emergency SMS
                             </DialogTitle>
                             <DialogDescription className="text-red-100 text-sm mt-1">
-                                This alert will be recorded for <span className="font-semibold">{emergencyTarget?.name}</span> with MRN {emergencyTarget?.mrn}.
+                                This message will be sent directly to <span className="font-semibold">{emergencyTarget?.name}</span>'s phone via SMS.
                             </DialogDescription>
                         </div>
 
@@ -577,10 +575,11 @@ export default function MidwifePatientsPage() {
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-3 pt-2 border-t">
+                            <div className="flex justify-end gap-3 pt-4 border-t">
                                 <Button
                                     type="button"
                                     variant="outline"
+                                    className="rounded-xl"
                                     onClick={() => { setEmergencyTarget(null); setEmergencyMessage(""); }}
                                 >
                                     Cancel
@@ -588,17 +587,17 @@ export default function MidwifePatientsPage() {
                                 <Button
                                     type="submit"
                                     disabled={isSendingAlert}
-                                    className="bg-red-600 hover:bg-red-700 text-white gap-2"
+                                    className="bg-red-600 hover:bg-red-700 text-white gap-2 rounded-xl px-6 shadow-lg shadow-red-200"
                                 >
                                     {isSendingAlert ? (
                                         <>
                                             <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full inline-block" />
-                                            Sending...
+                                            Dispatching...
                                         </>
                                     ) : (
                                         <>
-                                            <Send className="h-4 w-4" />
-                                            Send Alert
+                                            <Zap className="h-4 w-4" />
+                                            Send Urgent SMS
                                         </>
                                     )}
                                 </Button>

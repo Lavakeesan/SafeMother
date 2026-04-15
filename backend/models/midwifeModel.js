@@ -30,6 +30,10 @@ const midwifeSchema = mongoose.Schema(
         hospital_name: {
             type: String,
         },
+        profile_photo: {
+            data: Buffer,
+            contentType: String,
+        },
         password: {
             type: String,
         },

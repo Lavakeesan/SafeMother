@@ -17,23 +17,21 @@ app.use(cookieParser());
 const allowedOrigins = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
-    'http://192.168.1.93:8080'
+    'http://192.168.1.93:8080',
+    'http://localhost:5173',
 ];
 
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin) || (origin && origin.startsWith('http://192.168.1.'))) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-    
-    if (req.method === 'OPTIONS') {
-        return res.status(204).end();
-    }
-    next();
-});
+app.use(cors({
+    origin: function (origin, callback) {
+        // Reflection for dev: always allow the origin if it exists
+        if (!origin) return callback(null, true);
+        console.log('Incoming request from origin:', origin);
+        callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+}));
 
 app.get('/', (req, res) => {
     res.send('API is running...');
@@ -47,6 +45,7 @@ app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/alerts', require('./routes/alertRoutes'));
 app.use('/api/clinical-reports', require('./routes/clinicalReportRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/sms', require('./routes/messageRoutes'));
 
 const PORT = process.env.PORT || 5000;
 

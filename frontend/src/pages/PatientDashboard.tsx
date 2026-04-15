@@ -56,10 +56,10 @@ const advice = [
 ];
 
 const resources = [
-  { icon: Utensils, label: "Diet Guide" },
-  { icon: Baby, label: "Yoga Videos" },
-  { icon: Baby, label: "Newborn 101" },
-  { icon: Home, label: "Home Safety" },
+  { icon: Utensils, label: "Diet Guide", url: "https://www.youtube.com/watch?v=3GTK6MLPJ9g" },
+  { icon: Baby, label: "Yoga Videos", url: "https://www.youtube.com/watch?v=lKx0sOz31C4" },
+  { icon: Baby, label: "Newborn 101", url: "https://www.youtube.com/watch?v=hpgjwK_oQe0" },
+  { icon: Home, label: "Home Safety", url: "https://www.youtube.com/watch?v=jxV6P5R224E" },
 ];
 
 export default function PatientDashboard() {
@@ -99,6 +99,11 @@ export default function PatientDashboard() {
     confirmPassword: "",
   });
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  
+  // SMS Modal State
+  const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
+  const [smsMessage, setSMSMessage] = useState("");
+  const [isSendingSMS, setIsSendingSMS] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -147,7 +152,7 @@ export default function PatientDashboard() {
   };
 
   useEffect(() => {
-    if (patient?._id && isAlertMode) {
+    if (patient?._id) {
       fetchPatientAlerts(patient._id);
     }
     if (isReportsMode) {
@@ -297,6 +302,41 @@ export default function PatientDashboard() {
     }
   };
 
+  const handleSendSMS = async () => {
+    if (!smsMessage.trim()) {
+      toast.error("Please enter a message");
+      return;
+    }
+
+    setIsSendingSMS(true);
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/sms/send-to-midwife`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ message: smsMessage }),
+      });
+
+      if (response.ok) {
+        toast.success("Message sent to your midwife's phone", {
+          description: "They will receive it as an instant SMS.",
+          duration: 5000,
+        });
+        setIsSMSModalOpen(false);
+        setSMSMessage("");
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send SMS");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send SMS. Please try again later.");
+    } finally {
+      setIsSendingSMS(false);
+    }
+  };
+
   if (!patient) {
     return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Loading your profile...</div>;
   }
@@ -428,26 +468,27 @@ export default function PatientDashboard() {
 
           {/* Emergency Banner — only on main overview */}
           {!isAdviceMode && !isCarePlanMode && !isAlertMode && !isReportsMode && (
-            <div className="bg-emergency/5 border border-emergency/20 rounded-xl p-6 mb-8 flex items-center gap-6">
-              <div className="w-16 h-16 rounded-full bg-emergency/10 flex items-center justify-center">
-                <AlertTriangle className="h-8 w-8 text-emergency" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-emergency">Emergency Instructions</h3>
-                <p className="text-muted-foreground">
-                  If you experience sharp pain, heavy bleeding, or decreased movement, contact triage immediately.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button 
-                  onClick={() => setIsEmergencyModalOpen(true)}
-                  className="inline-flex items-center justify-center rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-2 border-emergency/50 bg-background text-emergency shadow-sm hover:bg-emergency/10 h-10 px-4 py-2"
-                >
-                  SEND MESSAGE
-                </button>
-                <Button className="bg-emergency hover:bg-emergency/90 text-white font-semibold">
-                  CALL TRIAGE NOW
-                </Button>
+            <div className="mb-8">
+              {/* Instant Message Banner */}
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <MessageSquare className="h-8 w-8 text-primary" />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-xl font-bold text-foreground">Instant SMS Messenger</h3>
+                  <p className="text-muted-foreground">
+                    Send a direct text message to your assigned midwife's phone for quick advice or questions.
+                  </p>
+                </div>
+                <div className="w-full md:w-auto">
+                  <Button 
+                    onClick={() => setIsSMSModalOpen(true)}
+                    className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-bold h-12 px-8 gap-2 rounded-xl shadow-lg shadow-primary/20"
+                  >
+                    <Send className="h-4 w-4" />
+                    SEND INSTANT MESSAGE
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -765,30 +806,54 @@ export default function PatientDashboard() {
 
             {/* Right Column */}
             <div className="space-y-6">
-              {/* Midwife Advice */}
+              {/* Midwife Alerts */}
               <div className="bg-card rounded-xl border p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-foreground">Midwife Advice</h3>
-                  <span className="text-primary">💡</span>
+                  <h3 className="font-semibold text-foreground">Midwife Alerts</h3>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-primary/10 rounded text-[10px] font-bold text-primary uppercase">
+                    <span className="relative flex h-2 w-2">
+                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                       <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                    Live
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  {advice.map((item, i) => (
-                    <div 
-                      key={i} 
-                      className={`p-3 rounded-lg ${item.active ? "bg-primary/5 border border-primary/20" : "bg-muted/50"}`}
-                    >
-                      <p className="text-xs text-primary font-medium mb-1">
-                        {item.category} • {item.date}
-                      </p>
-                      <p className="font-medium text-foreground text-sm">{item.title}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
+                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+                  {patientAlerts.length > 0 ? (
+                    patientAlerts.slice(0, 5).map((alert, i) => (
+                      <div 
+                        key={alert._id || i} 
+                        className={`p-3 rounded-xl border transition-all ${alert.status === 'Resolved' ? 'bg-muted/30 border-muted opacity-80' : 'bg-primary/5 border-primary/10 shadow-sm border-l-4 border-l-primary'}`}
+                      >
+                        <div className="flex justify-between items-start mb-1.5">
+                           <p className="text-[10px] text-primary font-black uppercase tracking-widest">
+                             {alert.alertType}
+                           </p>
+                           <span className="text-[10px] text-muted-foreground font-medium bg-muted px-1.5 py-0.5 rounded">
+                             {new Date(alert.alertDate).toLocaleDateString()}
+                           </span>
+                        </div>
+                        <p className="font-bold text-foreground text-sm leading-tight mb-1">{alert.message}</p>
+                        <div className="flex items-center gap-1">
+                           <div className="h-1 w-1 rounded-full bg-primary" />
+                           <p className="text-[10px] text-muted-foreground font-medium italic">
+                             from {patient.midwife_id?.user_id?.name || "Senior Midwife"}
+                           </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10 bg-muted/20 border border-dashed rounded-xl border-primary/20">
+                      <Bell className="h-8 w-8 mx-auto mb-3 text-primary/20" />
+                      <p className="text-xs font-bold text-muted-foreground">No current alerts from your clinical team.</p>
                     </div>
-                  ))}
+                  )}
                 </div>
 
-                <Button variant="outline" className="w-full mt-4">
-                  View All Advice
+                <Button variant="outline" className="w-full mt-4 h-10 rounded-xl text-xs font-bold gap-2 text-primary border-primary/10 hover:bg-primary/5 transition-all" onClick={() => navigate('/patient/alert')}>
+                  <MessageSquare className="h-4 w-4" />
+                  View History
                 </Button>
               </div>
 
@@ -799,6 +864,7 @@ export default function PatientDashboard() {
                   {resources.map((resource, i) => (
                     <button
                       key={i}
+                      onClick={() => resource.url && window.open(resource.url, '_blank')}
                       className="flex flex-col items-center gap-2 p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                     >
                       <resource.icon className="h-6 w-6 text-primary" />
@@ -1037,6 +1103,58 @@ export default function PatientDashboard() {
                  </Button>
               </div>
            </form>
+        </DialogContent>
+      </Dialog>
+      {/* SMS Message Modal */}
+      <Dialog open={isSMSModalOpen} onOpenChange={setIsSMSModalOpen}>
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Send Message to Midwife</DialogTitle>
+            <DialogDescription>Your message will be sent instantly to your midwife's phone via SMS.</DialogDescription>
+          </DialogHeader>
+          <div className="bg-primary p-6 text-white text-center pb-8">
+            <div className="h-16 w-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
+              <MessageSquare className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-xl font-black">Instant Messenger</h2>
+            <p className="text-white/80 text-sm">Send a direct SMS to {patient.midwife_id?.user_id?.name || 'your midwife'}</p>
+          </div>
+          <div className="p-8 space-y-5 bg-background">
+             <div className="space-y-2">
+                <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Your Message</Label>
+                <Textarea
+                  placeholder="Type your message here..."
+                  className="min-h-[150px] bg-muted/30 border-none rounded-2xl p-4 focus-visible:ring-primary text-foreground font-medium"
+                  value={smsMessage}
+                  onChange={(e) => setSMSMessage(e.target.value)}
+                />
+                <p className="text-[10px] text-muted-foreground italic px-1 pt-1">
+                  Note: This message is sent instantly via SMS gateway and is not stored in our database records.
+                </p>
+             </div>
+             <div className="flex gap-4 pt-4">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setIsSMSModalOpen(false)}
+                  className="flex-1 h-12 rounded-2xl font-bold"
+                  disabled={isSendingSMS}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSendSMS}
+                  disabled={isSendingSMS}
+                  className="flex-1 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl h-12 shadow-lg shadow-primary/20 gap-2"
+                >
+                  {isSendingSMS ? "Sending..." : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Send Instant SMS
+                    </>
+                  )}
+                </Button>
+             </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

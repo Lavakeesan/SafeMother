@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, AlertTriangle } from "lucide-react";
 import { StatusBadge, StatusBadgeVariant } from "./StatusBadge";
 
 interface PatientCardProps {
@@ -12,6 +12,7 @@ interface PatientCardProps {
   avatar?: string;
   isHighlighted?: boolean;
   onClick?: () => void;
+  onAlert?: (e: React.MouseEvent) => void;
 }
 
 export function PatientCard({
@@ -24,6 +25,7 @@ export function PatientCard({
   avatar,
   isHighlighted = false,
   onClick,
+  onAlert,
 }: PatientCardProps) {
   const statusLabels: Record<StatusBadgeVariant, string> = {
     normal: "Normal",
@@ -54,12 +56,26 @@ export function PatientCard({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className={cn(
-          "font-semibold",
-          status === "emergency" ? "text-emergency" : "text-foreground"
-        )}>
-          {name}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className={cn(
+            "font-semibold",
+            status === "emergency" ? "text-emergency" : "text-foreground"
+          )}>
+            {name}
+          </p>
+          {onAlert && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAlert(e);
+              }}
+              className="p-1.5 rounded-full bg-emergency/10 text-emergency hover:bg-emergency/20 transition-colors"
+              title="Send Emergency SMS"
+            >
+              <AlertTriangle className="h-4 w-4" />
+            </button>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">
           ID: {id} • {gestationWeeks} Weeks Pregnant
           {status === "emergency" && " • Active Alert"}

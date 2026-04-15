@@ -62,9 +62,15 @@ export default function MidwifeDashboard() {
   const [reportWeight, setReportWeight] = useState("");
   const [reportSugar, setReportSugar] = useState("");
   const [reportBP, setReportBP] = useState("");
-  const [reportBMI, setReportBMI] = useState("");
+  const [reportBMI, setReportBMI] = useState(""); 
   const [reportPhoto, setReportPhoto] = useState<string | null>(null);
   const [isUploadingReport, setIsUploadingReport] = useState(false);
+  
+  // Emergency SMS State
+  const [isEmergencySMSModalOpen, setIsEmergencySMSModalOpen] = useState(false);
+  const [emergencySMSMessage, setEmergencySMSMessage] = useState("");
+  const [selectedPatientForSMS, setSelectedPatientForSMS] = useState<any>(null);
+  const [isSendingSMS, setIsSendingSMS] = useState(false);
 
   const fetchPatients = async () => {
     try {
@@ -245,6 +251,44 @@ export default function MidwifeDashboard() {
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSendEmergencySMS = async () => {
+    if (!selectedPatientForSMS || !emergencySMSMessage.trim()) {
+      toast.error("Please enter a message");
+      return;
+    }
+
+    setIsSendingSMS(true);
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/sms/send-to-patient`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          patientId: selectedPatientForSMS._id,
+          message: emergencySMSMessage 
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(`Emergency SMS sent to ${selectedPatientForSMS.name}`, {
+          description: "They will receive a high-priority alert on their phone.",
+          duration: 5000,
+        });
+        setIsEmergencySMSModalOpen(false);
+        setEmergencySMSMessage("");
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send SMS");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send SMS. Please check gateway connection.");
+    } finally {
+      setIsSendingSMS(false);
     }
   };
 
@@ -538,6 +582,10 @@ export default function MidwifeDashboard() {
                           nextVisit={patient.contact_number}
                           isHighlighted={patient.risk_level === 'High'}
                           onClick={() => navigate(`/midwife/patients/${patient._id}`)}
+                          onAlert={() => {
+                            setSelectedPatientForSMS(patient);
+                            setIsEmergencySMSModalOpen(true);
+                          }}
                         />
                       ))
                     ) : (
@@ -724,6 +772,55 @@ export default function MidwifeDashboard() {
                 </Button>
               </div>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Emergency SMS Modal */}
+        <Dialog open={isEmergencySMSModalOpen} onOpenChange={setIsEmergencySMSModalOpen}>
+          <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+            <div className="bg-emergency p-6 text-white text-center pb-8">
+              <div className="h-16 w-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
+                <AlertTriangle className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="text-xl font-black italic tracking-tighter">EMERGENCY DISPATCH</h2>
+              <p className="text-white/80 text-sm">Send high-priority SMS to {selectedPatientForSMS?.name}</p>
+            </div>
+            <div className="p-8 space-y-5 bg-background">
+               <div className="space-y-2">
+                  <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Emergency Instructions</Label>
+                  <textarea
+                    placeholder="e.g. Please come to the hospital immediately. Reduced fetal movement noticed in your records."
+                    className="flex min-h-[120px] w-full rounded-2xl border-none bg-muted/30 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emergency text-foreground font-medium"
+                    value={emergencySMSMessage}
+                    onChange={(e) => setEmergencySMSMessage(e.target.value)}
+                  />
+                  <p className="text-[10px] text-muted-foreground italic px-1 pt-1 font-medium">
+                    This message is sent via SMS gateway and is not recorded in the clinical history.
+                  </p>
+               </div>
+               <div className="flex gap-4 pt-2">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setIsEmergencySMSModalOpen(false)}
+                    className="flex-1 h-12 rounded-2xl font-bold"
+                    disabled={isSendingSMS}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSendEmergencySMS}
+                    disabled={isSendingSMS}
+                    className="flex-1 bg-emergency hover:bg-emergency/90 text-white font-black rounded-2xl h-12 shadow-lg shadow-emergency/20 gap-2"
+                  >
+                    {isSendingSMS ? "Dispatching..." : (
+                      <>
+                        <Zap className="h-4 w-4 fill-current" />
+                        SEND URGENT SMS
+                      </>
+                    )}
+                  </Button>
+               </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
