@@ -9,8 +9,20 @@ const appointmentSchema = mongoose.Schema(
         },
         midwife: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
+            required: false,
             ref: 'Midwife',
+        },
+        doctor: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: false,
+            ref: 'Doctor',
+        },
+        purpose: {
+            type: String,
+            default: 'Routine Checkup'
+        },
+        advice: {
+            type: String,
         },
         appointmentDate: {
             type: Date,

@@ -9,7 +9,7 @@ interface NavItem {
 }
 
 interface SidebarProps {
-  variant: "midwife" | "patient" | "admin";
+  variant: "midwife" | "patient" | "admin" | "doctor";
   userName?: string;
   userRole?: string;
   userAvatar?: string;
@@ -39,16 +39,25 @@ const adminNav: NavItem[] = [
   { label: "Guidelines", href: "/admin/guidelines", icon: BookOpen },
 ];
 
+const doctorNav: NavItem[] = [
+  { label: "Overview", href: "/doctor", icon: LayoutDashboard },
+  { label: "My Patients", href: "/doctor/patients", icon: Users },
+  { label: "Consultations", href: "/doctor/consultations", icon: Stethoscope },
+  { label: "Secure Chat", href: "/doctor/chat", icon: MessageSquare },
+];
+
 const navConfigs = {
   midwife: midwifeNav,
   patient: patientNav,
   admin: adminNav,
+  doctor: doctorNav,
 };
 
 const brandConfigs = {
   midwife: { name: "SafeMother", subtitle: "Midwife Portal" },
   patient: { name: "SafeMother", subtitle: "Patient Portal" },
   admin: { name: "SafeMother", subtitle: "Admin Control" },
+  doctor: { name: "SafeMother", subtitle: "Physician Hub" },
 };
 
 export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProps) {

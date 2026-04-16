@@ -47,6 +47,7 @@ app.use('/api/clinical-reports', require('./routes/clinicalReportRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/sms', require('./routes/messageRoutes'));
+app.use('/api/doctor', require('./routes/doctorRoutes'));
 
 const PORT = process.env.PORT || 5000;
 

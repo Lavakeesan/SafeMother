@@ -58,6 +58,11 @@ export default function LandingPage() {
                     Admin
                   </Button>
                 </Link>
+                <Link to="/doctor">
+                  <Button size="lg" variant="secondary" className="bg-indigo-600 text-white hover:bg-indigo-700">
+                    Doctor
+                  </Button>
+                </Link>
               </div>
             </div>
 

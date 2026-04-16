@@ -17,6 +17,10 @@ import AdminAppointmentsPage from "./pages/AdminAppointmentsPage";
 import AdminAlertsPage from "./pages/AdminAlertsPage";
 import AdminGuidelinesPage from "./pages/AdminGuidelinesPage";
 import ResourceLibrary from "./pages/ResourceLibrary";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import DoctorPatientsPage from "./pages/DoctorPatientsPage";
+import DoctorConsultationsPage from "./pages/DoctorConsultationsPage";
+import DoctorChatPage from "./pages/DoctorChatPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +64,12 @@ const App = () => (
           <Route path="/admin/guidelines" element={<AdminGuidelinesPage />} />
           <Route path="/admin/audit" element={<AdminDashboard />} />
           <Route path="/admin/config" element={<AdminDashboard />} />
+
+          {/* Doctor Routes */}
+          <Route path="/doctor" element={<DoctorDashboard />} />
+          <Route path="/doctor/patients" element={<DoctorPatientsPage />} />
+          <Route path="/doctor/consultations" element={<DoctorConsultationsPage />} />
+          <Route path="/doctor/chat" element={<DoctorChatPage />} />
 
 
 
