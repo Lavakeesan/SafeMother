@@ -4,6 +4,7 @@ const {
     createAlert,
     getPatientAlerts,
     updateAlertStatus,
+    deleteAlert,
     sendEmergencyAlert,
     getMidwifeAlerts
 } = require('../controllers/alertController');
@@ -15,10 +16,13 @@ router.route('/')
     .get(protect, authorize('admin', 'midwife'), getMidwifeAlerts)
     .post(protect, authorize('admin', 'midwife'), createAlert);
 
-router.route('/:id')
-    .put(protect, authorize('midwife'), updateAlertStatus);
-
+// ⚠️ Specific routes MUST come before /:id to avoid "patient" being parsed as an id
 router.route('/patient/:patientId')
     .get(protect, getPatientAlerts);
 
+router.route('/:id')
+    .put(protect, authorize('midwife', 'admin'), updateAlertStatus)
+    .delete(protect, authorize('admin'), deleteAlert);
+
 module.exports = router;
+

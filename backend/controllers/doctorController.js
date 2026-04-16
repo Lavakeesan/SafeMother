@@ -134,11 +134,33 @@ const getDoctors = async (req, res) => {
     }
 };
 
+// @desc    Update doctor status
+// @route   PUT /api/doctor/:id/status
+// @access  Private/Admin
+const updateDoctorStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const doctor = await Doctor.findById(req.params.id);
+        
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        doctor.status = status;
+        await doctor.save();
+        
+        res.json(doctor);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getDoctorStats,
     getDoctorPatients,
     getPatientDetails,
     addDoctorAdvice,
     getDoctorConsultations,
-    getDoctors
+    getDoctors,
+    updateDoctorStatus
 };

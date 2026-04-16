@@ -37,6 +37,11 @@ const midwifeSchema = mongoose.Schema(
         password: {
             type: String,
         },
+        status: {
+            type: String,
+            enum: ['Active', 'Deactivated'],
+            default: 'Active'
+        }
     },
     {
         timestamps: true,

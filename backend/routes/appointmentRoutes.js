@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     scheduleAppointment,
     updateAppointmentStatus,
+    deleteAppointment,
     getPatientAppointments,
     getAllAppointments
 } = require('../controllers/appointmentController');
@@ -12,10 +13,12 @@ router.route('/')
     .get(protect, authorize('admin', 'midwife'), getAllAppointments)
     .post(protect, authorize('midwife'), scheduleAppointment);
 
-router.route('/:id')
-    .put(protect, authorize('midwife'), updateAppointmentStatus);
-
 router.route('/patient/:patientId')
     .get(protect, getPatientAppointments);
 
+router.route('/:id')
+    .put(protect, authorize('midwife', 'admin'), updateAppointmentStatus)
+    .delete(protect, authorize('admin'), deleteAppointment);
+
 module.exports = router;
+

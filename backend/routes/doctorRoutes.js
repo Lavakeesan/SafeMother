@@ -6,11 +6,16 @@ const {
     getPatientDetails, 
     addDoctorAdvice,
     getDoctorConsultations,
-    getDoctors
+    getDoctors,
+    updateDoctorStatus
 } = require('../controllers/doctorController');
+
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.use(protect);
+
+// Admin can update doctor status
+router.put('/:id/status', authorize('admin'), updateDoctorStatus);
 
 // Clinical staff can see doctor list
 router.get('/', authorize('doctor', 'midwife', 'admin'), getDoctors);

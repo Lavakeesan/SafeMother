@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
+import { motion } from "framer-motion";
 import { 
   Users, 
   Search, 
@@ -30,6 +31,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -10 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } }
+};
 
 export default function DoctorPatientsPage() {
   const navigate = useNavigate();
@@ -142,31 +148,50 @@ export default function DoctorPatientsPage() {
   });
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-screen bg-[#f8fdfe] relative overflow-x-hidden font-sans">
+      {/* Ambient blobs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], rotate: [0, 6, 0] }}
+          transition={{ duration: 14, repeat: Infinity }}
+          className="absolute -top-[15%] -right-[10%] w-[40%] h-[40%] bg-indigo-200/15 rounded-full blur-[120px]"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.12, 1], rotate: [0, -6, 0] }}
+          transition={{ duration: 12, repeat: Infinity }}
+          className="absolute bottom-[5%] -left-[8%] w-[35%] h-[35%] bg-teal-200/15 rounded-full blur-[100px]"
+        />
+      </div>
+
       <Sidebar variant="doctor" />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <Header 
-          title="Patient Directory" 
-          subtitle="Assigned Clinical Cases & Medical Histories" 
+      <div className="flex-1 flex flex-col z-10 overflow-hidden">
+        <Header
+          title="Patient Directory"
+          subtitle="Assigned Clinical Cases & Medical Histories"
         />
 
-        <main className="flex-1 overflow-auto p-8 bg-muted/20">
-          {/* Header Controls */}
-          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <main className="flex-1 overflow-auto p-6 md:p-10 lg:p-12">
+          {/* Search & Filter Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4"
+          >
             <div className="flex flex-1 items-center gap-4 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search by name, ID or MRN..." 
-                  className="pl-10 h-12 rounded-2xl bg-card border-none shadow-sm"
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search by name, ID or MRN..."
+                  className="pl-12 h-13 rounded-[2rem] bg-white border-none shadow-lg shadow-gray-100/70 font-bold text-gray-700 placeholder:text-gray-300 focus-visible:ring-teal-400"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-2xl shadow-sm border border-muted">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <select 
-                  className="bg-transparent text-sm font-bold outline-none"
+              <div className="flex items-center gap-2 bg-white px-5 py-3 rounded-[2rem] shadow-lg shadow-gray-100/70 border-none">
+                <Filter className="h-4 w-4 text-gray-400" />
+                <select
+                  className="bg-transparent text-sm font-black text-gray-700 outline-none cursor-pointer"
                   value={riskFilter}
                   onChange={(e) => setRiskFilter(e.target.value)}
                 >
@@ -177,69 +202,109 @@ export default function DoctorPatientsPage() {
                 </select>
               </div>
             </div>
-          </div>
+            <div className="flex items-center gap-2 px-5 py-3 bg-teal-50 rounded-[2rem] border border-teal-100">
+              <Users className="h-4 w-4 text-teal-600" />
+              <span className="text-xs font-black text-teal-700 uppercase tracking-widest">{filteredPatients.length} Patients</span>
+            </div>
+          </motion.div>
 
-          <div className="bg-card rounded-3xl border-none shadow-xl overflow-hidden">
+          {/* Patients Table */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden"
+          >
             <Table>
-              <TableHeader className="bg-muted/30">
+              <TableHeader className="bg-gray-50/70">
                 <TableRow className="border-none">
-                  <TableHead className="py-5 px-8 font-black uppercase tracking-widest text-[10px] text-muted-foreground">Patient Identity</TableHead>
-                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">Identity MRN</TableHead>
-                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">Risk Status</TableHead>
-                  <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">Joined Date</TableHead>
+                  <TableHead className="py-5 px-8 font-black uppercase tracking-[0.15em] text-[9px] text-gray-400">Patient Identity</TableHead>
+                  <TableHead className="font-black uppercase tracking-[0.15em] text-[9px] text-gray-400">MRN</TableHead>
+                  <TableHead className="font-black uppercase tracking-[0.15em] text-[9px] text-gray-400">Risk Status</TableHead>
+                  <TableHead className="font-black uppercase tracking-[0.15em] text-[9px] text-gray-400">Joined</TableHead>
+                  <TableHead className="font-black uppercase tracking-[0.15em] text-[9px] text-gray-400 text-right px-8">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground font-medium italic">Synchronizing patient records...</TableCell>
+                    <TableCell colSpan={5} className="h-40 text-center">
+                      <div className="flex flex-col items-center gap-3 text-gray-300">
+                        <Users className="h-12 w-12 opacity-20 animate-pulse" />
+                        <p className="text-xs font-black uppercase tracking-widest">Synchronizing records...</p>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ) : filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground font-medium italic">No matches found in your assigned registry.</TableCell>
+                    <TableCell colSpan={5} className="h-40 text-center">
+                      <div className="flex flex-col items-center gap-3 text-gray-300">
+                        <Search className="h-12 w-12 opacity-20" />
+                        <p className="text-xs font-black uppercase tracking-widest">No matches in registry</p>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                ) : filteredPatients.map((patient) => (
-                  <TableRow key={patient._id} className="border-none hover:bg-muted/30 transition-colors group">
+                ) : filteredPatients.map((patient, i) => (
+                  <motion.tr
+                    key={patient._id}
+                    initial="hidden"
+                    animate="visible"
+                    variants={itemVariants}
+                    transition={{ delay: i * 0.05 }}
+                    className="border-none hover:bg-teal-50/20 transition-colors group cursor-pointer"
+                  >
                     <TableCell className="py-5 px-8">
-                      <div 
-                        className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity"
+                      <div
+                        className="flex items-center gap-4"
                         onClick={() => handleOpenDetails(patient)}
                       >
-                        <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm border ${
-                          patient.risk_level === 'High' ? 'bg-emergency/10 text-emergency border-emergency/20' : 
-                          patient.risk_level === 'Medium' ? 'bg-amber-100 text-amber-600 border-amber-200' :
-                          'bg-primary/10 text-primary border-primary/20'
+                        <div className={`h-12 w-12 rounded-[1rem] flex items-center justify-center font-black text-lg shadow-sm border-2 ${
+                          patient.risk_level === 'High' ? 'bg-red-50 text-red-600 border-red-100' :
+                          patient.risk_level === 'Medium' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                          'bg-teal-50 text-teal-600 border-teal-100'
                         }`}>
                           {patient.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-black text-foreground tracking-tight">{patient.name}</p>
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Age: {patient.age} • Female</p>
+                          <p className="font-black text-gray-900 tracking-tight">{patient.name}</p>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Age: {patient.age} · Female</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <code className="bg-muted px-2 py-1 rounded-md text-[10px] font-black tracking-widest text-foreground/70">
-                        {patient.mrn || "UNASSIGNED"}
+                      <code className="bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-2xl text-[9px] font-black tracking-widest text-gray-500">
+                        {patient.mrn || "—"}
                       </code>
                     </TableCell>
                     <TableCell>
-                      <Badge className={`rounded-xl px-4 py-1.5 font-black text-[10px] uppercase tracking-tighter shadow-sm border-none ${
-                        patient.risk_level === 'High' ? 'bg-emergency text-white animate-pulse' : 
+                      <Badge className={`rounded-2xl px-4 py-1.5 font-black text-[9px] uppercase tracking-wider shadow-sm border-none ${
+                        patient.risk_level === 'High' ? 'bg-red-100 text-red-700 animate-pulse' :
                         patient.risk_level === 'Medium' ? 'bg-amber-100 text-amber-700' :
                         'bg-emerald-100 text-emerald-700'
                       }`}>
                         {patient.risk_level}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm font-bold text-muted-foreground">
-                      {new Date(patient.createdAt).toLocaleDateString()}
+                    <TableCell>
+                      <span className="text-sm font-bold text-gray-400">
+                        {new Date(patient.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
                     </TableCell>
-                  </TableRow>
+                    <TableCell className="text-right px-8">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenDetails(patient)}
+                        className="group-hover:text-teal-600 group-hover:bg-teal-50 transition-all rounded-xl h-9 w-9"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </Button>
+                    </TableCell>
+                  </motion.tr>
                 ))}
               </TableBody>
             </Table>
-          </div>
+          </motion.div>
         </main>
       </div>
 

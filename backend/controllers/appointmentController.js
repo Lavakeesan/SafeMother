@@ -29,20 +29,39 @@ const scheduleAppointment = async (req, res) => {
     }
 };
 
-// @desc    Update appointment status
+// @desc    Update appointment details
 // @route   PUT /api/appointments/:id
-// @access  Private/Midwife
+// @access  Private/Midwife/Admin
 const updateAppointmentStatus = async (req, res) => {
     try {
         const appointment = await Appointment.findById(req.params.id);
 
         if (appointment) {
             appointment.status = req.body.status || appointment.status;
+            appointment.appointmentDate = req.body.appointmentDate || appointment.appointmentDate;
+            appointment.purpose = req.body.purpose || appointment.purpose;
+            
             const updatedAppointment = await appointment.save();
             res.json(updatedAppointment);
         } else {
             res.status(404).json({ message: 'Appointment not found' });
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete an appointment
+// @route   DELETE /api/appointments/:id
+// @access  Private/Admin
+const deleteAppointment = async (req, res) => {
+    try {
+        const appointment = await Appointment.findById(req.params.id);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+        await appointment.deleteOne();
+        res.json({ message: 'Appointment deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -78,6 +97,7 @@ const getAllAppointments = async (req, res) => {
 module.exports = {
     scheduleAppointment,
     updateAppointmentStatus,
+    deleteAppointment,
     getPatientAppointments,
     getAllAppointments
 };

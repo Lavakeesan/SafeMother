@@ -34,6 +34,11 @@ const doctorSchema = mongoose.Schema(
         consultations_count: {
             type: Number,
             default: 0
+        },
+        status: {
+            type: String,
+            enum: ['Active', 'Deactivated'],
+            default: 'Active'
         }
     },
     {

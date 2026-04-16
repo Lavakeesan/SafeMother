@@ -34,7 +34,8 @@ const patientNav: NavItem[] = [
 const adminNav: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Users", href: "/admin/users", icon: UserCog },
-  { label: "Midwives", href: "/admin/midwives", icon: Stethoscope },
+  { label: "Midwifes", href: "/admin/midwifes", icon: Stethoscope },
+  { label: "Doctors", href: "/admin/doctors", icon: ClipboardList },
   { label: "Patients", href: "/admin/patients", icon: Users },
   { label: "Appointments", href: "/admin/appointments", icon: Calendar },
   { label: "Alerts", href: "/admin/alerts", icon: AlertTriangle },
@@ -74,20 +75,26 @@ export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProp
   };
 
   return (
-    <aside className="flex flex-col w-60 min-h-screen bg-sidebar border-r border-sidebar-border">
+    <aside className="hidden lg:flex flex-col w-72 min-h-screen bg-white border-r border-gray-100 shadow-[20px_0_40px_-20px_rgba(0,0,0,0.02)] z-50">
       {/* Brand */}
-      <Link to="/" className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border hover:bg-sidebar-accent/50 transition-colors group">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg overflow-hidden border bg-background flex-shrink-0 group-hover:scale-105 transition-transform">
-          <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
-        </div>
-        <div>
-          <h1 className="font-bold text-foreground group-hover:text-primary transition-colors">{brand.name}</h1>
-          <p className="text-xs text-muted-foreground">{brand.subtitle}</p>
-        </div>
-      </Link>
+      <div className="flex flex-col items-center justify-center pt-10 pb-10 border-b border-gray-50/50">
+        <Link to="/" className="flex flex-col items-center gap-4 group">
+          <div className="relative">
+            <div className="absolute inset-0 bg-teal-400 rounded-2xl rotate-6 opacity-20 group-hover:rotate-12 transition-transform shadow-lg" />
+            <div className="relative flex items-center justify-center w-16 h-16 rounded-[1.5rem] overflow-hidden border-2 border-white shadow-xl bg-white group-hover:scale-105 transition-transform">
+              <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full" />
+          </div>
+          <div className="text-center px-4">
+            <h1 className="font-black text-xl text-gray-900 tracking-tighter group-hover:text-teal-600 transition-colors uppercase">{brand.name}</h1>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-0.5">{brand.subtitle}</p>
+          </div>
+        </Link>
+      </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-6 py-10 space-y-3 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           return (
@@ -95,32 +102,42 @@ export function Sidebar({ variant, userName, userRole, userAvatar }: SidebarProp
               key={item.href}
               to={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-4 px-5 py-4 rounded-[1.5rem] text-sm font-black transition-all group relative overflow-hidden",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                  : "text-gray-400 hover:text-teal-600 hover:bg-teal-50"
               )}
             >
-              <item.icon className="h-5 w-5" />
-              {item.label}
+              {isActive && (
+                <div className="absolute left-0 w-1.5 h-6 bg-white/40 rounded-r-full" />
+              )}
+              <item.icon className={cn(
+                "h-5 w-5 transition-transform group-hover:scale-110",
+                isActive ? "text-white" : "text-gray-300 group-hover:text-teal-500"
+              )} />
+              <span className="uppercase tracking-widest">{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-
-
-
-
-
-      {/* Logout Button */}
-      <div className="px-3 py-2 border-t border-sidebar-border mb-2">
+      {/* User Info & Logout */}
+      <div className="p-6 border-t border-gray-50">
+        <div className="mb-6 px-2 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400">
+             <LayoutDashboard className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-xs font-black text-gray-900 uppercase">Authenticated</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Session Active</p>
+          </div>
+        </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-bold text-emergency bg-emergency/5 hover:bg-emergency/10 transition-all active:scale-95"
+          className="flex items-center justify-center gap-3 w-full px-5 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.1em] text-red-600 bg-red-50 hover:bg-red-600 hover:text-white transition-all active:scale-95 shadow-sm"
         >
-          <LogOut className="h-5 w-5" />
-          Logout
+          <LogOut className="h-4 w-4" />
+          Secure Exit
         </button>
       </div>
     </aside>

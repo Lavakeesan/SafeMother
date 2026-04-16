@@ -13,6 +13,28 @@ const getDashboardStats = async (req, res) => {
         const totalMidwives = await Midwife.countDocuments();
         const totalAlerts = await Alert.countDocuments();
         
+        // Use User table for role distribution
+        const userCounts = await User.aggregate([
+            { $group: { _id: '$role', count: { $sum: 1 } } }
+        ]);
+        
+        // Monthy registration trends from User table
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const registrationTrends = await User.aggregate([
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id": 1 } }
+        ]);
+
+        const formattedTrends = registrationTrends.map(item => ({
+            month: monthNames[item._id - 1],
+            count: item.count
+        }));
+
         // Handling potentially non-existent appointments model
         let totalAppointments = 0;
         try {
@@ -29,6 +51,8 @@ const getDashboardStats = async (req, res) => {
             totalMidwives,
             totalAppointments,
             totalAlerts,
+            userDistribution: userCounts,
+            registrationTrends: formattedTrends,
             riskBreakdown: {
                 low: lowRisk,
                 medium: mediumRisk,
@@ -36,18 +60,19 @@ const getDashboardStats = async (req, res) => {
             }
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Error fetching stats' });
     }
 };
 
-// @desc    Get all midwives with their user data
-// @route   GET /api/admin/midwives
+// @desc    Get all midwifes with their user data
+// @route   GET /api/admin/midwifes
 // @access  Private/Admin
-const getAllMidwives = async (req, res) => {
+const getAllMidwifes = async (req, res) => {
     try {
-        const midwives = await Midwife.find({}).populate('user_id', 'name email').lean();
+        const midwifes = await Midwife.find({}).populate('user_id', 'name email').lean();
         
-        const sanitizedMidwives = midwives.map(mw => {
+        const sanitizedMidwifes = midwifes.map(mw => {
             const hasPhoto = !!(mw.profile_photo && mw.profile_photo.data);
             const { profile_photo, ...rest } = mw;
             return {
@@ -56,9 +81,30 @@ const getAllMidwives = async (req, res) => {
             };
         });
 
-        res.json(sanitizedMidwives);
+        res.json(sanitizedMidwifes);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching midwives' });
+        res.status(500).json({ message: 'Error fetching midwifes' });
+    }
+};
+
+// @desc    Update midwife status
+// @route   PUT /api/admin/midwifes/:id/status
+// @access  Private/Admin
+const updateMidwifeStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const midwife = await Midwife.findById(req.params.id);
+        
+        if (!midwife) {
+            return res.status(404).json({ message: 'Midwife not found' });
+        }
+
+        midwife.status = status;
+        await midwife.save();
+        
+        res.json(midwife);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating midwife status' });
     }
 };
 
@@ -76,6 +122,7 @@ const getAllPatients = async (req, res) => {
 
 module.exports = {
     getDashboardStats,
-    getAllMidwives,
-    getAllPatients
+    getAllMidwifes,
+    getAllPatients,
+    updateMidwifeStatus
 };

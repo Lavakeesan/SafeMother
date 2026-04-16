@@ -1,407 +1,375 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Shield, CheckCircle, Users, BookOpen, AlertTriangle, ArrowRight, Lock, Cloud, Clock, Stethoscope } from "lucide-react";
+import { 
+  Shield, 
+  CheckCircle, 
+  Users, 
+  BookOpen, 
+  AlertTriangle, 
+  ArrowRight, 
+  Lock, 
+  Cloud, 
+  Clock, 
+  Stethoscope,
+  Heart,
+  Calendar,
+  MessageSquare,
+  ShieldCheck,
+  ChevronRight,
+  Star,
+  Quote,
+  Navigation
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PublicNavbar } from "@/components/PublicNavbar";
-import clinicRoom from "@/assets/clinic-room.png";
+import useEmblaCarousel from 'embla-carousel-react';
+import heroModern from "@/assets/hero-modern.png";
 import midwifeImg from "@/assets/mid-wife.jpg";
-import midwifeImg_2 from "@/assets/mid-wife-2.jpeg";
-import midwifeImg_3 from "@/assets/mid-wife-3.jpeg";
 
-export default function LandingPage() {   
+export default function LandingPage() {
+  const [emblaRef] = useEmblaCarousel({ 
+    loop: true,
+    align: 'start',
+    slidesToScroll: 1
+  });
+
+  const features = [
+    {
+      icon: Users,
+      title: "Patient Monitoring",
+      description: "Real-time health tracking and vital monitoring for expectant mothers.",
+      color: "bg-blue-500/10 text-blue-500"
+    },
+    {
+      icon: Stethoscope,
+      title: "Midwife Support",
+      description: "Smart guidance tools and digital records for clinical excellence.",
+      color: "bg-teal-500/10 text-teal-500"
+    },
+    {
+      icon: MessageSquare,
+      title: "Doctor Consultation",
+      description: "Instant secure communication channels between patients and physicians.",
+      color: "bg-indigo-500/10 text-indigo-500"
+    },
+    {
+      icon: AlertTriangle,
+      title: "Emergency Alerts",
+      description: "Priority notification system for high-risk maternal health scenarios.",
+      color: "bg-orange-500/10 text-orange-600"
+    }
+  ];
+
+  const steps = [
+    { title: "Register", desc: "Create your clinical profile in seconds." },
+    { title: "Connect", desc: "Link with your assigned care team." },
+    { title: "Track", desc: "Monitor pregnancy milestones and vitals." },
+    { title: "Advice", desc: "Receive real-time medical guidance safely." }
+  ];
+
+  const testimonials = [
+    { 
+      name: "Sarah Johnson", 
+      role: "Patient", 
+      content: "SafeMother gave me peace of mind throughout my pregnancy. Knowing my midwife is just a chat away was everything.",
+      avatar: "SJ"
+    },
+    { 
+      name: "Dr. Elena Rodriguez", 
+      role: "Obstetrician", 
+      content: "The coordination between my patients and the clinical team has never been smoother. A game-changer for maternal health.",
+      avatar: "ER"
+    },
+    { 
+      name: "Mary Mwangi", 
+      role: "Midwife", 
+      content: "Managing high-risk cases is much more structured now. The emergency alerts have literally saved lives in our clinic.",
+      avatar: "MM"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50/50">
       <PublicNavbar />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-                <CheckCircle className="h-4 w-4" />
-                Trusted by 500+ Clinics
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/4" />
+        
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="animate-slide-up">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest mb-8 border border-primary/10 animate-fade-in">
+                <Heart className="h-3.5 w-3.5 fill-primary" />
+                Trusted by 500+ Clinics Worldwide
               </div>
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight">
-                Empowering Midwives,{" "}
-                <span className="text-primary">Protecting Mothers</span>
+              <h1 className="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight mb-8">
+                Ensuring Safe Motherhood <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">Through Smart Digital Care</span>
               </h1>
-              <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-                A comprehensive clinical support system designed to streamline maternal care,
-                track patient health, and provide instant expert guidance when it matters most.
+              <p className="text-xl text-slate-600 mb-10 leading-relaxed max-w-xl font-medium">
+                Connecting pregnant mothers, midwives, and doctors for better maternal health. 
+                Experience a new standard of coordinated clinical excellence.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-5">
                 <Link to="/register">
-                  <Button size="lg" className="gap-2">
+                  <Button size="lg" className="h-16 px-10 rounded-2xl text-lg font-black bg-primary hover:bg-primary/90 shadow-xl shadow-primary/25 transition-all hover:scale-105 active:scale-95 group">
                     Get Started Free
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
                 <Link to="/login">
-                  <Button size="lg" variant="outline">
-                    View Demo
+                  <Button size="lg" variant="outline" className="h-16 px-10 rounded-2xl text-lg font-bold border-2 hover:bg-white/50 transition-all border-slate-200">
+                    Login to Portal
                   </Button>
                 </Link>
               </div>
             </div>
 
-            <div className="relative animate-fade-in lg:animate-slide-in-left">
-              <div className="relative">
-                <img
-                  src={midwifeImg}
-                  alt="Midwife caring for newborn"
-                  className="w-full max-w-lg mx-auto rounded-2xl"
-                />
-                <div className="absolute bottom-4 left-4 bg-card rounded-xl shadow-lg px-4 py-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-success" />
+            <div className="relative animate-fade-in delay-300">
+               <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-premium border-8 border-white animate-float bg-white">
+                  <img src={heroModern} alt="Healthcare Illustration" className="w-full h-auto object-cover" />
+               </div>
+               {/* Floating Stats */}
+               <div className="absolute -top-6 -right-6 bg-white p-6 rounded-3xl shadow-xl z-20 animate-slide-up delay-400 border border-slate-100">
+                  <p className="text-3xl font-black text-primary leading-none">99.8%</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Recovery Rate</p>
+               </div>
+               <div className="absolute -bottom-10 -left-10 bg-white p-6 rounded-3xl shadow-xl z-20 animate-slide-up delay-500 border border-slate-100 flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shadow-inner">
+                    <ShieldCheck className="h-6 w-6 text-emerald-500" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Patient Response Rate</p>
-                    <p className="text-lg font-bold text-foreground">99.8%</p>
+                    <p className="text-base font-black text-slate-900 leading-tight">Secure & Private</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter mt-0.5">HIPAA Compliant</p>
                   </div>
-                </div>
-              </div>
+               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Core Features */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-primary uppercase tracking-wide mb-2">
-              Core Features
-            </p>
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-              Designed for the frontline of maternal care
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              SafeMother provides the tools midwives need to manage high-risk pregnancies and ensure safe deliveries.
-            </p>
-          </div>
+      {/* Features Section */}
+      <section id="features" className="py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+           <div className="text-center mb-20 animate-slide-up">
+              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-4">Powerful Ecosystem</h2>
+              <h3 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Designed for the frontline of maternal care</h3>
+           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Users,
-                title: "Patient Tracking",
-                description: "Comprehensive longitudinal records for every mother, including vitals history and appointment schedules.",
-              },
-              {
-                icon: BookOpen,
-                title: "Guidance Library",
-                description: "Instant access to evidence-based clinical protocols and emergency procedures at the point of care.",
-              },
-              {
-                icon: AlertTriangle,
-                title: "Emergency Alerts",
-                description: "Automated notification system for critical patient status, ensuring rapid response during emergencies.",
-              },
-            ].map((feature) => (
-              <div
-                key={feature.title}
-                className="bg-card rounded-xl p-6 border shadow-card hover:shadow-card-hover transition-all"
-              >
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
+           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, i) => (
+                <div key={i} className="group p-10 rounded-[2.5rem] bg-slate-50 hover:bg-white border-2 border-transparent hover:border-primary/10 transition-all duration-500 shadow-soft hover:shadow-premium animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
+                   <div className={`h-16 w-16 rounded-[1.25rem] ${feature.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm`}>
+                      <feature.icon className="h-8 w-8" />
+                   </div>
+                   <h4 className="text-xl font-black text-slate-900 mb-4 tracking-tight leading-tight">{feature.title}</h4>
+                   <p className="text-slate-500 font-medium leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+           </div>
         </div>
       </section>
 
-      {/* Community Section */}
-      <section className="py-24 relative bg-background overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-20 items-center">
-            <div className="lg:w-1/2 order-2 lg:order-1">
-              <div className="relative group">
-                <div className="absolute -inset-6 bg-primary/5 rounded-[3rem] rotate-3 transition-transform group-hover:rotate-1" />
-                <img
-                  src={midwifeImg_2}
-                  alt="Midwife providing care"
-                  className="relative rounded-[2.5rem] shadow-2xl border-8 border-white w-full object-cover aspect-[4/5] object-center transition-transform duration-500"
-                />
-                <div className="absolute -bottom-8 -right-8 bg-card p-6 rounded-3xl shadow-xl flex items-center gap-4 max-w-sm border backdrop-blur-sm bg-card/90">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                    <Users className="h-7 w-7 text-blue-500" />
-                  </div>
-                  <div>
-                    <p className="text-base font-bold text-foreground">Midwife Community</p>
-                    <p className="text-sm text-muted-foreground">Linking 1,200+ practitioners</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="lg:w-1/2 order-1 lg:order-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6">
-                Our Mission
-              </div>
-              <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-8 leading-tight">
-                Supporting the heroes of <span className="text-primary italic">maternal health</span>
-              </h2>
-              <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-xl">
-                SafeMother is built by understanding the daily challenges midwives face. We provide the digital infrastructure so you can focus on the physical and emotional support mothers need.
-              </p>
+      {/* How It Works */}
+      <section id="how-it-works" className="py-32 bg-slate-50/50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-16 animate-slide-up">
+           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-4">Patient Journey</h2>
+           <h3 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Your path to a safe delivery</h3>
+        </div>
 
-              <div className="grid sm:grid-cols-2 gap-6 mb-12">
-                {[
-                  "Digital Health Records",
-                  "Automated Risk Assessment",
-                  "Specialist Communication",
-                  "Clinical Guidance"
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="h-4 w-4 text-success" />
+        <div className="max-w-5xl mx-auto px-6 lg:px-8">
+           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+              {/* Timeline Line */}
+              <div className="hidden lg:block absolute top-[50%] left-[10%] right-[10%] h-0.5 bg-slate-200 -z-0" />
+              
+              {steps.map((step, i) => (
+                <div key={i} className="relative z-10 text-center space-y-4 animate-slide-up" style={{ animationDelay: `${i * 150}ms` }}>
+                   <div className="h-24 w-24 rounded-[2rem] bg-white border-[6px] border-slate-50 shadow-premium flex items-center justify-center mx-auto text-3xl font-black text-primary mb-6 transition-transform hover:scale-110 group cursor-default">
+                      <span className="group-hover:animate-bounce">0{i + 1}</span>
+                   </div>
+                   <h5 className="text-xl font-black text-slate-900 tracking-tight">{step.title}</h5>
+                   <p className="text-sm font-medium text-slate-400 leading-relaxed px-4">{step.desc}</p>
+                </div>
+              ))}
+           </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="impact" className="py-32 overflow-hidden bg-white">
+         <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row gap-20 items-center">
+               <div className="lg:w-1/2 relative animate-fade-in">
+                  <div className="relative p-6 bg-primary/5 rounded-[4rem] group max-w-lg mx-auto lg:max-w-none">
+                    <img src={midwifeImg} alt="About SafeMother" className="rounded-[3.5rem] shadow-premium transition-transform duration-700 group-hover:scale-[1.02] aspect-[4/5] object-cover" />
+                    <div className="absolute -bottom-10 -right-6 lg:-right-10 bg-white p-8 rounded-[2rem] shadow-premium border flex items-center gap-5 animate-slide-up delay-300">
+                       <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-primary/30">
+                          10+
+                       </div>
+                       <div>
+                          <p className="font-black text-slate-900 leading-none">Years of Research</p>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mt-2">In Clinical Care</p>
+                       </div>
                     </div>
-                    <span className="font-semibold text-foreground">{item}</span>
                   </div>
-                ))}
-              </div>
-
-              <Button size="lg" className="rounded-full px-10 h-16 text-lg shadow-xl shadow-primary/20 group">
-                Join the Global Network
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Workflow Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-8">
-                Simplified workflow for dedicated professionals
-              </h2>
-
-              <div className="space-y-6">
-                {[
-                  {
-                    step: 1,
-                    title: "Register Your Clinic",
-                    description: "Onboard your team and patients in minutes with our streamlined setup process.",
-                  },
-                  {
-                    step: 2,
-                    title: "Manage Patient Care",
-                    description: "Use our intuitive dashboard to monitor health trends and schedule follow-ups.",
-                  },
-                  {
-                    step: 3,
-                    title: "Get Real-time Support",
-                    description: "Access expert guidance and decision support tools during critical clinical moments.",
-                  },
-                ].map((item) => (
-                  <div key={item.step} className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                      {item.step}
+               </div>
+               <div className="lg:w-1/2 animate-slide-up delay-200">
+                  <div className="flex flex-col items-center lg:items-start">
+                    <h2 className="text-xs font-black uppercase tracking-[0.3rem] text-primary mb-6">Improving Outcomes</h2>
+                    <h3 className="text-4xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] mb-10 text-center lg:text-left">
+                       Reducing maternal & <br className="hidden lg:block" /> newborn mortality.
+                    </h3>
+                    <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12 text-center lg:text-left max-w-xl">
+                       SafeMother is more than a tool; it's a mission to digitalize maternal healthcare. By linking patients directly with specialized clinicians, we ensure that every pregnancy receives the oversight it deserves.
+                    </p>
+                    <div className="grid sm:grid-cols-2 gap-8 mb-12 w-full max-w-lg">
+                       <div className="p-8 rounded-[2.5rem] bg-slate-50 shadow-soft border border-black/5 flex flex-col items-center lg:items-start group hover:bg-primary transition-colors hover:border-primary duration-500">
+                          <p className="text-4xl font-black text-primary mb-2 group-hover:text-white transition-colors">95%</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white/70 transition-colors">Response Speed</p>
+                       </div>
+                       <div className="p-8 rounded-[2.5rem] bg-slate-50 shadow-soft border border-black/5 flex flex-col items-center lg:items-start group hover:bg-primary transition-colors hover:border-primary duration-500">
+                          <p className="text-4xl font-black text-primary mb-2 group-hover:text-white transition-colors">24/7</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white/70 transition-colors">Active Monitoring</p>
+                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground">{item.title}</h3>
-                      <p className="text-muted-foreground">{item.description}</p>
+                      <Link to="/register">
+                          <Button variant="ghost" className="h-16 px-10 rounded-full font-black text-primary border-2 border-primary/20 hover:bg-primary/5 gap-3 group">
+                              Our Impact Story
+                              <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          </Button>
+                      </Link>
                     </div>
                   </div>
-                ))}
-              </div>
+               </div>
             </div>
-
-            <div className="bg-muted rounded-2xl p-8">
-              <div className="bg-card rounded-xl p-4 shadow-card">
-                <div className="flex gap-2 mb-4">
-                  <div className="w-3 h-3 rounded-full bg-emergency/50" />
-                  <div className="w-3 h-3 rounded-full bg-warning/50" />
-                  <div className="w-3 h-3 rounded-full bg-success/50" />
-                </div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Dashboard Preview</p>
-                <div className="space-y-3">
-                  <div className="h-8 bg-muted rounded-md" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="h-20 bg-muted rounded-md" />
-                    <div className="h-20 bg-muted rounded-md" />
-                  </div>
-                  <div className="h-32 bg-muted rounded-md" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+         </div>
       </section>
 
-      {/* Visual Impact Section */}
-      <section className="py-24 bg-background overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[2.5rem] bg-muted/50 overflow-hidden border shadow-sm group hover:shadow-md transition-shadow">
-            <div className="grid lg:grid-cols-2 items-stretch">
-              <div className="p-12 lg:p-20 order-2 lg:order-1 flex flex-col justify-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6 w-fit">
-                  Clinical Excellence
-                </div>
-                <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-6 leading-[1.15]">
-                  Compassionate care, <br />
-                  <span className="text-primary font-serif italic">backed by technology</span>
-                </h2>
-                <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                  SafeMother isn't just about data; it's about the lives we touch. Our platform ensures that clinical teams can focus on the patient, while we take care of the record-keeping and high-risk monitoring.
-                </p>
-                <div className="flex gap-5 items-start">
-                  <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
-                    <Stethoscope className="h-7 w-7 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-lg">Hospital-Grade Reliability</p>
-                    <p className="text-sm text-muted-foreground mt-1">Designed to function flawlessly in busy clinical environments, from city hospitals to rural health centers.</p>
-                  </div>
-                </div>
-              </div>
-              <div className="order-1 lg:order-2 relative overflow-hidden h-[400px] lg:h-auto">
-                <img
-                  src={midwifeImg_3}
-                  alt="Clinical care context"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
+      {/* Testimonials */}
+      <section id="testimonials" className="py-32 bg-slate-950 text-white overflow-hidden relative">
+         <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--primary)_0%,_transparent_50%)]" />
+         </div>
+         
+         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-24 animate-slide-up">
+               <h3 className="text-4xl lg:text-6xl font-black tracking-tight mb-6">Trusted by the community</h3>
+               <p className="text-slate-400 text-xl font-medium">Voices from the clinical frontline and growing families</p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Security Section */}
-      <section className="py-20 bg-foreground text-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-                Security that patients and providers trust
-              </h2>
-              <p className="text-lg opacity-80 mb-8">
-                We understand that medical data is sensitive. SafeMother is built with enterprise-grade
-                security protocols to ensure every byte of information remains confidential and protected.
-              </p>
-
-              <div className="grid grid-cols-2 gap-6">
-                {[
-                  { icon: Shield, title: "HIPAA Compliant", description: "Full adherence to healthcare privacy standards." },
-                  { icon: Lock, title: "Secure Data", description: "AES-256 bit encryption for all stored records." },
-                  { icon: Clock, title: "24/7 Monitoring", description: "Proactive threat detection and system audits." },
-                  { icon: Cloud, title: "Cloud Backups", description: "Automated redundancy for data preservation." },
-                ].map((item) => (
-                  <div key={item.title} className="flex gap-3">
-                    <item.icon className="h-5 w-5 text-primary flex-shrink-0" />
-                    <div>
-                      <p className="font-medium">{item.title}</p>
-                      <p className="text-sm opacity-70">{item.description}</p>
+            <div className="overflow-hidden" ref={emblaRef}>
+               <div className="flex -ml-4">
+                  {testimonials.map((t, i) => (
+                    <div key={i} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4">
+                       <div className="h-full p-10 rounded-[3rem] bg-white/5 border border-white/10 flex flex-col justify-between backdrop-blur-xl shadow-2xl transition-all hover:bg-white/10 group cursor-default">
+                          <div>
+                             <Quote className="h-12 w-12 text-primary mb-10 opacity-30 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+                             <p className="text-xl font-medium leading-relaxed italic text-slate-200 mb-10">"{t.content}"</p>
+                          </div>
+                          <div className="flex items-center gap-5">
+                             <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-primary/20">
+                                {t.avatar}
+                             </div>
+                             <div>
+                                <p className="font-black text-xl leading-none">{t.name}</p>
+                                <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-2">{t.role}</p>
+                             </div>
+                          </div>
+                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+               </div>
             </div>
-
-            <div className="text-center">
-              <div className="inline-flex flex-col items-center p-8 rounded-2xl bg-background/10 backdrop-blur-sm">
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-                  <Shield className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Privacy First</h3>
-                <p className="text-sm opacity-80 max-w-xs">
-                  We never sell data. Our only goal is to support midwives in delivering safe care.
-                </p>
-                <Button variant="outline" className="mt-6 border-background/30 text-background hover:bg-background/10">
-                  Read Privacy Policy
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-primary-foreground mb-4">
-            Ready to transform your practice?
-          </h2>
-          <p className="text-lg text-primary-foreground/80 mb-8">
-            Join thousands of midwives around the world using SafeMother to provide better, safer care
-            for mothers and newborns.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/register">
-              <Button size="lg" variant="secondary" className="bg-background text-foreground hover:bg-background/90">
-                Create Professional Account
-              </Button>
-            </Link>
-            <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-              Contact Sales
-            </Button>
-          </div>
-        </div>
+      <section className="py-32 relative overflow-hidden bg-white">
+         <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="relative rounded-[4rem] bg-gradient-to-br from-primary via-primary to-blue-600 p-12 lg:p-28 overflow-hidden shadow-premium text-center">
+               <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[size:40px_40px]" />
+               </div>
+               
+               <div className="relative z-10 animate-slide-up">
+                  <h2 className="text-4xl lg:text-7xl font-black text-white tracking-tight leading-[1] mb-10">
+                     Start Your Safe Motherhood <br /> Journey Today
+                  </h2>
+                  <p className="text-white/80 text-xl lg:text-2xl font-medium mb-14 max-w-2xl mx-auto leading-relaxed">
+                     Join thousands of families and practitioners who have transformed maternal care with SafeMother's clinical network.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-6">
+                     <Link to="/register">
+                        <Button className="h-20 px-12 rounded-[2.25rem] bg-white text-primary text-2xl font-black hover:bg-slate-50 shadow-2xl transition-all hover:scale-105 active:scale-95 group">
+                           Register Now
+                           <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                        </Button>
+                     </Link>
+                     <Button className="h-20 px-12 rounded-[2.25rem] border-2 border-white/30 bg-transparent text-white text-2xl font-black hover:bg-white/10 shadow-2xl transition-all">
+                        Contact Sales
+                     </Button>
+                  </div>
+               </div>
+            </div>
+         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-5 gap-8">
-            <div className="md:col-span-2">
-              <Link to="/" className="flex items-center gap-2 mb-4">
-                <div className="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden border bg-background">
-                  <img src="/logo.jpeg" alt="SafeMother Logo" className="w-full h-full object-cover" />
-                </div>
-                <span className="font-bold text-xl tracking-tight">SafeMother</span>
-              </Link>
-              <p className="text-sm text-muted-foreground max-w-xs">
-                Professional healthcare platform for maternal and newborn care.
-                Empowering those who care for life.
-              </p>
+      <footer className="py-24 border-t bg-slate-50/30">
+         <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-20 mb-20">
+               <div className="col-span-2">
+                  <Link to="/" className="flex items-center gap-4 mb-10">
+                    <div className="h-14 w-14 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-premium bg-white">
+                       <img src="/logo.jpeg" alt="Logo" className="h-full w-full object-cover" />
+                    </div>
+                    <div>
+                        <h4 className="font-black text-3xl tracking-tighter text-slate-900 leading-none">SafeMother</h4>
+                        <p className="text-[11px] font-black tracking-[0.25em] text-primary uppercase mt-1.5 opacity-80">Clinical Oversight Network</p>
+                    </div>
+                  </Link>
+                  <p className="text-xl font-medium text-slate-500 max-w-sm leading-relaxed mb-10">
+                     Ensuring clinical excellence and safety for mothers and newborns through innovative digital healthcare solutions.
+                  </p>
+                  <div className="flex gap-4">
+                     {["Twitter", "LinkedIn", "Instagram", "Facebook"].map(platform => (
+                        <div key={platform} className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer border-2 border-slate-100 shadow-soft group">
+                           <Shield className="h-5 w-5 opacity-40 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                     ))}
+                  </div>
+               </div>
+
+               <div>
+                  <h6 className="font-black text-slate-900 uppercase tracking-[0.3em] text-[10px] mb-10">System Architecture</h6>
+                  <ul className="space-y-5">
+                     {["Clinical Monitoring", "Risk Assessment", "Specialist Portal", "Patient Experience"].map(l => (
+                        <li key={l}><a href="#" className="text-slate-500 font-bold hover:text-primary transition-colors hover:translate-x-1 inline-block">{l}</a></li>
+                     ))}
+                  </ul>
+               </div>
+
+               <div>
+                  <h6 className="font-black text-slate-900 uppercase tracking-[0.3em] text-[10px] mb-10">Legal & Trust</h6>
+                  <ul className="space-y-5">
+                     {["Security Standards", "Privacy Policy", "Data Processing", "Clinical Standards"].map(l => (
+                        <li key={l}><a href="#" className="text-slate-500 font-bold hover:text-primary transition-colors hover:translate-x-1 inline-block">{l}</a></li>
+                     ))}
+                  </ul>
+               </div>
             </div>
 
-            {[
-              {
-                title: "Product",
-                links: ["Features", "Medical Library", "Patient Portal", "Pricing"],
-              },
-              {
-                title: "Company",
-                links: ["About Us", "Our Mission", "Global Impact", "Contact"],
-              },
-              {
-                title: "Legal",
-                links: ["Privacy Policy", "Terms of Service", "Security", "Compliance"],
-              },
-            ].map((col) => (
-              <div key={col.title}>
-                <p className="font-semibold text-foreground mb-4">{col.title}</p>
-                <ul className="space-y-2">
-                  {col.links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">
-              © 2024 SafeMother Healthcare Systems. All rights reserved.
-            </p>
-            <div className="flex items-center gap-2 text-sm text-success">
-              <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              Global Network Active
+            <div className="pt-10 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-8">
+               <p className="text-sm font-black text-slate-400">© 2024 SafeMother Technologies. All clinical data encrypted via AES-256.</p>
+               <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 shadow-sm animate-fade-in">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  <p className="text-[10px] font-black tracking-[0.1em] text-emerald-600 uppercase">Specialist Network: Live & Secure</p>
+               </div>
             </div>
-          </div>
-        </div>
+         </div>
       </footer>
     </div>
   );

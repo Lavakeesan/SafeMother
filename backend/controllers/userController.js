@@ -143,6 +143,13 @@ const authUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
+            // Set status to Active upon login for clinical roles
+            if (user.role === 'doctor') {
+                await Doctor.findOneAndUpdate({ user_id: user._id }, { status: 'Active' });
+            } else if (user.role === 'midwife') {
+                await Midwife.findOneAndUpdate({ user_id: user._id }, { status: 'Active' });
+            }
+            
             generateToken(res, user.id);
             res.json({
                 _id: user.id,

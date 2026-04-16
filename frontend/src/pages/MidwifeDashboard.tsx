@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,16 @@ import {
 import { Users, Baby, AlertTriangle, Zap, Search, Calendar, Edit, Upload, FileText, ChevronRight, Plus, ShieldCheck } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.15 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+};
 
 export default function MidwifeDashboard() {
   const navigate = useNavigate();
@@ -359,14 +370,28 @@ export default function MidwifeDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar 
-        variant="midwife" 
-        userName={user?.name || "Midwife User"} 
-        userRole={user?.role === 'midwife' ? 'Senior Midwife' : 'Clinical Administrator'} 
+    <div className="flex min-h-screen bg-[#f8fdfe] font-sans relative overflow-x-hidden">
+      {/* Ambient background blobs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], rotate: [0, 6, 0] }}
+          transition={{ duration: 12, repeat: Infinity }}
+          className="absolute -top-[12%] -right-[8%] w-[40%] h-[40%] bg-teal-200/20 rounded-full blur-[100px]"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], rotate: [0, -6, 0] }}
+          transition={{ duration: 14, repeat: Infinity }}
+          className="absolute bottom-[10%] -left-[10%] w-[45%] h-[45%] bg-sky-200/20 rounded-full blur-[120px]"
+        />
+      </div>
+
+      <Sidebar
+        variant="midwife"
+        userName={user?.name || "Midwife User"}
+        userRole={user?.role === 'midwife' ? 'Senior Midwife' : 'Clinical Administrator'}
       />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col z-10 overflow-hidden">
         <Header
           title="Midwife Dashboard"
           subtitle="Care management for maternal health"
@@ -374,221 +399,290 @@ export default function MidwifeDashboard() {
           onRegisterPatient={() => setIsRegisterModalOpen(true)}
         />
 
-        <main className="flex-1 p-8 overflow-auto">
+        <main className="flex-1 p-6 md:p-10 lg:p-12 overflow-auto">
           {isAlertsMode ? (
-            <div className="space-y-6 max-w-4xl">
-              <div className="flex items-center gap-3 border-b pb-4">
-                <AlertTriangle className="h-8 w-8 text-emergency" />
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">Medical Alerts</h2>
-                  <p className="text-muted-foreground text-sm">Send urgent medical prescriptions and alerts to your patients.</p>
-                </div>
-              </div>
-
-              {/* Alert Chat Box Form */}
-              <div className="bg-card border rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4">Send New Alert</h3>
-                <div className="space-y-4">
+            /* ─── ALERTS MODE ──────────────────────────────── */
+            <motion.div
+              initial="hidden" animate="visible" variants={containerVariants}
+              className="space-y-10 max-w-4xl pb-12"
+            >
+              {/* Section header */}
+              <motion.div variants={itemVariants} className="space-y-2">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-red-50 rounded-3xl text-red-500 shadow-sm border border-red-100/50">
+                    <AlertTriangle className="h-8 w-8" />
+                  </div>
                   <div>
-                    <Label className="mb-1.5 block">Select Patient</Label>
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">Medical Alerts</h2>
+                    <p className="text-gray-400 font-medium">Send urgent prescriptions and clinical alerts to patients.</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Send Alert Form */}
+              <motion.div variants={itemVariants} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-gray-200/50 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-red-50/80 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
+                <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse inline-block" />
+                  Dispatch New Alert
+                </h3>
+                <div className="space-y-5 relative">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Select Patient</Label>
                     <Select value={selectedPatientForAlert} onValueChange={setSelectedPatientForAlert}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select patient to alert..." />
+                      <SelectTrigger className="w-full h-12 rounded-2xl border-none bg-gray-50 px-4 font-bold text-gray-700 focus:ring-teal-400">
+                        <SelectValue placeholder="Search and select patient..." />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-2xl border-none shadow-2xl">
                         {patients.map(p => (
-                          <SelectItem key={p._id} value={p._id}>{p.name} - {p.mrn}</SelectItem>
+                          <SelectItem key={p._id} value={p._id} className="rounded-xl">{p.name} — {p.mrn}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label className="mb-1.5 block">Alert Prescriptions / Message</Label>
-                    <textarea 
-                      className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[120px]"
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Alert Message / Prescription</Label>
+                    <textarea
+                      className="flex w-full rounded-2xl border-none bg-gray-50 px-4 py-3 text-sm placeholder:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 min-h-[130px] font-medium text-gray-700 resize-none"
                       placeholder="Type the exact prescription, medical advice, or alert message here..."
                       value={alertMessageText}
                       onChange={(e) => setAlertMessageText(e.target.value)}
                     />
                   </div>
-                  <Button 
-                    className="w-full bg-emergency hover:bg-emergency/90 text-white gap-2"
+                  <Button
+                    className="w-full h-14 bg-red-500 hover:bg-red-600 text-white font-black rounded-[1.5rem] shadow-lg shadow-red-100 tracking-widest text-xs uppercase gap-2 transition-all hover:-translate-y-0.5 active:scale-95"
                     onClick={handleSendAlert}
                     disabled={isSendingAlert}
                   >
-                    {isSendingAlert ? "Sending..." : "Dispatch Medical Alert"}
+                    <AlertTriangle className="h-4 w-4" />
+                    {isSendingAlert ? "Dispatching..." : "Dispatch Medical Alert"}
                   </Button>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Alerts List */}
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-4">Alert History</h3>
-                <div className="space-y-3">
+              {/* Alert History */}
+              <motion.div variants={itemVariants} className="space-y-5">
+                <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
+                  Alert History
+                  <span className="px-3 py-1 bg-gray-100 rounded-full text-xs font-black text-gray-400 uppercase tracking-widest">{alerts.length} Records</span>
+                </h3>
+                <div className="space-y-4">
                   {alerts.length > 0 ? (
-                    alerts.map((alert) => {
+                    alerts.map((alert, i) => {
                       const isPatientSender = alert.sender === 'Patient';
-                      // Use a different color logic based on the sender
-                      const borderClass = isPatientSender ? 'border-emergency/30 bg-emergency/5' : 'border-primary/30 bg-primary/5';
-                      const badgeBg = isPatientSender ? 'bg-emergency/10 text-emergency' : 'bg-primary/10 text-primary';
                       return (
-                        <div key={alert._id} className={`p-4 rounded-xl border ${borderClass} flex flex-col`}>
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${badgeBg}`}>
-                                {isPatientSender ? "From Patient" : "To Patient"}
-                              </span>
-                              <span className="font-semibold text-foreground">{alert.patient?.name} ({alert.patient?.mrn})</span>
+                        <motion.div
+                          key={alert._id}
+                          variants={itemVariants}
+                          className={`p-6 rounded-[2rem] border-2 shadow-sm transition-all hover:shadow-md group ${
+                            isPatientSender
+                              ? 'bg-amber-50 border-amber-100'
+                              : 'bg-white border-gray-100'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm ${
+                                isPatientSender ? 'bg-amber-100 text-amber-700' : 'bg-teal-100 text-teal-700'
+                              }`}>
+                                {isPatientSender ? "P" : "M"}
+                              </div>
+                              <div>
+                                <p className={`text-[10px] font-black uppercase tracking-widest ${isPatientSender ? 'text-amber-600' : 'text-teal-600'}`}>
+                                  {isPatientSender ? "From Patient" : "To Patient"}
+                                </p>
+                                <p className="font-black text-gray-900 text-sm">{alert.patient?.name} <span className="text-gray-400 font-bold">({alert.patient?.mrn})</span></p>
+                              </div>
                             </div>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(alert.alertDate).toLocaleString()}
+                            <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                              {new Date(alert.alertDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {new Date(alert.alertDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
-                          <p className="text-sm font-medium text-foreground">{alert.message}</p>
-                        </div>
+                          <p className="text-sm font-bold text-gray-700 leading-relaxed pl-13">{alert.message}</p>
+                        </motion.div>
                       );
                     })
                   ) : (
-                    <div className="text-center p-8 bg-muted/20 border border-dashed rounded-xl text-muted-foreground">
-                      No alerts triggered yet.
+                    <div className="text-center py-20 bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-[3rem]">
+                      <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-gray-200" />
+                      <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No Alerts Dispatched Yet</p>
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
+
           ) : isReportsMode ? (
-            <div className="space-y-6 max-w-4xl">
-              <div className="flex items-center gap-3 border-b pb-4">
-                <FileText className="h-8 w-8 text-primary" />
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">Clinical Reports</h2>
-                  <p className="text-muted-foreground text-sm">Upload physical clinical documents and record patient vitals.</p>
+            /* ─── REPORTS MODE ─────────────────────────────── */
+            <motion.div
+              initial="hidden" animate="visible" variants={containerVariants}
+              className="space-y-10 max-w-5xl pb-12"
+            >
+              {/* Section Header */}
+              <motion.div variants={itemVariants} className="space-y-2">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-teal-50 rounded-3xl text-teal-600 shadow-sm border border-teal-100/50">
+                    <FileText className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">Clinical Reports</h2>
+                    <p className="text-gray-400 font-medium">Upload clinical documents and record patient vitals.</p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Upload Form */}
-              <div className="bg-card border rounded-xl p-6 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4">New Clinical Log</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2">
-                    <Label className="mb-1.5 block">Select Patient</Label>
+              <motion.div variants={itemVariants} className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-gray-200/50 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-teal-50/80 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
+                <h3 className="text-xl font-black text-gray-900 mb-6">New Clinical Log</h3>
+                <div className="grid grid-cols-2 gap-5 relative">
+                  <div className="col-span-2 space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Select Patient</Label>
                     <Select value={selectedPatientForReport} onValueChange={setSelectedPatientForReport}>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full h-12 rounded-2xl border-none bg-gray-50 px-4 font-bold text-gray-700">
                         <SelectValue placeholder="Select patient..." />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-2xl border-none shadow-2xl">
                         {patients.map(p => (
-                          <SelectItem key={p._id} value={p._id}>{p.name} - {p.mrn}</SelectItem>
+                          <SelectItem key={p._id} value={p._id} className="rounded-xl">{p.name} — {p.mrn}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label className="mb-1.5 block">Weight (kg)</Label>
-                    <Input type="number" placeholder="e.g. 68" value={reportWeight} onChange={e => setReportWeight(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block">BMI</Label>
-                    <Input type="number" step="0.1" placeholder="e.g. 24.5" value={reportBMI} onChange={e => setReportBMI(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block">Blood Pressure</Label>
-                    <Input placeholder="e.g. 120/80" value={reportBP} onChange={e => setReportBP(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label className="mb-1.5 block">Sugar Level</Label>
-                    <Input placeholder="e.g. 90 mg/dL" value={reportSugar} onChange={e => setReportSugar(e.target.value)} />
-                  </div>
-                  <div className="col-span-2">
-                    <Label className="mb-1.5 block">Report Scan/Photo</Label>
-                    <Input type="file" accept="image/*,.pdf" onChange={handlePhotoUpload} className="cursor-pointer file:text-primary file:bg-primary/10 file:border-0 file:rounded-md file:px-4 file:py-1 hover:file:bg-primary/20 bg-muted/30" />
+                  {[
+                    { label: "Weight (kg)", placeholder: "e.g. 68", value: reportWeight, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setReportWeight(e.target.value), type: "number" },
+                    { label: "BMI", placeholder: "e.g. 24.5", value: reportBMI, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setReportBMI(e.target.value), type: "number" },
+                    { label: "Blood Pressure", placeholder: "e.g. 120/80", value: reportBP, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setReportBP(e.target.value), type: "text" },
+                    { label: "Sugar Level", placeholder: "e.g. 90 mg/dL", value: reportSugar, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setReportSugar(e.target.value), type: "text" },
+                  ].map((field, i) => (
+                    <div key={i} className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">{field.label}</Label>
+                      <Input
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="h-12 rounded-2xl border-none bg-gray-50 px-4 font-bold text-gray-700"
+                      />
+                    </div>
+                  ))}
+                  <div className="col-span-2 space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Report Scan / Photo</Label>
+                    <Input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handlePhotoUpload}
+                      className="cursor-pointer h-12 rounded-2xl border-none bg-gray-50 px-4 file:text-teal-600 file:bg-teal-50 file:border-0 file:rounded-xl file:px-4 file:py-1 file:font-black hover:file:bg-teal-100 transition-all"
+                    />
                     {reportPhoto && (
-                      <div className="mt-3 relative w-full h-32 bg-muted rounded-md overflow-hidden flex items-center justify-center">
-                         {reportPhoto.includes("application/pdf") ? <span className="text-sm font-semibold">PDF Attached</span> : <img src={reportPhoto} alt="Preview" className="h-full object-contain" />}
+                      <div className="mt-3 relative w-full h-32 bg-gray-50 rounded-2xl overflow-hidden flex items-center justify-center border border-gray-100">
+                        {reportPhoto.includes("application/pdf") ? (
+                          <span className="text-sm font-black text-gray-400 uppercase tracking-widest">📄 PDF Attached</span>
+                        ) : (
+                          <img src={reportPhoto} alt="Preview" className="h-full object-contain" />
+                        )}
                       </div>
                     )}
                   </div>
                   <div className="col-span-2 mt-2">
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white gap-2" onClick={handleUploadReport} disabled={isUploadingReport}>
+                    <Button
+                      className="w-full h-14 bg-teal-600 hover:bg-teal-700 text-white font-black rounded-[1.5rem] shadow-lg shadow-teal-100 tracking-widest text-xs uppercase gap-2 transition-all hover:-translate-y-0.5 active:scale-95"
+                      onClick={handleUploadReport}
+                      disabled={isUploadingReport}
+                    >
+                      <Upload className="h-4 w-4" />
                       {isUploadingReport ? "Uploading..." : "Save Clinical Report"}
                     </Button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Uploaded History */}
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-4">Patient Reports Archive</h3>
-                <div className="space-y-4">
+              {/* Reports Archive */}
+              <motion.div variants={itemVariants} className="space-y-5">
+                <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
+                  Patient Reports Archive
+                  <span className="px-3 py-1 bg-gray-100 rounded-full text-xs font-black text-gray-400 uppercase tracking-widest">{reports.length} Records</span>
+                </h3>
+                <div className="grid lg:grid-cols-2 gap-6">
                   {reports.length > 0 ? reports.map((rep, index) => {
                     const clinicNumber = reports.length - index;
                     return (
-                      <div key={rep._id} className="bg-card border rounded-2xl p-6 shadow-sm flex flex-col gap-6 relative overflow-hidden">
-                        {/* Clinic Visit Badge */}
-                        <div className="absolute top-0 right-0 bg-primary/20 text-primary px-4 py-2 rounded-bl-2xl font-black text-lg">
-                          Clinic Visit #{clinicNumber}
+                      <motion.div
+                        key={rep._id}
+                        variants={itemVariants}
+                        whileHover={{ y: -4 }}
+                        className="bg-white border-2 border-gray-50 rounded-[2.5rem] p-8 shadow-xl shadow-gray-200/50 flex flex-col gap-6 relative overflow-hidden group"
+                      >
+                        <div className="absolute top-0 right-0 bg-teal-500 text-white px-5 py-2 rounded-bl-[2rem] font-black text-xs uppercase tracking-widest shadow-md">
+                          VISIT #{clinicNumber}
                         </div>
-                        
                         {rep.report_photo ? (
-                          <div 
-                            className="w-full h-[600px] bg-black/5 rounded-xl border-2 border-primary/10 overflow-hidden cursor-pointer transition-transform hover:scale-[1.01] hover:shadow-lg relative mt-2"
+                          <div
+                            className="w-full h-52 bg-gray-50 rounded-[2rem] border border-gray-100 overflow-hidden cursor-zoom-in relative group/img"
                             onClick={() => {
                               const newTab = window.open();
                               if (newTab) {
-                                newTab.document.body.innerHTML = `<img src="${rep.report_photo}" style="max-width:100%; height:auto; display:block; margin:auto;" />`;
+                                newTab.document.body.innerHTML = `<img src="${rep.report_photo}" style="max-width:100%; height:auto; display:block; margin:auto; padding:2rem;" />`;
                               }
                             }}
-                            title="Click to enlarge"
                           >
-                            {rep.report_photo.includes("application/pdf") ? <div className="w-full h-full flex items-center justify-center text-xl font-semibold text-muted-foreground bg-muted/30">📄 View PDF Document</div> : <img src={rep.report_photo} className="w-full h-full object-contain drop-shadow-sm" />}
+                            {rep.report_photo.includes("application/pdf") ? (
+                              <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                <FileText className="h-16 w-16 mb-2 opacity-30" />
+                                <span className="text-xs font-black uppercase tracking-widest">View Document</span>
+                              </div>
+                            ) : (
+                              <img src={rep.report_photo} className="w-full h-full object-contain p-4 grayscale-[0.15] group-hover/img:grayscale-0 transition-all" />
+                            )}
                           </div>
                         ) : (
-                          <div className="w-full h-64 bg-muted/30 rounded-xl border-2 border-dashed flex items-center justify-center text-sm font-medium text-muted-foreground">No Photo Available</div>
+                          <div className="w-full h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center text-xs font-black text-gray-300 uppercase tracking-widest">No Photo</div>
                         )}
-                        
-                        {/* Metadata underneath */}
-                        <div className="w-full">
-                          <div className="flex justify-between items-center mb-4 border-b border-primary/10 pb-3">
-                            <div className="truncate">
-                              <span className="font-bold text-2xl text-primary">{rep.patient?.name}</span>
-                              <span className="ml-2 text-md text-muted-foreground mr-1">({rep.patient?.mrn})</span>
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-end border-b border-gray-50 pb-4">
+                            <div>
+                              <p className="font-black text-xl text-gray-900">{rep.patient?.name}</p>
+                              <p className="text-xs font-bold text-gray-400">MRN: {rep.patient?.mrn}</p>
                             </div>
-                            <span className="text-sm font-bold text-muted-foreground shrink-0">{new Date(rep.report_date).toLocaleDateString()}</span>
+                            <div className="text-right">
+                              <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-0.5">Date</p>
+                              <p className="text-sm font-black text-gray-800">{new Date(rep.report_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                            </div>
                           </div>
-                        
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
-                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">Weight</p>
-                            <p className="font-black text-2xl text-foreground">{rep.weight} kg</p>
-                          </div>
-                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
-                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">BP</p>
-                            <p className="font-black text-2xl text-foreground">{rep.blood_pressure}</p>
-                          </div>
-                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
-                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">Sugar</p>
-                            <p className="font-black text-2xl text-foreground truncate">{rep.sugar_level}</p>
-                          </div>
-                          <div className="bg-primary/5 rounded-xl border border-primary/10 px-5 py-4">
-                            <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">BMI</p>
-                            <p className="font-black text-2xl text-foreground">{rep.bmi}</p>
+                          <div className="grid grid-cols-2 gap-3">
+                            {[
+                              { label: "Weight", val: `${rep.weight} kg` },
+                              { label: "Blood Pressure", val: rep.blood_pressure },
+                              { label: "Sugar Level", val: rep.sugar_level },
+                              { label: "BMI", val: rep.bmi },
+                            ].map((stat, i) => (
+                              <div key={i} className="bg-gray-50 p-4 rounded-2xl hover:bg-teal-50 transition-colors group/stat border border-gray-100">
+                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                                <p className="font-black text-lg text-gray-900 group-hover/stat:text-teal-600 transition-colors">{stat.val}</p>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                }) : (
-                    <div className="text-center p-8 bg-muted/20 border border-dashed rounded-xl text-muted-foreground">
-                      No reports uploaded yet.
+                      </motion.div>
+                    );
+                  }) : (
+                    <div className="text-center py-24 bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-[3rem] lg:col-span-2">
+                      <FileText className="h-14 w-14 mx-auto mb-4 text-gray-200" />
+                      <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No Reports Uploaded Yet</p>
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
+
           ) : (
-            <>
-              <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 mb-8">
-                <div className="xl:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-4">
+            /* ─── MAIN OVERVIEW ────────────────────────────── */
+            <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-10 pb-12">
+
+              {/* Stat Cards + Quick Actions Row */}
+              <motion.div variants={itemVariants} className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                {/* Stat Cards */}
+                <div className="xl:col-span-3 grid grid-cols-2 lg:grid-cols-4 gap-5">
                   <StatCard
                     title="Active Patients"
                     value={patients.length}
@@ -616,42 +710,54 @@ export default function MidwifeDashboard() {
                     iconColor="text-emergency"
                   />
                 </div>
-                <div className="bg-card rounded-xl border p-5">
-                  <h3 className="font-semibold text-foreground mb-4 uppercase text-xs tracking-wide">
-                    Quick Actions
-                  </h3>
-                  <div className="space-y-2">
+
+                {/* Quick Actions */}
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="bg-white rounded-[2.5rem] border border-gray-100 p-7 shadow-xl shadow-gray-200/50 flex flex-col justify-between"
+                >
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-5">Quick Actions</p>
+                  <div className="space-y-3">
                     <Button
-                      variant="outline"
-                      className="w-full justify-start gap-2 text-primary border-primary/20 hover:bg-primary/5"
+                      variant="ghost"
+                      className="w-full justify-start gap-3 h-12 rounded-2xl text-teal-700 bg-teal-50 hover:bg-teal-500 hover:text-white font-black text-xs uppercase tracking-widest transition-all"
                       onClick={() => setIsRegisterModalOpen(true)}
                     >
                       <Plus className="h-4 w-4" />
-                      Register New Patient
+                      Register Patient
                     </Button>
                     <Button
-                      variant="outline"
-                      className="w-full justify-start gap-2 text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      variant="ghost"
+                      className="w-full justify-start gap-3 h-12 rounded-2xl text-indigo-700 bg-indigo-50 hover:bg-indigo-500 hover:text-white font-black text-xs uppercase tracking-widest transition-all"
                       onClick={() => {
-                        setSelectedPatientForAppointment(null); // Let them choose in modal
+                        setSelectedPatientForAppointment(null);
                         setIsAppointmentModalOpen(true);
                       }}
                     >
                       <Calendar className="h-4 w-4" />
-                      Schedule Consultation
+                      Schedule Consult
                     </Button>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
-              <div className="grid xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2">
-                  <h2 className="text-lg font-semibold text-foreground mb-4">Assigned Patients</h2>
-                  <div className="space-y-3">
-                    {patients.length > 0 ? (
-                      patients.map((patient) => (
+              {/* Patients Section */}
+              <motion.div variants={itemVariants} className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-black text-gray-900">Assigned Patients</h2>
+                  <span className="px-4 py-1.5 bg-teal-50 text-teal-700 rounded-full text-xs font-black uppercase tracking-widest border border-teal-100">
+                    {patients.length} Active
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {patients.length > 0 ? (
+                    patients.map((patient, i) => (
+                      <motion.div
+                        key={patient._id}
+                        variants={itemVariants}
+                        whileHover={{ y: -2 }}
+                      >
                         <PatientCard
-                          key={patient._id}
                           name={patient.name}
                           id={patient.mrn}
                           gestationWeeks={0}
@@ -668,16 +774,24 @@ export default function MidwifeDashboard() {
                             setIsAppointmentModalOpen(true);
                           }}
                         />
-                      ))
-                    ) : (
-                      <div className="text-center py-12 bg-muted/20 rounded-xl border border-dashed text-muted-foreground">
-                        No patients registered
-                      </div>
-                    )}
-                  </div>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-24 bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-[3rem]">
+                      <Users className="h-14 w-14 mx-auto mb-4 text-gray-200" />
+                      <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No Patients Registered Yet</p>
+                      <Button
+                        className="mt-6 bg-teal-600 hover:bg-teal-700 text-white font-black rounded-2xl px-8 h-12 shadow-lg shadow-teal-100"
+                        onClick={() => setIsRegisterModalOpen(true)}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Register First Patient
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </>
+              </motion.div>
+            </motion.div>
           )}
         </main>
 

@@ -36,9 +36,6 @@ export default function MidwifePatientsPage() {
     const [emergencyTarget, setEmergencyTarget] = useState<any | null>(null);
     const [emergencyMessage, setEmergencyMessage] = useState("");
     const [isSendingAlert, setIsSendingAlert] = useState(false);
-    const [uploadTarget, setUploadTarget] = useState<any | null>(null);
-    const [uploadFile, setUploadFile] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState(false);
     const [user, setUser] = useState<any>(null);
 
     const [formData, setFormData] = useState({
@@ -96,33 +93,7 @@ export default function MidwifePatientsPage() {
         }
     };
 
-    const handleUploadReport = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!uploadTarget || !uploadFile) return;
-        setIsUploading(true);
-        try {
-            const formData = new FormData();
-            formData.append('report', uploadFile);
-            const response = await fetch(`http://${window.location.hostname}:5001/api/reports/upload/${uploadTarget._id}`, {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            });
-            const data = await response.json();
-            if (response.ok) {
-                toast.success(`Report uploaded for ${uploadTarget.name}`);
-                fetchPatients(); // Refresh list to show new report from DB
-                setUploadTarget(null);
-                setUploadFile(null);
-            } else {
-                toast.error(data.message || 'Upload failed');
-            }
-        } catch (err) {
-            toast.error('Could not upload the report');
-        } finally {
-            setIsUploading(false);
-        }
-    };
+
 
     useEffect(() => {
         const userInfo = localStorage.getItem("userInfo");
@@ -296,20 +267,7 @@ export default function MidwifePatientsPage() {
                                                     Alert
                                                 </button>
 
-                                                {/* Upload Button */}
-                                                <button
-                                                    type="button"
-                                                    title="Upload Medical Report"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setUploadTarget(patient);
-                                                        setUploadFile(null);
-                                                    }}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
-                                                >
-                                                    <Upload className="h-3.5 w-3.5" />
-                                                    Upload Medical Reports
-                                                </button>
+
 
                                                 <span className="text-muted-foreground text-sm">
                                                     {selectedPatient?._id === patient._id ? '▲' : '▼'}
@@ -606,88 +564,7 @@ export default function MidwifePatientsPage() {
                     </DialogContent>
                 </Dialog>
 
-                {/* Upload Medical Report Dialog */}
-                <Dialog open={!!uploadTarget} onOpenChange={(open) => { if (!open) { setUploadTarget(null); setUploadFile(null); } }}>
-                    <DialogContent className="sm:max-w-[460px] p-0 overflow-hidden">
-                        <DialogHeader className="bg-gradient-to-r from-primary to-primary/80 px-6 py-5 space-y-0">
-                            <DialogTitle className="text-white text-lg font-bold flex items-center gap-2">
-                                <Upload className="h-5 w-5" />
-                                Upload Medical Report
-                            </DialogTitle>
-                            <DialogDescription className="text-primary-foreground/70 text-sm mt-1">
-                                Upload a report for <span className="font-semibold">{uploadTarget?.name}</span> (MRN: {uploadTarget?.mrn})
-                            </DialogDescription>
-                        </DialogHeader>
 
-                        <form onSubmit={handleUploadReport} className="px-6 py-5 space-y-4">
-                            {/* Drop zone */}
-                            <div
-                                className="border-2 border-dashed border-primary/30 rounded-xl p-6 text-center cursor-pointer hover:border-primary/60 hover:bg-primary/5 transition-all"
-                                onClick={() => document.getElementById('report-file-input')?.click()}
-                            >
-                                {uploadFile ? (
-                                    <div className="flex items-center justify-between bg-muted/40 rounded-lg p-3">
-                                        <div className="flex items-center gap-3">
-                                            <FileText className="h-8 w-8 text-primary" />
-                                            <div className="text-left">
-                                                <p className="text-sm font-medium text-foreground truncate max-w-[220px]">{uploadFile.name}</p>
-                                                <p className="text-xs text-muted-foreground">{(uploadFile.size / 1024).toFixed(1)} KB · {uploadFile.type}</p>
-                                            </div>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => { e.stopPropagation(); setUploadFile(null); }}
-                                            className="text-muted-foreground hover:text-destructive transition-colors"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Upload className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-                                        <p className="text-sm font-medium text-foreground">Click to browse or drag & drop</p>
-                                        <p className="text-xs text-muted-foreground mt-1">Supports: JPG, PNG, GIF, WEBP, BMP, TIFF, PDF · Max 20MB</p>
-                                    </>
-                                )}
-                            </div>
-
-                            <input
-                                id="report-file-input"
-                                type="file"
-                                accept="image/*,.pdf"
-                                className="hidden"
-                                onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                            />
-
-                            <div className="flex justify-end gap-3 pt-2 border-t">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => { setUploadTarget(null); setUploadFile(null); }}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={!uploadFile || isUploading}
-                                    className="gap-2"
-                                >
-                                    {isUploading ? (
-                                        <>
-                                            <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full inline-block" />
-                                            Uploading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className="h-4 w-4" />
-                                            Upload Medical Reports
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
-                        </form>
-                    </DialogContent>
-                </Dialog>
             </div>
         </div>
     );

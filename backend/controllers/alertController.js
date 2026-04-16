@@ -118,15 +118,18 @@ const sendEmergencyAlert = async (req, res) => {
     }
 };
 
-// @desc    Update alert status
+// @desc    Update alert status and/or message
 // @route   PUT /api/alerts/:id
-// @access  Private/Midwife
+// @access  Private/Midwife/Admin
 const updateAlertStatus = async (req, res) => {
     try {
         const alert = await Alert.findById(req.params.id);
 
         if (alert) {
             alert.status = req.body.status || alert.status;
+            if (req.body.message !== undefined) {
+                alert.message = req.body.message;
+            }
             const updatedAlert = await alert.save();
             res.json(updatedAlert);
         } else {
@@ -137,10 +140,27 @@ const updateAlertStatus = async (req, res) => {
     }
 };
 
+// @desc    Delete an alert
+// @route   DELETE /api/alerts/:id
+// @access  Private/Admin
+const deleteAlert = async (req, res) => {
+    try {
+        const alert = await Alert.findById(req.params.id);
+        if (!alert) {
+            return res.status(404).json({ message: 'Alert not found' });
+        }
+        await alert.deleteOne();
+        res.json({ message: 'Alert deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     createAlert,
     getPatientAlerts,
     updateAlertStatus,
+    deleteAlert,
     sendEmergencyAlert,
     getMidwifeAlerts,
 };
