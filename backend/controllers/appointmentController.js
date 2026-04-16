@@ -1,16 +1,26 @@
 const Appointment = require('../models/appointmentModel');
+const Midwife = require('../models/midwifeModel');
+const Doctor = require('../models/doctorModel');
 
 // @desc    Schedule an appointment
 // @route   POST /api/appointments
 // @access  Private/Midwife
 const scheduleAppointment = async (req, res) => {
     try {
-        const { patientId, midwifeId, appointmentDate } = req.body;
+        const { patientId, doctorId, appointmentDate, purpose } = req.body;
+
+        let midwifeId = null;
+        if (req.user.role === 'midwife') {
+            const midwife = await Midwife.findOne({ user_id: req.user._id });
+            midwifeId = midwife ? midwife._id : null;
+        }
 
         const appointment = await Appointment.create({
             patient: patientId,
-            midwife: midwifeId,
+            midwife: midwifeId, 
+            doctor: doctorId,
             appointmentDate,
+            purpose: purpose || 'Clinical Consultation'
         });
 
         res.status(201).json(appointment);
@@ -57,7 +67,8 @@ const getAllAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find({})
             .populate('patient', 'name mrn')
-            .populate('midwife', 'name hospital_name');
+            .populate('midwife', 'name hospital_name')
+            .populate('doctor', 'name specialization');
         res.json(appointments);
     } catch (error) {
         res.status(500).json({ message: error.message });

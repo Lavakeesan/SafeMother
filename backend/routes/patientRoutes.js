@@ -7,7 +7,8 @@ const {
     getPatientProfile,
     updatePatientProfile,
     updatePatient,
-    deletePatient
+    deletePatient,
+    getMyAppointments
 } = require('../controllers/patientController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -18,6 +19,9 @@ router.route('/')
 router.route('/profile')
     .get(protect, authorize('patient'), getPatientProfile)
     .put(protect, authorize('patient'), updatePatientProfile);
+
+router.route('/appointments')
+    .get(protect, authorize('patient'), getMyAppointments);
 
 router.route('/:id')
     .get(protect, getPatientById)

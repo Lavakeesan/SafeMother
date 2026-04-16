@@ -18,15 +18,17 @@ interface SidebarProps {
 const midwifeNav: NavItem[] = [
   { label: "Dashboard", href: "/midwife", icon: LayoutDashboard },
   { label: "Patients", href: "/midwife/patients", icon: Users },
+  { label: "Schedule Consultation", href: "/midwife/appointments", icon: Stethoscope },
   { label: "Medical Alerts", href: "/midwife/calendar", icon: AlertTriangle },
   { label: "Clinical Reports", href: "/midwife/reports", icon: FileText },
 ];
 
 const patientNav: NavItem[] = [
   { label: "My Dashboard", href: "/patient", icon: LayoutDashboard },
-  { label: "Care Plans", href: "/patient/advice", icon: MessageSquare },
+  { label: "Chat with Doctor", href: "/patient/chat", icon: MessageSquare },
   { label: "Clinic Reports", href: "/patient/reports", icon: FileText },
   { label: "Midwife Alert", href: "/patient/alert", icon: AlertTriangle },
+  { label: "Care Plans", href: "/patient/advice", icon: MessageSquare },
 ];
 
 const adminNav: NavItem[] = [
@@ -42,7 +44,7 @@ const adminNav: NavItem[] = [
 const doctorNav: NavItem[] = [
   { label: "Overview", href: "/doctor", icon: LayoutDashboard },
   { label: "My Patients", href: "/doctor/patients", icon: Users },
-  { label: "Consultations", href: "/doctor/consultations", icon: Stethoscope },
+  { label: "Appointments", href: "/doctor/consultations", icon: Calendar },
   { label: "Secure Chat", href: "/doctor/chat", icon: MessageSquare },
 ];
 

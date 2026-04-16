@@ -9,8 +9,13 @@ const consultationSchema = mongoose.Schema(
         },
         midwife: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
+            required: false,
             ref: 'Midwife',
+        },
+        doctor: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'Doctor',
         },
         consultationDate: {
             type: Date,

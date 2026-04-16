@@ -16,13 +16,14 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function DoctorChatPage() {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<any[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -33,15 +34,28 @@ export default function DoctorChatPage() {
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [currentUserId, setCurrentUserId] = useState<string>("");
+
   useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) {
+      navigate("/login");
+      return;
+    }
+    const user = JSON.parse(userInfo);
+    setCurrentUserId(user._id);
+    if (user.role !== 'doctor' && user.role !== 'admin') {
+      navigate("/login");
+      return;
+    }
     fetchChatPatients();
   }, []);
 
   useEffect(() => {
-    if (selectedPatient) {
-      fetchMessages(selectedPatient._id);
+    if (selectedPatient && selectedPatient.user_id) {
+      fetchMessages(selectedPatient.user_id);
       // Setup polling or socket here in real app
-      const interval = setInterval(() => fetchMessages(selectedPatient._id), 5000);
+      const interval = setInterval(() => fetchMessages(selectedPatient.user_id), 3000);
       return () => clearInterval(interval);
     }
   }, [selectedPatient]);
@@ -70,13 +84,15 @@ export default function DoctorChatPage() {
     }
   };
 
-  const fetchMessages = async (patientId: string) => {
+  const fetchMessages = async (userId: string) => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/sms/history/${patientId}`, {
+      const resp = await fetch(`http://${window.location.hostname}:5001/api/chat/${userId}`, {
         credentials: 'include'
       });
       const data = await resp.json();
-      setMessages(data);
+      if (Array.isArray(data)) {
+        setMessages(data);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -88,19 +104,19 @@ export default function DoctorChatPage() {
 
     setIsSending(true);
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/sms/send`, {
+      const resp = await fetch(`http://${window.location.hostname}:5001/api/chat/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
         body: JSON.stringify({
-          receiverId: selectedPatient.user_id, // Assuming patient model has user_id
+          receiverId: selectedPatient.user_id,
           message: newMessage
         })
       });
 
       if (resp.ok) {
         setNewMessage("");
-        fetchMessages(selectedPatient._id);
+        fetchMessages(selectedPatient.user_id);
       } else {
         toast.error("Failed to transmit message securely");
       }
@@ -231,26 +247,29 @@ export default function DoctorChatPage() {
                       <p className="font-black uppercase tracking-widest text-xs">Clinical channel initialized</p>
                       <p className="text-[10px] font-bold mt-1">Start typing to begin consultation</p>
                     </div>
-                  ) : messages.map((msg, idx) => (
-                    <div 
-                      key={idx}
-                      className={`flex ${msg.sender === 'doctor' || msg.senderType === 'midwife' || msg.senderType === 'admin' ? "justify-end" : "justify-start"}`}
-                    >
-                      <div className={`max-w-[70%] group relative ${
-                        msg.sender === 'doctor' || msg.senderType === 'midwife' || msg.senderType === 'admin'
-                        ? "bg-primary text-white rounded-2xl rounded-tr-none shadow-lg shadow-primary/20" 
-                        : "bg-white dark:bg-zinc-900 border border-black/5 text-foreground rounded-2xl rounded-tl-none shadow-sm"
-                      } p-4`}>
-                        <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">{msg.message}</p>
-                        <div className={`flex items-center justify-end gap-1.5 mt-2 opacity-70`}>
-                          <span className="text-[9px] font-black uppercase">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                          {(msg.sender === 'doctor' || msg.senderType === 'midwife' || msg.senderType === 'admin') && (
-                             <CheckCheck className="h-3 w-3" />
-                          )}
+                  ) : messages.map((msg, idx) => {
+                    const isMe = msg.sender === currentUserId;
+                    return (
+                      <div 
+                        key={idx}
+                        className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                      >
+                        <div className={`max-w-[70%] group relative ${
+                          isMe
+                          ? "bg-primary text-white rounded-2xl rounded-tr-none shadow-lg shadow-primary/20" 
+                          : "bg-white dark:bg-zinc-900 border border-black/5 text-foreground rounded-2xl rounded-tl-none shadow-sm"
+                        } p-4`}>
+                          <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                          <div className={`flex items-center justify-end gap-1.5 mt-2 opacity-70`}>
+                            <span className="text-[9px] font-black uppercase">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            {isMe && (
+                               <CheckCheck className={`h-3 w-3 ${msg.read ? "text-emerald-300" : ""}`} />
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Message Input */}

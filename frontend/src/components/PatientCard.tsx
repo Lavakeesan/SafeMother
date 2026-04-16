@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronRight, AlertTriangle } from "lucide-react";
+import { ChevronRight, AlertTriangle, Calendar } from "lucide-react";
 import { StatusBadge, StatusBadgeVariant } from "./StatusBadge";
 
 interface PatientCardProps {
@@ -13,6 +13,7 @@ interface PatientCardProps {
   isHighlighted?: boolean;
   onClick?: () => void;
   onAlert?: (e: React.MouseEvent) => void;
+  onAppointment?: (e: React.MouseEvent) => void;
 }
 
 export function PatientCard({
@@ -26,6 +27,7 @@ export function PatientCard({
   isHighlighted = false,
   onClick,
   onAlert,
+  onAppointment,
 }: PatientCardProps) {
   const statusLabels: Record<StatusBadgeVariant, string> = {
     normal: "Normal",
@@ -73,6 +75,18 @@ export function PatientCard({
               title="Send Emergency SMS"
             >
               <AlertTriangle className="h-4 w-4" />
+            </button>
+          )}
+          {onAppointment && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAppointment(e);
+              }}
+              className="p-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors ml-1"
+              title="Schedule Physician Appointment"
+            >
+              <Calendar className="h-4 w-4" />
             </button>
           )}
         </div>

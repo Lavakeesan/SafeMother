@@ -42,28 +42,6 @@ export default function LandingPage() {
                   </Button>
                 </Link>
               </div>
-              <div className="mt-4 flex flex-wrap gap-4">
-                <Link to="/patient">
-                  <Button size="lg" variant="secondary" className="bg-blue-600 text-white hover:bg-blue-700">
-                    Patient
-                  </Button>
-                </Link>
-                <Link to="/midwife">
-                  <Button size="lg" variant="secondary" className="bg-pink-600 text-white hover:bg-pink-700">
-                    Midwife
-                  </Button>
-                </Link>
-                <Link to="/admin">
-                  <Button size="lg" variant="secondary" className="bg-amber-600 text-white hover:bg-amber-700">
-                    Admin
-                  </Button>
-                </Link>
-                <Link to="/doctor">
-                  <Button size="lg" variant="secondary" className="bg-indigo-600 text-white hover:bg-indigo-700">
-                    Doctor
-                  </Button>
-                </Link>
-              </div>
             </div>
 
             <div className="relative animate-fade-in lg:animate-slide-in-left">

@@ -1,7 +1,7 @@
 const Doctor = require('../models/doctorModel');
 const Patient = require('../models/patientModel');
 const Appointment = require('../models/appointmentModel');
-const Message = require('../models/messageModel');
+const Consultation = require('../models/consultationModel');
 
 // @desc    Get doctor dashboard stats
 // @route   GET /api/doctor/stats
@@ -40,10 +40,16 @@ const getDoctorStats = async (req, res) => {
 // @access  Private/Doctor
 const getDoctorPatients = async (req, res) => {
     try {
-        const doctor = await Doctor.findOne({ user_id: req.user._id }).populate('assigned_patients');
+        const doctor = await Doctor.findOne({ user_id: req.user._id });
         if (!doctor) return res.status(404).json({ message: 'Doctor profile not found' });
 
-        res.json(doctor.assigned_patients);
+        // Find all unique patients who have appointments with this doctor
+        const appointments = await Appointment.find({ doctor: doctor._id }).select('patient');
+        const patientIds = [...new Set(appointments.map(a => a.patient.toString()))];
+
+        const patients = await Patient.find({ _id: { $in: patientIds } });
+
+        res.json(patients);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -84,8 +90,18 @@ const addDoctorAdvice = async (req, res) => {
         if (!appointment) return res.status(404).json({ message: 'Consultation not found' });
 
         appointment.advice = advice;
-        appointment.status = 'Completed';
+        appointment.status = 'Consulting Finished';
         await appointment.save();
+
+        // Save to Consultation table as requested by user
+        await Consultation.create({
+            patient: appointment.patient,
+            midwife: appointment.midwife,
+            doctor: appointment.doctor,
+            doctorAdvice: advice,
+            status: 'Completed',
+            consultationDate: new Date()
+        });
 
         res.json({ message: 'Medical advice recorded and consultation completed' });
     } catch (error) {
@@ -106,10 +122,23 @@ const getDoctorConsultations = async (req, res) => {
     }
 };
 
+// @desc    Get all doctors
+// @route   GET /api/doctor
+// @access  Private (Clinical roles)
+const getDoctors = async (req, res) => {
+    try {
+        const doctors = await Doctor.find({});
+        res.json(doctors);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getDoctorStats,
     getDoctorPatients,
     getPatientDetails,
     addDoctorAdvice,
-    getDoctorConsultations
+    getDoctorConsultations,
+    getDoctors
 };

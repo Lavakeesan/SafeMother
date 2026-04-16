@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import MidwifeDashboard from "./pages/MidwifeDashboard";
 import MidwifePatientsPage from "./pages/MidwifePatientsPage";
 import PatientProfilePage from "./pages/PatientProfilePage";
+import MidwifeAppointmentsPage from "./pages/MidwifeAppointmentsPage";
 import PatientDashboard from "./pages/PatientDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsersPage from "./pages/AdminUsersPage";
@@ -21,6 +22,7 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 import DoctorPatientsPage from "./pages/DoctorPatientsPage";
 import DoctorConsultationsPage from "./pages/DoctorConsultationsPage";
 import DoctorChatPage from "./pages/DoctorChatPage";
+import PatientChatPage from "./pages/PatientChatPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,10 +46,12 @@ const App = () => (
           <Route path="/midwife/calendar" element={<MidwifeDashboard />} />
           <Route path="/midwife/reports" element={<MidwifeDashboard />} />
           <Route path="/midwife/settings" element={<MidwifeDashboard />} />
+          <Route path="/midwife/appointments" element={<MidwifeAppointmentsPage />} />
           <Route path="/midwife/resources" element={<ResourceLibrary />} />
 
           {/* Patient Routes */}
           <Route path="/patient" element={<PatientDashboard />} />
+          <Route path="/patient/chat" element={<PatientChatPage />} />
           <Route path="/patient/care-plan" element={<PatientDashboard />} />
           <Route path="/patient/advice" element={<PatientDashboard />} />
           <Route path="/patient/alert" element={<PatientDashboard />} />

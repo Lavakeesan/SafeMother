@@ -29,8 +29,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 export default function DoctorPatientsPage() {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
@@ -49,6 +51,16 @@ export default function DoctorPatientsPage() {
   const [isSubmittingAdvice, setIsSubmittingAdvice] = useState(false);
 
   useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) {
+      navigate("/login");
+      return;
+    }
+    const user = JSON.parse(userInfo);
+    if (user.role !== 'doctor' && user.role !== 'admin') {
+      navigate("/login");
+      return;
+    }
     fetchPatients();
   }, []);
 
@@ -175,7 +187,6 @@ export default function DoctorPatientsPage() {
                   <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">Identity MRN</TableHead>
                   <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">Risk Status</TableHead>
                   <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground">Joined Date</TableHead>
-                  <TableHead className="text-right py-5 px-8 font-black uppercase tracking-widest text-[10px] text-muted-foreground">Consultation</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -190,7 +201,10 @@ export default function DoctorPatientsPage() {
                 ) : filteredPatients.map((patient) => (
                   <TableRow key={patient._id} className="border-none hover:bg-muted/30 transition-colors group">
                     <TableCell className="py-5 px-8">
-                      <div className="flex items-center gap-4">
+                      <div 
+                        className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => handleOpenDetails(patient)}
+                      >
                         <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm border ${
                           patient.risk_level === 'High' ? 'bg-emergency/10 text-emergency border-emergency/20' : 
                           patient.risk_level === 'Medium' ? 'bg-amber-100 text-amber-600 border-amber-200' :
@@ -220,15 +234,6 @@ export default function DoctorPatientsPage() {
                     </TableCell>
                     <TableCell className="text-sm font-bold text-muted-foreground">
                       {new Date(patient.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right py-5 px-8">
-                      <Button 
-                        onClick={() => handleOpenDetails(patient)}
-                        className="rounded-xl h-10 px-4 font-black text-[10px] uppercase tracking-widest gap-2 bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.05] transition-all"
-                      >
-                        <FileText className="h-3.5 w-3.5" />
-                        Examine Case
-                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -313,7 +318,7 @@ export default function DoctorPatientsPage() {
                                 </div>
                                 <div className="flex items-center gap-3">
                                    <Badge className={`rounded-xl px-3 py-1 font-bold text-[10px] uppercase ${
-                                      consult.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                                      (consult.status === 'Completed' || consult.status === 'Consulting Finished') ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                                    }`}>
                                       {consult.status}
                                    </Badge>

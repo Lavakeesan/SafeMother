@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { Users, Baby, AlertTriangle, Zap, Search, Calendar, Edit, Upload, FileText, ChevronRight, Plus } from "lucide-react";
+import { Users, Baby, AlertTriangle, Zap, Search, Calendar, Edit, Upload, FileText, ChevronRight, Plus, ShieldCheck } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -66,11 +66,20 @@ export default function MidwifeDashboard() {
   const [reportPhoto, setReportPhoto] = useState<string | null>(null);
   const [isUploadingReport, setIsUploadingReport] = useState(false);
   
-  // Emergency SMS State
   const [isEmergencySMSModalOpen, setIsEmergencySMSModalOpen] = useState(false);
   const [emergencySMSMessage, setEmergencySMSMessage] = useState("");
   const [selectedPatientForSMS, setSelectedPatientForSMS] = useState<any>(null);
   const [isSendingSMS, setIsSendingSMS] = useState(false);
+
+  // Appointment State
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState("");
+  const [selectedPatientForAppointment, setSelectedPatientForAppointment] = useState<any>(null);
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [appointmentPurpose, setAppointmentPurpose] = useState("");
+  const [isScheduling, setIsScheduling] = useState(false);
 
   const fetchPatients = async () => {
     try {
@@ -112,6 +121,7 @@ export default function MidwifeDashboard() {
       navigate("/login");
     }
     fetchPatients();
+    fetchDoctors();
     if (isAlertsMode) {
       fetchAlerts();
     }
@@ -119,6 +129,62 @@ export default function MidwifeDashboard() {
       fetchReports();
     }
   }, [isAlertsMode, isReportsMode]);
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch(`http://${window.location.hostname}:5001/api/doctor`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDoctors(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch doctors:", err);
+    }
+  };
+
+  const handleScheduleAppointment = async () => {
+    if (!selectedPatientForAppointment || !selectedDoctorId || !appointmentDate || !appointmentTime) {
+      return toast.error("Please fill all required fields");
+    }
+
+    setIsScheduling(true);
+    try {
+      // Combine date and time
+      const dateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+      
+      const response = await fetch(`http://${window.location.hostname}:5001/api/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          patientId: selectedPatientForAppointment._id,
+          doctorId: selectedDoctorId,
+          appointmentDate: dateTime.toISOString(),
+          purpose: appointmentPurpose
+        })
+      });
+
+      if (response.ok) {
+        toast.success("Appointment scheduled successfully");
+        setIsAppointmentModalOpen(false);
+        // Reset form
+        setSelectedDoctorId("");
+        setAppointmentDate("");
+        setAppointmentTime("");
+        setAppointmentPurpose("");
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Failed to schedule appointment");
+      }
+    } catch (err) {
+      toast.error("An error occurred");
+      console.error(err);
+    } finally {
+      setIsScheduling(false);
+    }
+  };
 
   const fetchReports = async () => {
     try {
@@ -563,6 +629,17 @@ export default function MidwifeDashboard() {
                       <Plus className="h-4 w-4" />
                       Register New Patient
                     </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-2 text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      onClick={() => {
+                        setSelectedPatientForAppointment(null); // Let them choose in modal
+                        setIsAppointmentModalOpen(true);
+                      }}
+                    >
+                      <Calendar className="h-4 w-4" />
+                      Schedule Consultation
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -585,6 +662,10 @@ export default function MidwifeDashboard() {
                           onAlert={() => {
                             setSelectedPatientForSMS(patient);
                             setIsEmergencySMSModalOpen(true);
+                          }}
+                          onAppointment={() => {
+                            setSelectedPatientForAppointment(patient);
+                            setIsAppointmentModalOpen(true);
                           }}
                         />
                       ))
@@ -818,6 +899,124 @@ export default function MidwifeDashboard() {
                       <>
                         <Zap className="h-4 w-4 fill-current" />
                         SEND URGENT SMS
+                      </>
+                    )}
+                  </Button>
+               </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+        {/* Appointment Modal */}
+        <Dialog open={isAppointmentModalOpen} onOpenChange={setIsAppointmentModalOpen}>
+          <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+            <div className="bg-primary p-6 text-white text-center pb-8">
+              <DialogHeader className="p-0">
+                <div className="h-16 w-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
+                  <Calendar className="h-8 w-8 text-white" />
+                </div>
+                <DialogTitle className="text-xl font-black italic tracking-tighter text-white">PHYSICIAN REFERRAL</DialogTitle>
+                <DialogDescription className="text-white/80 text-sm">
+                  {selectedPatientForAppointment 
+                    ? `Schedule ${selectedPatientForAppointment.name} for a consultation`
+                    : "Schedule a patient consultation with a specialist"}
+                </DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="p-8 space-y-5 bg-background">
+               <div className="space-y-4">
+                  {/* Patient Selection (if not pre-selected) */}
+                  {!selectedPatientForAppointment && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Select Patient</Label>
+                      <Select 
+                        value={selectedPatientForAppointment?._id} 
+                        onValueChange={(val) => {
+                          const p = patients.find(p => p._id === val);
+                          setSelectedPatientForAppointment(p);
+                        }}
+                      >
+                        <SelectTrigger className="w-full h-12 rounded-2xl border-none bg-muted/30 px-4">
+                          <SelectValue placeholder="Choose a patient..." />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          {patients.map(p => (
+                            <SelectItem key={p._id} value={p._id} className="rounded-lg">
+                              {p.name} ({p.mrn})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Select Physician</Label>
+                    <Select value={selectedDoctorId} onValueChange={setSelectedDoctorId}>
+                      <SelectTrigger className="w-full h-12 rounded-2xl border-none bg-muted/30 px-4">
+                        <SelectValue placeholder="Choose a doctor..." />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        {doctors.map(doc => (
+                          <SelectItem key={doc._id} value={doc._id} className="rounded-lg">
+                            <div className="flex flex-col">
+                              <span className="font-bold">{doc.name}</span>
+                              <span className="text-[10px] text-muted-foreground">{doc.specialization}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Appointment Date</Label>
+                      <Input
+                        type="date"
+                        className="h-12 rounded-2xl border-none bg-muted/30 px-4 font-medium"
+                        value={appointmentDate}
+                        onChange={(e) => setAppointmentDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Time Slot</Label>
+                      <Input
+                        type="time"
+                        className="h-12 rounded-2xl border-none bg-muted/30 px-4 font-medium"
+                        value={appointmentTime}
+                        onChange={(e) => setAppointmentTime(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Clinical Notes (Referral Message)</Label>
+                    <textarea
+                      placeholder="e.g. Please review glucose reports. Patient showing signs of gestational diabetes."
+                      className="flex min-h-[100px] w-full rounded-2xl border-none bg-muted/30 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground font-medium"
+                      value={appointmentPurpose}
+                      onChange={(e) => setAppointmentPurpose(e.target.value)}
+                    />
+                  </div>
+               </div>
+
+               <div className="flex gap-4 pt-2">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setIsAppointmentModalOpen(false)}
+                    className="flex-1 h-12 rounded-2xl font-bold"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleScheduleAppointment}
+                    disabled={isScheduling}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl h-12 shadow-lg shadow-primary/20 gap-2"
+                  >
+                    {isScheduling ? "Scheduling..." : (
+                      <>
+                        <ShieldCheck className="h-4 w-4" />
+                        CONFIRM APPOINTMENT
                       </>
                     )}
                   </Button>

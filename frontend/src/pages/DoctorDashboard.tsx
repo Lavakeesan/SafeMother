@@ -16,13 +16,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 export default function DoctorDashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [recentConsultations, setRecentConsultations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (!userInfo) {
+      navigate("/login");
+      return;
+    }
+    const user = JSON.parse(userInfo);
+    if (user.role !== 'doctor' && user.role !== 'admin') {
+      navigate("/login");
+      return;
+    }
     fetchDashboardData();
   }, []);
 

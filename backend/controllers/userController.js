@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const Admin = require('../models/adminModel');
 const Midwife = require('../models/midwifeModel');
 const Patient = require('../models/patientModel');
+const Doctor = require('../models/doctorModel');
 const generateToken = require('../utils/generateToken');
 
 // @desc    Register new user
@@ -68,6 +69,16 @@ const registerUser = async (req, res) => {
                     risk_level: profileData.riskLevel || profileData.risk_level || 'Low',
                     midwife_id: profileData.midwifeId || profileData.midwife_id
                 });
+            } else if (role === 'doctor') {
+                console.log('Creating Doctor profile...');
+                profile = await Doctor.create({
+                    user_id: user._id,
+                    name: user.name,
+                    specialization: profileData.specialization || 'Maternal-Fetal Medicine Specialists',
+                    license_number: profileData.license_number || profileData.licenseNumber,
+                    hospital_name: profileData.hospital_name || profileData.hospitalName
+                });
+                console.log('Doctor profile created successfully');
             }
 
             generateToken(res, user.id);

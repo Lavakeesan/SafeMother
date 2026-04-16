@@ -132,8 +132,29 @@ export default function PatientDashboard() {
         console.error("Failed to fetch profile", error);
       }
     };
+
     fetchProfile();
+    fetchAssignedDoctors();
   }, [navigate]);
+
+  const [assignedDoctors, setAssignedDoctors] = useState<any[]>([]);
+  const fetchAssignedDoctors = async () => {
+    try {
+      const resp = await fetch(`http://${window.location.hostname}:5001/api/patients/appointments`, {
+        credentials: 'include'
+      });
+      const appointments = await resp.json();
+      if (Array.isArray(appointments)) {
+        const doctorMap = new Map();
+        appointments.forEach((app: any) => {
+          if (app.doctor) doctorMap.set(app.doctor._id, app.doctor);
+        });
+        setAssignedDoctors(Array.from(doctorMap.values()));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const [patientAlerts, setPatientAlerts] = useState<any[]>([]);
 
   const fetchPatientAlerts = async (patientId: string) => {
@@ -408,10 +429,28 @@ export default function PatientDashboard() {
                   <>Welcome to your SafeMother Maternal Portal.</>
                 )}
               </p>
-              <p className="text-muted-foreground mt-2 text-sm flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                Primary Clinical Team: <span className="font-semibold text-foreground">{patient.midwife_id?.user_id?.name || 'Not Assigned'}</span>
-              </p>
+              <div className="flex flex-col gap-2 mt-2">
+                <p className="text-muted-foreground text-sm flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary" />
+                  Primary Midwife: <span className="font-semibold text-foreground">{patient.midwife_id?.user_id?.name || 'Not Assigned'}</span>
+                </p>
+                {assignedDoctors.length > 0 && (
+                  <div className="flex items-center gap-4">
+                    <p className="text-muted-foreground text-sm flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      Assigned Physician: <span className="font-semibold text-foreground">Dr. {assignedDoctors[0].name}</span>
+                    </p>
+                    <Button 
+                      onClick={() => navigate('/patient/chat')}
+                      variant="outline" 
+                      className="h-7 text-[10px] px-3 font-black uppercase tracking-widest border-emerald-500/30 text-emerald-600 hover:bg-emerald-50/50 rounded-lg gap-1.5"
+                    >
+                      <MessageSquare className="h-3 w-3" />
+                      Clinical Chat
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-4 mt-2 sm:mt-0">

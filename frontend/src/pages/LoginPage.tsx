@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import midwifeAuthImg from "@/assets/mid-wife-3.jpeg";
 
-type UserRole = "midwife" | "patient" | "admin";
+type UserRole = "midwife" | "patient" | "admin" | "doctor";
 
 export default function LoginPage() {
   const location = useLocation();
@@ -23,6 +23,8 @@ export default function LoginPage() {
   const [qualification, setQualification] = useState("");
   const [experienceYears, setExperienceYears] = useState("");
   const [hospitalName, setHospitalName] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [specialization, setSpecialization] = useState("Maternal-Fetal Medicine Specialists");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -54,6 +56,7 @@ export default function LoginPage() {
 
           if (data.role === "midwife") navigate("/midwife");
           else if (data.role === "patient") navigate("/patient");
+          else if (data.role === "doctor") navigate("/doctor");
           else navigate("/admin");
         } else {
           toast.error(data.message || "Invalid email or password");
@@ -76,6 +79,8 @@ export default function LoginPage() {
             qualification,
             experience_years: Number(experienceYears),
             hospital_name: hospitalName,
+            license_number: licenseNumber,
+            specialization,
           }),
         });
 
@@ -161,27 +166,29 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleAuth} className="space-y-6">
-            {/* Role Selector */}
-            <div>
-              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                {isLogin ? "Accessing As:" : "Registering As:"}
-              </Label>
-              <div className="mt-2 grid grid-cols-3 gap-2 p-1 bg-muted rounded-lg">
-                {(["midwife", "patient", "admin"] as UserRole[]).map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => setSelectedRole(role)}
-                    className={`py-2.5 px-4 rounded-md text-sm font-medium transition-colors capitalize ${selectedRole === role
-                      ? "bg-card text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                      }`}
-                  >
-                    {role}
-                  </button>
-                ))}
+            {/* Role Selector (Register Only) */}
+            {!isLogin && (
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Registering As:
+                </Label>
+                <div className="mt-2 grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg">
+                  {["midwife", "doctor"].map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setSelectedRole(role as UserRole)}
+                      className={`py-2.5 px-4 rounded-md text-sm font-medium transition-colors capitalize ${selectedRole === role
+                        ? "bg-card text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                        }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Name (Register Only) */}
             {!isLogin && (
@@ -243,6 +250,45 @@ export default function LoginPage() {
                           onChange={(e) => setHospitalName(e.target.value)}
                         />
                       </div>
+                    </div>
+                  </>
+                )}
+
+                {selectedRole === 'doctor' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="license">Medical License Number</Label>
+                      <Input
+                        id="license"
+                        placeholder="e.g. SLMC-XXXXX"
+                        value={licenseNumber}
+                        onChange={(e) => setLicenseNumber(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="specialization">Primary Specialization</Label>
+                      <select 
+                        id="specialization"
+                        value={specialization}
+                        onChange={(e) => setSpecialization(e.target.value)}
+                        className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                         <option value="Maternal-Fetal Medicine Specialists">Maternal-Fetal Medicine Specialists</option>
+                         <option value="Obstetrician-Gynecologist">Obstetrician-Gynecologist</option>
+                         <option value="Neonatologist">Neonatologist</option>
+                         <option value="General Physician">General Physician</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="hospital-doc">Hospital / Clinic Name</Label>
+                      <Input
+                        id="hospital-doc"
+                        placeholder="e.g. General Hospital Colombo"
+                        value={hospitalName}
+                        onChange={(e) => setHospitalName(e.target.value)}
+                        required
+                      />
                     </div>
                   </>
                 )}

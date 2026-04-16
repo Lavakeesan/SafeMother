@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Midwife = require('../models/midwifeModel');
 const sendEmail = require('../utils/emailService');
 const crypto = require('crypto');
+const Appointment = require('../models/appointmentModel');
 
 // @desc    Create a patient profile
 // @route   POST /api/patients
@@ -229,6 +230,28 @@ const updatePatientProfile = async (req, res) => {
     }
 };
 
+// @desc    Get logged in patient's appointments
+// @route   GET /api/patients/appointments
+// @access  Private/Patient
+const getMyAppointments = async (req, res) => {
+    try {
+        const patient = await Patient.findOne({ user_id: req.user._id });
+        if (!patient) {
+            return res.status(404).json({ message: 'Patient profile not found' });
+        }
+
+        const appointments = await Appointment.find({ patient: patient._id })
+            .populate('doctor', 'name specialization user_id')
+            .populate('midwife', 'name hospital_name')
+            .sort({ appointmentDate: -1 });
+            
+        res.json(appointments);
+    } catch (error) {
+        console.error('Get My Appointments Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     createPatient,
     updatePatient,
@@ -237,4 +260,5 @@ module.exports = {
     getPatientProfile,
     updatePatientProfile,
     deletePatient,
+    getMyAppointments
 };
