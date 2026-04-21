@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
-const rateLimit = require('express-rate-limit');
+const { rateLimit } = require('express-rate-limit');
 const hpp = require('hpp');
 const connectDB = require('./config/db');
 
