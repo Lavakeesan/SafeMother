@@ -3,11 +3,26 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
 const connectDB = require('./config/db');
 
 dotenv.config();
 
 const app = express();
+
+// Set security HTTP headers
+app.use(helmet());
+
+// Rate limiting (max 100 requests per 10 mins per IP)
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000, 
+    max: 100,
+    message: 'Too many requests from this IP, please try again after 10 minutes'
+});
+app.use('/api', limiter);
 
 // Ensure DB is connected before processing any requests
 app.use(async (req, res, next) => {
@@ -23,24 +38,35 @@ app.use(async (req, res, next) => {
     }
 });
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(cookieParser());
+
+// Sanitize data against NoSQL injection
+app.use(mongoSanitize());
+
+// Prevent HTTP parameter pollution
+app.use(hpp());
 const allowedOrigins = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://192.168.1.93:8080',
     'http://localhost:5173',
     'https://safe-mother-two.vercel.app',
+    'https://safe-mother-74td.vercel.app',
     process.env.FRONTEND_URL,
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Reflection for dev: always allow the origin if it exists
-        if (!origin) return callback(null, true);
-        console.log('Incoming request from origin:', origin);
-        callback(null, true);
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // Check if origin is in allowedOrigins
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.error('CORS blocked incoming request from origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

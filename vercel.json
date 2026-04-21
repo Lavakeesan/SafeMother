@@ -1,4 +1,10 @@
 {
+  "redirects": [
+    { "source": "/backend/(.*)", "destination": "/", "permanent": false },
+    { "source": "/package(.*)", "destination": "/", "permanent": false },
+    { "source": "/(.*)\\.md", "destination": "/", "permanent": false },
+    { "source": "/(.*)\\.txt", "destination": "/", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
