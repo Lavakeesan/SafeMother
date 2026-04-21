@@ -288,3 +288,5 @@ export default function PatientProfilePage() {
 
 // Add missing icons
 import { Activity, FileText } from "lucide-react";
+import { API_BASE_URL } from "@/config";
+

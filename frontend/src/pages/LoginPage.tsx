@@ -6,6 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import midwifeAuthImg from "@/assets/mid-wife-3.jpeg";
+import { API_BASE_URL } from "@/config";
+
 
 // Types
 type UserRole = "midwife" | "patient" | "admin" | "doctor";

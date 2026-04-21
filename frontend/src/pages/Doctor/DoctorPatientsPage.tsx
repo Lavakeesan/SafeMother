@@ -31,6 +31,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "@/config";
+
 
 const itemVariants = {
   hidden: { opacity: 0, x: -10 },

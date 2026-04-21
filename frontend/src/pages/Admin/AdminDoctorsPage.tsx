@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/config";
+
 
 const containerVariants = {
   hidden: { opacity: 0 },

@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "@/config";
+
 
 export default function DoctorChatPage() {
   const navigate = useNavigate();

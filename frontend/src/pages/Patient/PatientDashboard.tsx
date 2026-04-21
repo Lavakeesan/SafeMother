@@ -33,6 +33,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import clinicRoom from "@/assets/clinic-room.png";
+import { API_BASE_URL } from "@/config";
+
 
 const advice = [
   {

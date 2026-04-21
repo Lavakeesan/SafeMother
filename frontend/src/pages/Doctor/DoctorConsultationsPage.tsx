@@ -30,6 +30,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "@/config";
+
 
 export default function DoctorConsultationsPage() {
   const navigate = useNavigate();

@@ -20,6 +20,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/config";
+
 
 interface HeaderProps {
   title: string;

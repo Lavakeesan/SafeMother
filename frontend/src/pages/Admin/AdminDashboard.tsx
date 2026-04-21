@@ -13,6 +13,8 @@ import {
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from "recharts";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "@/config";
+
 
 const RISK_COLORS = ['#10b981', '#f59e0b', '#ef4444']; // Low, Medium, High
 const ROLE_COLORS = ['#6366f1', '#14b8a6', '#f43f5e', '#8b5cf6']; // Admin, Midwife, Patient, Doctor

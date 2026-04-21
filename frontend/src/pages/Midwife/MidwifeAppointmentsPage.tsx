@@ -32,6 +32,8 @@ import { Calendar, Clock, Plus, Search, Filter, ShieldCheck, Stethoscope } from 
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { API_BASE_URL } from "@/config";
+
 
 export default function MidwifeAppointmentsPage() {
   const navigate = useNavigate();

@@ -23,6 +23,8 @@ import { Label } from "@/components/ui/label";
 import { Search, Users, Plus, Filter, AlertTriangle, Send, Upload, FileText, X, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/config";
+
 
 export default function MidwifePatientsPage() {
     const navigate = useNavigate();

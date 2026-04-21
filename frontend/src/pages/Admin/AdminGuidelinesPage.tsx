@@ -19,6 +19,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/config";
+
 
 export default function AdminGuidelinesPage() {
   const [guidelines, setGuidelines] = useState<any[]>([]);

@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/config";
+
 
 export default function AdminAlertsPage() {
   const [alerts, setAlerts] = useState<any[]>([]);
