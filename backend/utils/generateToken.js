@@ -7,8 +7,8 @@ const generateToken = (res, userId) => {
 
     res.cookie('jwt', token, {
         httpOnly: true,
-        secure: true, // Must be true for sameSite: 'none'
-        sameSite: 'none', // Required for cross-domain cookies
+        secure: true, 
+        sameSite: 'lax', // Best for unified/same-domain deployments
         maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 };
