@@ -101,7 +101,7 @@ const sendEmergencyAlert = async (req, res) => {
             await sendEmail({
                 email: midwifeEmail,
                 subject: `🚨 EMERGENCY ALERT: Patient ${patient.name}`,
-                message: `URGENT: Your patient ${patient.name} (MRN: ${patient.mrn}) has sent an emergency message:\n\n"${message}"\n\nPlease check the SafeMother dashboard immediately and contact the patient at ${patient.contact_number}.`
+                message: `URGENT: Your patient ${patient.name} (MRN: ${patient.mrn}) has sent an emergency message:\n\n"${message}"\n\nPlease check the SafeMother dashboard immediately at ${process.env.FRONTEND_URL || 'your dashboard'} and contact the patient at ${patient.contact_number}.`
             });
         } catch (emailErr) {
             console.error('Failed to send emergency email:', emailErr.message);

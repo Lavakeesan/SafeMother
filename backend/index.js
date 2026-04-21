@@ -20,6 +20,7 @@ const allowedOrigins = [
     'http://192.168.1.93:8080',
     'http://localhost:5173',
     'https://safe-mother-two.vercel.app',
+    process.env.FRONTEND_URL,
 ];
 
 app.use(cors({
