@@ -12,9 +12,13 @@ const app = express();
 // Ensure DB is connected before processing any requests
 app.use(async (req, res, next) => {
     try {
+        if (!process.env.MONGO_URI) {
+            throw new Error('MONGO_URI is not defined in environment variables');
+        }
         await connectDB();
         next();
     } catch (err) {
+        console.error('Database connection error:', err.message);
         res.status(500).json({ message: 'Database connection failed: ' + err.message });
     }
 });
