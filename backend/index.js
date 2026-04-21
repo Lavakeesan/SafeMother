@@ -3,28 +3,11 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const { rateLimit } = require('express-rate-limit');
-const hpp = require('hpp');
 const connectDB = require('./config/db');
 
 dotenv.config();
 
 const app = express();
-
-app.set('trust proxy', 1); // Necessary for rate limiting behind Vercel edge/proxies
-
-// Set security HTTP headers
-app.use(helmet());
-
-// Rate limiting (max 100 requests per 10 mins per IP)
-const limiter = rateLimit({
-    windowMs: 10 * 60 * 1000, 
-    limit: 100,
-    message: 'Too many requests from this IP, please try again after 10 minutes'
-});
-app.use('/api', limiter);
 
 // Ensure DB is connected before processing any requests
 app.use(async (req, res, next) => {
@@ -43,12 +26,6 @@ app.use(async (req, res, next) => {
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(cookieParser());
-
-// Sanitize data against NoSQL injection
-app.use(mongoSanitize());
-
-// Prevent HTTP parameter pollution
-app.use(hpp());
 const allowedOrigins = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
