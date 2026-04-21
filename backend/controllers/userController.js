@@ -127,7 +127,7 @@ const getUserProfile = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 };
 
@@ -163,7 +163,7 @@ const authUser = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 };
 
@@ -272,7 +272,7 @@ const updatePassword = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 };
 
@@ -349,7 +349,7 @@ const getAllUsers = async (req, res) => {
 
         res.json(sanitizedUsers);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 };
 
@@ -374,7 +374,7 @@ const deleteUser = async (req, res) => {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 };
 
@@ -419,7 +419,7 @@ const updateUserByAdmin = async (req, res) => {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message });
     }
 };
 
