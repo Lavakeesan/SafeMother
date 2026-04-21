@@ -119,7 +119,7 @@ export default function LoginPage() {
     try {
       if (isLogin) {
         // Login API Call
-        const response = await fetch(`http://${window.location.hostname}:5001/api/users/login`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: 'include',
@@ -143,7 +143,7 @@ export default function LoginPage() {
         }
       } else {
         // Register API Call
-        const response = await fetch(`http://${window.location.hostname}:5001/api/users`, {
+        const response = await fetch(`${API_BASE_URL}/api/users`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: 'include',

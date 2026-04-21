@@ -94,7 +94,7 @@ export default function MidwifeDashboard() {
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/patients`, {
+      const response = await fetch(`${API_BASE_URL}/api/patients`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -111,7 +111,7 @@ export default function MidwifeDashboard() {
 
   const fetchAlerts = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/alerts`, {
+      const response = await fetch(`${API_BASE_URL}/api/alerts`, {
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
       });
@@ -143,7 +143,7 @@ export default function MidwifeDashboard() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/doctor`, {
+      const response = await fetch(`${API_BASE_URL}/api/doctor`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -165,7 +165,7 @@ export default function MidwifeDashboard() {
       // Combine date and time
       const dateTime = new Date(`${appointmentDate}T${appointmentTime}`);
       
-      const response = await fetch(`http://${window.location.hostname}:5001/api/appointments`, {
+      const response = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -199,7 +199,7 @@ export default function MidwifeDashboard() {
 
   const fetchReports = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/clinical-reports`, {
+      const response = await fetch(`${API_BASE_URL}/api/clinical-reports`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -227,7 +227,7 @@ export default function MidwifeDashboard() {
     
     setIsUploadingReport(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/clinical-reports`, {
+      const response = await fetch(`${API_BASE_URL}/api/clinical-reports`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -261,7 +261,7 @@ export default function MidwifeDashboard() {
     }
     setIsSendingAlert(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/alerts`, {
+      const response = await fetch(`${API_BASE_URL}/api/alerts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -290,7 +290,7 @@ export default function MidwifeDashboard() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/patients`, {
+      const response = await fetch(`${API_BASE_URL}/api/patients`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -339,7 +339,7 @@ export default function MidwifeDashboard() {
 
     setIsSendingSMS(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/sms/send-to-patient`, {
+      const response = await fetch(`${API_BASE_URL}/api/sms/send-to-patient`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

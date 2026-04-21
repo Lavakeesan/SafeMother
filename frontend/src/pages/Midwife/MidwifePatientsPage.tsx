@@ -51,7 +51,7 @@ export default function MidwifePatientsPage() {
 
     const fetchPatients = async () => {
         try {
-            const response = await fetch(`http://${window.location.hostname}:5001/api/patients`, {
+            const response = await fetch(`${API_BASE_URL}/api/patients`, {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -69,7 +69,7 @@ export default function MidwifePatientsPage() {
         if (!emergencyTarget || !emergencyMessage.trim()) return;
         setIsSendingAlert(true);
         try {
-            const response = await fetch(`http://${window.location.hostname}:5001/api/sms/send-to-patient`, {
+            const response = await fetch(`${API_BASE_URL}/api/sms/send-to-patient`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',
@@ -127,7 +127,7 @@ export default function MidwifePatientsPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`http://${window.location.hostname}:5001/api/patients`, {
+            const response = await fetch(`${API_BASE_URL}/api/patients`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -342,7 +342,7 @@ export default function MidwifePatientsPage() {
                                                             {patient.medical_reports.map((report: any, index: number) => (
                                                                 <a 
                                                                     key={index}
-                                                                    href={`http://${window.location.hostname}:5001/api/reports/view/${patient._id}/${report._id}`}
+                                                                    href={`${API_BASE_URL}/api/reports/view/${patient._id}/${report._id}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="flex items-center gap-2 p-2 rounded-lg border bg-background hover:bg-muted/50 transition-colors group"

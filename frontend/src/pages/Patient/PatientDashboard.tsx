@@ -150,7 +150,7 @@ export default function PatientDashboard() {
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://${window.location.hostname}:5001/api/patients/profile`, {
+        const response = await fetch(`${API_BASE_URL}/api/patients/profile`, {
           credentials: 'include'
         });
         if (response.ok) {
@@ -169,7 +169,7 @@ export default function PatientDashboard() {
   const [assignedDoctors, setAssignedDoctors] = useState<any[]>([]);
   const fetchAssignedDoctors = async () => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/patients/appointments`, {
+      const resp = await fetch(`${API_BASE_URL}/api/patients/appointments`, {
         credentials: 'include'
       });
       const appointments = await resp.json();
@@ -188,7 +188,7 @@ export default function PatientDashboard() {
 
   const fetchPatientAlerts = async (patientId: string) => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/alerts/patient/${patientId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/alerts/patient/${patientId}`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -213,7 +213,7 @@ export default function PatientDashboard() {
   const fetchReports = async () => {
     setIsReportsLoading(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/clinical-reports/my-reports`, {
+      const response = await fetch(`${API_BASE_URL}/api/clinical-reports/my-reports`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -236,7 +236,7 @@ export default function PatientDashboard() {
     e.preventDefault();
     setIsUpdatingProfile(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/patients/profile`, {
+      const response = await fetch(`${API_BASE_URL}/api/patients/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -292,7 +292,7 @@ export default function PatientDashboard() {
     }
     setIsUpdatingPassword(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users/update-password`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/update-password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -324,7 +324,7 @@ export default function PatientDashboard() {
 
     setIsSending(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/alerts/emergency`, {
+      const response = await fetch(`${API_BASE_URL}/api/alerts/emergency`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -360,7 +360,7 @@ export default function PatientDashboard() {
 
     setIsSendingSMS(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/sms/send-to-midwife`, {
+      const response = await fetch(`${API_BASE_URL}/api/sms/send-to-midwife`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

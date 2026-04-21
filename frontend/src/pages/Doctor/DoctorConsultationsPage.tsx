@@ -60,7 +60,7 @@ export default function DoctorConsultationsPage() {
 
   const fetchConsultations = async () => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/doctor/consultations`, {
+      const resp = await fetch(`${API_BASE_URL}/api/doctor/consultations`, {
         credentials: 'include'
       });
       const data = await resp.json();
@@ -80,7 +80,7 @@ export default function DoctorConsultationsPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/doctor/advice`, {
+      const response = await fetch(`${API_BASE_URL}/api/doctor/advice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

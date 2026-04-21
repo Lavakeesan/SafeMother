@@ -72,7 +72,7 @@ export default function DoctorChatPage() {
 
   const fetchChatPatients = async () => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/doctor/patients`, {
+      const resp = await fetch(`${API_BASE_URL}/api/doctor/patients`, {
         credentials: 'include'
       });
       const data = await resp.json();
@@ -86,7 +86,7 @@ export default function DoctorChatPage() {
 
   const fetchMessages = async (userId: string) => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/chat/${userId}`, {
+      const resp = await fetch(`${API_BASE_URL}/api/chat/${userId}`, {
         credentials: 'include'
       });
       const data = await resp.json();
@@ -104,7 +104,7 @@ export default function DoctorChatPage() {
 
     setIsSending(true);
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/chat/send`, {
+      const resp = await fetch(`${API_BASE_URL}/api/chat/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',

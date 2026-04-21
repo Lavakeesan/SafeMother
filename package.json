@@ -1,0 +1,15 @@
+{
+  "name": "safemother",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "backend-install": "npm install --prefix backend",
+    "frontend-install": "npm install --prefix frontend",
+    "frontend-build": "npm run build --prefix frontend",
+    "install:all": "npm run backend-install && npm run frontend-install",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

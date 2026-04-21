@@ -72,7 +72,7 @@ export default function DoctorPatientsPage() {
 
   const fetchPatients = async () => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/doctor/patients`, {
+      const resp = await fetch(`${API_BASE_URL}/api/doctor/patients`, {
         credentials: 'include'
       });
       const data = await resp.json();
@@ -87,7 +87,7 @@ export default function DoctorPatientsPage() {
   const fetchDetails = async (id: string) => {
     setIsFetchingDetails(true);
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/doctor/patients/${id}`, {
+      const resp = await fetch(`${API_BASE_URL}/api/doctor/patients/${id}`, {
         credentials: 'include'
       });
       const data = await resp.json();
@@ -116,7 +116,7 @@ export default function DoctorPatientsPage() {
     
     setIsSubmittingAdvice(true);
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/doctor/advice`, {
+      const resp = await fetch(`${API_BASE_URL}/api/doctor/advice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',

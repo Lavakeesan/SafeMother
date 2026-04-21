@@ -47,7 +47,7 @@ export default function AdminDoctorsPage() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/doctor`, {
+      const response = await fetch(`${API_BASE_URL}/api/doctor`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -78,7 +78,7 @@ export default function AdminDoctorsPage() {
   const toggleStatus = async (doctor: any) => {
     const newStatus = doctor.status === "Active" ? "Deactivated" : "Active";
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/doctor/${doctor._id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/doctor/${doctor._id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

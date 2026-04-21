@@ -19,6 +19,7 @@ const allowedOrigins = [
     'http://127.0.0.1:8080',
     'http://192.168.1.93:8080',
     'http://localhost:5173',
+    'https://safe-mother-two.vercel.app',
 ];
 
 app.use(cors({
@@ -50,6 +51,10 @@ app.use('/api/sms', require('./routes/messageRoutes'));
 app.use('/api/doctor', require('./routes/doctorRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;

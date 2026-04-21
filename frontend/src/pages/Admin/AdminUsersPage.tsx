@@ -70,7 +70,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -106,7 +106,7 @@ export default function AdminUsersPage() {
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users/${selectedUser._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${selectedUser._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -129,7 +129,7 @@ export default function AdminUsersPage() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users/${selectedUser._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${selectedUser._id}`, {
         method: "DELETE",
         credentials: 'include'
       });
@@ -150,7 +150,7 @@ export default function AdminUsersPage() {
     e.preventDefault();
     setIsRegistering(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -262,7 +262,7 @@ export default function AdminUsersPage() {
                             }`}>
                               {user.hasProfilePhoto && (
                                 <img 
-                                  src={`http://${window.location.hostname}:5001/api/users/profile-photo/${user._id}`} 
+                                  src={`${API_BASE_URL}/api/users/profile-photo/${user._id}`} 
                                   alt=""
                                   className="w-full h-full object-cover"
                                 />

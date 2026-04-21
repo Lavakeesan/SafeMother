@@ -67,7 +67,7 @@ export default function PatientChatPage() {
   const fetchChatDoctors = async () => {
     try {
       // First get patient's appointments to see which doctors they are linked to
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/patients/appointments`, {
+      const resp = await fetch(`${API_BASE_URL}/api/patients/appointments`, {
         credentials: 'include'
       });
        const appointments = await resp.json();
@@ -99,7 +99,7 @@ export default function PatientChatPage() {
 
   const fetchMessages = async (userId: string) => {
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/chat/${userId}`, {
+      const resp = await fetch(`${API_BASE_URL}/api/chat/${userId}`, {
         credentials: 'include'
       });
       const data = await resp.json();
@@ -117,7 +117,7 @@ export default function PatientChatPage() {
 
     setIsSending(true);
     try {
-      const resp = await fetch(`http://${window.location.hostname}:5001/api/chat/send`, {
+      const resp = await fetch(`${API_BASE_URL}/api/chat/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',

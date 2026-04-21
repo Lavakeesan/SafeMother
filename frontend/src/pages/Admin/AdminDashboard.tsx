@@ -24,7 +24,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`http://${window.location.hostname}:5001/api/admin/stats`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
           credentials: 'include'
         });
         if (response.ok) {

@@ -60,7 +60,7 @@ export default function AdminMidwifesPage() {
 
   const fetchMidwifes = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/admin/midwifes`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/midwifes`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -81,7 +81,7 @@ export default function AdminMidwifesPage() {
   const toggleStatus = async (midwife: any) => {
     const newStatus = midwife.status === "Active" ? "Deactivated" : "Active";
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/admin/midwifes/${midwife._id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/midwifes/${midwife._id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -108,7 +108,7 @@ export default function AdminMidwifesPage() {
     }
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -258,7 +258,7 @@ export default function AdminMidwifesPage() {
                         <div className="absolute -top-10 left-6">
                            <Avatar className={`h-20 w-20 border-4 border-white shadow-xl ring-2 ring-gray-100/50 transition-all ${!isActive ? 'grayscale opacity-70' : ''}`}>
                               {midwife.hasProfilePhoto && (
-                                <AvatarImage src={`http://${window.location.hostname}:5001/api/users/profile-photo/${midwife.user_id?._id || midwife.user_id}`} />
+                                <AvatarImage src={`${API_BASE_URL}/api/users/profile-photo/${midwife.user_id?._id || midwife.user_id}`} />
                               )}
                               <AvatarFallback className="bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 text-2xl font-black">
                                  {midwife.name.charAt(0)}

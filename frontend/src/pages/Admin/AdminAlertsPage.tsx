@@ -38,7 +38,7 @@ export default function AdminAlertsPage() {
 
   const fetchAlerts = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/alerts`, {
+      const response = await fetch(`${API_BASE_URL}/api/alerts`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -74,7 +74,7 @@ export default function AdminAlertsPage() {
     setIsSaving(true);
     try {
       const res = await fetch(
-        `http://${window.location.hostname}:5001/api/alerts/${editingAlert._id}`,
+        `${API_BASE_URL}/api/alerts/${editingAlert._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -109,7 +109,7 @@ export default function AdminAlertsPage() {
     setIsDeleting(true);
     try {
       const res = await fetch(
-        `http://${window.location.hostname}:5001/api/alerts/${deletingAlert._id}`,
+        `${API_BASE_URL}/api/alerts/${deletingAlert._id}`,
         { method: "DELETE", credentials: "include" }
       );
       if (res.ok) {

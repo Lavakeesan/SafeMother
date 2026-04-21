@@ -51,13 +51,13 @@ export default function DoctorDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const statsRes = await fetch(`http://${window.location.hostname}:5001/api/doctor/stats`, {
+      const statsRes = await fetch(`${API_BASE_URL}/api/doctor/stats`, {
         credentials: 'include'
       });
       const statsData = await statsRes.json();
       setStats(statsData);
 
-      const consultationsRes = await fetch(`http://${window.location.hostname}:5001/api/doctor/consultations`, {
+      const consultationsRes = await fetch(`${API_BASE_URL}/api/doctor/consultations`, {
         credentials: 'include'
       });
       const consultationsData = await consultationsRes.json();

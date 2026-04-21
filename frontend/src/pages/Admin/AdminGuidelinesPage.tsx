@@ -31,7 +31,7 @@ export default function AdminGuidelinesPage() {
 
   const fetchGuidelines = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/guidelines`, {
+      const response = await fetch(`${API_BASE_URL}/api/guidelines`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -52,8 +52,8 @@ export default function AdminGuidelinesPage() {
   const handleSave = async () => {
     try {
       const url = editingGuideline 
-        ? `http://${window.location.hostname}:5001/api/guidelines/${editingGuideline._id}`
-        : `http://${window.location.hostname}:5001/api/guidelines`;
+        ? `${API_BASE_URL}/api/guidelines/${editingGuideline._id}`
+        : `${API_BASE_URL}/api/guidelines`;
       
       const method = editingGuideline ? "PUT" : "POST";
 

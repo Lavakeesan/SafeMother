@@ -66,7 +66,7 @@ export default function AdminPatientsPage() {
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/admin/patients`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/patients`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -102,7 +102,7 @@ export default function AdminPatientsPage() {
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/patients/${selectedPatient._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/patients/${selectedPatient._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -125,7 +125,7 @@ export default function AdminPatientsPage() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/patients/${selectedPatient._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/patients/${selectedPatient._id}`, {
         method: "DELETE",
         credentials: 'include'
       });

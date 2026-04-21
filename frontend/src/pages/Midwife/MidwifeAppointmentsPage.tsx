@@ -68,9 +68,9 @@ export default function MidwifeAppointmentsPage() {
     setIsLoading(true);
     try {
       const [appResp, patResp, docResp] = await Promise.all([
-        fetch(`http://${window.location.hostname}:5001/api/appointments`, { credentials: "include" }),
-        fetch(`http://${window.location.hostname}:5001/api/patients`, { credentials: "include" }),
-        fetch(`http://${window.location.hostname}:5001/api/doctor`, { credentials: "include" })
+        fetch(`${API_BASE_URL}/api/appointments`, { credentials: "include" }),
+        fetch(`${API_BASE_URL}/api/patients`, { credentials: "include" }),
+        fetch(`${API_BASE_URL}/api/doctor`, { credentials: "include" })
       ]);
 
       if (appResp.ok) setAppointments(await appResp.json());
@@ -93,7 +93,7 @@ export default function MidwifeAppointmentsPage() {
     try {
       const dateTime = new Date(`${appointmentDate}T${appointmentTime}`);
       
-      const response = await fetch(`http://${window.location.hostname}:5001/api/appointments`, {
+      const response = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

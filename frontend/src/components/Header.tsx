@@ -61,7 +61,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
   const fetchProfile = async () => {
     setIsFetchingProfile(true);
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users/profile`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -106,7 +106,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
         const formDataPhoto = new FormData();
         formDataPhoto.append('photo', selectedFile);
         
-        const photoResponse = await fetch(`http://${window.location.hostname}:5001/api/users/profile-photo`, {
+        const photoResponse = await fetch(`${API_BASE_URL}/api/users/profile-photo`, {
           method: "POST",
           credentials: 'include',
           body: formDataPhoto,
@@ -118,7 +118,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
       }
 
       // 2. Update Basic Info
-      const response = await fetch(`http://${window.location.hostname}:5001/api/users/profile`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -150,7 +150,7 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
     }
   };
 
-  const profilePhotoUrl = user ? `http://${window.location.hostname}:5001/api/users/profile-photo/${user._id}?t=${Date.now()}` : "";
+  const profilePhotoUrl = user ? `${API_BASE_URL}/api/users/profile-photo/${user._id}?t=${Date.now()}` : "";
 
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-card border-b">

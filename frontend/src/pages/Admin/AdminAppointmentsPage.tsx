@@ -41,7 +41,7 @@ export default function AdminAppointmentsPage() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch(`http://${window.location.hostname}:5001/api/appointments`, {
+      const response = await fetch(`${API_BASE_URL}/api/appointments`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -83,7 +83,7 @@ export default function AdminAppointmentsPage() {
     setIsSaving(true);
     try {
       const res = await fetch(
-        `http://${window.location.hostname}:5001/api/appointments/${editingApt._id}`,
+        `${API_BASE_URL}/api/appointments/${editingApt._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -125,7 +125,7 @@ export default function AdminAppointmentsPage() {
     setIsDeleting(true);
     try {
       const res = await fetch(
-        `http://${window.location.hostname}:5001/api/appointments/${deletingApt._id}`,
+        `${API_BASE_URL}/api/appointments/${deletingApt._id}`,
         { method: "DELETE", credentials: "include" }
       );
       if (res.ok) {
