@@ -287,7 +287,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel - Login/Register Form Card */}
-      <div className="flex flex-col justify-center items-center p-6 lg:p-12 z-10">
+      <div className="flex flex-col justify-center items-center p-4 sm:p-6 lg:p-12 z-10 w-full">
         
         {/* Mobile Header & Illustration */}
         <motion.div 
@@ -318,10 +318,10 @@ export default function LoginPage() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="w-full max-w-[480px] bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white"
+          className="w-full max-w-[480px] bg-white/80 backdrop-blur-xl p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white"
         >
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
               {isLogin ? "Sign In" : "Create Account"}
             </h1>
             <p className="text-gray-500 font-medium">
@@ -357,7 +357,7 @@ export default function LoginPage() {
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">
                     I am registering as:
                   </label>
-                  <div className="mt-2 flex gap-3">
+                  <div className="mt-2 flex flex-col sm:flex-row gap-2 sm:gap-3">
                     {["midwife", "doctor"].map((role) => (
                       <button
                         key={role}
@@ -440,14 +440,14 @@ export default function LoginPage() {
             />
 
             {isLogin && (
-              <div className="flex items-center justify-between mb-8 mt-2 pl-1 text-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 mt-2 pl-1 text-sm">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="remember" className="border-gray-300 text-teal-600 data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600 rounded" />
                   <label htmlFor="remember" className="font-medium text-gray-600 cursor-pointer">
                     Remember me
                   </label>
                 </div>
-                <Link to="/forgot-password" className="font-semibold text-teal-600 hover:text-teal-800 transition-colors">
+                <Link to="/forgot-password" className="font-semibold text-teal-600 hover:text-teal-800 transition-colors self-start sm:self-auto">
                   Forgot Password?
                 </Link>
               </div>

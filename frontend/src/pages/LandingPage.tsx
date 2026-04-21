@@ -97,22 +97,22 @@ export default function LandingPage() {
         <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/4" />
         <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/4" />
         
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="animate-slide-up">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <div className="animate-slide-up text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest mb-8 border border-primary/10 animate-fade-in">
                 <Heart className="h-3.5 w-3.5 fill-primary" />
                 Trusted by 500+ Clinics Worldwide
               </div>
-              <h1 className="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight mb-8">
-                Ensuring Safe Motherhood <br />
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight mb-8">
+                Ensuring Safe Motherhood <br className="hidden sm:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">Through Smart Digital Care</span>
               </h1>
-              <p className="text-xl text-slate-600 mb-10 leading-relaxed max-w-xl font-medium">
+              <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
                 Connecting pregnant mothers, midwives, and doctors for better maternal health. 
                 Experience a new standard of coordinated clinical excellence.
               </p>
-              <div className="flex flex-wrap gap-5">
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start flex-wrap gap-4 lg:gap-5">
                 <Link to="/register">
                   <Button size="lg" className="h-16 px-10 rounded-2xl text-lg font-black bg-primary hover:bg-primary/90 shadow-xl shadow-primary/25 transition-all hover:scale-105 active:scale-95 group">
                     Get Started Free
@@ -132,17 +132,17 @@ export default function LandingPage() {
                   <img src={heroModern} alt="Healthcare Illustration" className="w-full h-auto object-cover" />
                </div>
                {/* Floating Stats */}
-               <div className="absolute -top-6 -right-6 bg-white p-6 rounded-3xl shadow-xl z-20 animate-slide-up delay-400 border border-slate-100">
-                  <p className="text-3xl font-black text-primary leading-none">99.8%</p>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Recovery Rate</p>
+               <div className="absolute -top-4 -right-4 lg:-top-6 lg:-right-6 bg-white p-4 lg:p-6 rounded-[2rem] lg:rounded-3xl shadow-xl z-20 animate-slide-up delay-400 border border-slate-100">
+                  <p className="text-xl lg:text-3xl font-black text-primary leading-none">99.8%</p>
+                  <p className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Recovery Rate</p>
                </div>
-               <div className="absolute -bottom-10 -left-10 bg-white p-6 rounded-3xl shadow-xl z-20 animate-slide-up delay-500 border border-slate-100 flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shadow-inner">
-                    <ShieldCheck className="h-6 w-6 text-emerald-500" />
+               <div className="absolute -bottom-6 -left-4 lg:-bottom-10 lg:-left-10 bg-white p-4 lg:p-6 rounded-[2rem] lg:rounded-3xl shadow-xl z-20 animate-slide-up delay-500 border border-slate-100 flex items-center gap-3 lg:gap-4">
+                  <div className="h-10 w-10 lg:h-12 lg:w-12 rounded-xl lg:rounded-2xl bg-emerald-500/10 flex items-center justify-center shadow-inner">
+                    <ShieldCheck className="h-5 w-5 lg:h-6 lg:w-6 text-emerald-500" />
                   </div>
                   <div>
-                    <p className="text-base font-black text-slate-900 leading-tight">Secure & Private</p>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter mt-0.5">HIPAA Compliant</p>
+                    <p className="text-sm lg:text-base font-black text-slate-900 leading-tight">Secure</p>
+                    <p className="text-[9px] lg:text-xs font-bold text-slate-400 uppercase tracking-tighter mt-0.5">HIPAA</p>
                   </div>
                </div>
             </div>
@@ -151,14 +151,14 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-           <div className="text-center mb-20 animate-slide-up">
-              <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-4">Powerful Ecosystem</h2>
-              <h3 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Designed for the frontline of maternal care</h3>
+      <section id="features" className="py-20 lg:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="text-center mb-12 lg:mb-20 animate-slide-up">
+              <h2 className="text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] text-primary mb-4">Powerful Ecosystem</h2>
+              <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Designed for the frontline of maternal care</h3>
            </div>
 
-           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               {features.map((feature, i) => (
                 <div key={i} className="group p-10 rounded-[2.5rem] bg-slate-50 hover:bg-white border-2 border-transparent hover:border-primary/10 transition-all duration-500 shadow-soft hover:shadow-premium animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
                    <div className={`h-16 w-16 rounded-[1.25rem] ${feature.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm`}>
@@ -173,13 +173,13 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-32 bg-slate-50/50 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-16 animate-slide-up">
-           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-4">Patient Journey</h2>
-           <h3 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Your path to a safe delivery</h3>
+      <section id="how-it-works" className="py-20 lg:py-32 bg-slate-50/50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 lg:mb-16 animate-slide-up">
+           <h2 className="text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] text-primary mb-4">Patient Journey</h2>
+           <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Your path to a safe delivery</h3>
         </div>
 
-        <div className="max-w-5xl mx-auto px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
               {/* Timeline Line */}
               <div className="hidden lg:block absolute top-[50%] left-[10%] right-[10%] h-0.5 bg-slate-200 -z-0" />
@@ -198,13 +198,13 @@ export default function LandingPage() {
       </section>
 
       {/* About Section */}
-      <section id="impact" className="py-32 overflow-hidden bg-white">
-         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex flex-col lg:flex-row gap-20 items-center">
-               <div className="lg:w-1/2 relative animate-fade-in">
-                  <div className="relative p-6 bg-primary/5 rounded-[4rem] group max-w-lg mx-auto lg:max-w-none">
-                    <img src={midwifeImg} alt="About SafeMother" className="rounded-[3.5rem] shadow-premium transition-transform duration-700 group-hover:scale-[1.02] aspect-[4/5] object-cover" />
-                    <div className="absolute -bottom-10 -right-6 lg:-right-10 bg-white p-8 rounded-[2rem] shadow-premium border flex items-center gap-5 animate-slide-up delay-300">
+      <section id="impact" className="py-20 lg:py-32 overflow-hidden bg-white">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+               <div className="w-full lg:w-1/2 relative animate-fade-in">
+                  <div className="relative p-6 bg-primary/5 rounded-[3rem] lg:rounded-[4rem] group max-w-md sm:max-w-lg mx-auto lg:max-w-none">
+                    <img src={midwifeImg} alt="About SafeMother" className="rounded-[2.5rem] lg:rounded-[3.5rem] shadow-premium transition-transform duration-700 group-hover:scale-[1.02] aspect-[4/5] object-cover" />
+                    <div className="absolute -bottom-6 -right-2 sm:-bottom-10 sm:-right-6 lg:-right-10 bg-white p-5 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] shadow-premium border flex items-center gap-3 lg:gap-5 animate-slide-up delay-300 transform scale-90 sm:scale-100">
                        <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-primary/30">
                           10+
                        </div>
@@ -215,17 +215,17 @@ export default function LandingPage() {
                     </div>
                   </div>
                </div>
-               <div className="lg:w-1/2 animate-slide-up delay-200">
-                  <div className="flex flex-col items-center lg:items-start">
-                    <h2 className="text-xs font-black uppercase tracking-[0.3rem] text-primary mb-6">Improving Outcomes</h2>
-                    <h3 className="text-4xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] mb-10 text-center lg:text-left">
+               <div className="w-full lg:w-1/2 animate-slide-up delay-200">
+                  <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                    <h2 className="text-[10px] lg:text-xs font-black uppercase tracking-[0.3rem] text-primary mb-4 lg:mb-6">Improving Outcomes</h2>
+                    <h3 className="text-3xl md:text-4xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] mb-6 lg:mb-10 text-center lg:text-left">
                        Reducing maternal & <br className="hidden lg:block" /> newborn mortality.
                     </h3>
-                    <p className="text-xl text-slate-500 font-medium leading-relaxed mb-12 text-center lg:text-left max-w-xl">
+                    <p className="text-lg lg:text-xl text-slate-500 font-medium leading-relaxed mb-10 lg:mb-12 text-center lg:text-left max-w-xl">
                        SafeMother is more than a tool; it's a mission to digitalize maternal healthcare. By linking patients directly with specialized clinicians, we ensure that every pregnancy receives the oversight it deserves.
                     </p>
-                    <div className="grid sm:grid-cols-2 gap-8 mb-12 w-full max-w-lg">
-                       <div className="p-8 rounded-[2.5rem] bg-slate-50 shadow-soft border border-black/5 flex flex-col items-center lg:items-start group hover:bg-primary transition-colors hover:border-primary duration-500">
+                    <div className="grid grid-cols-2 gap-4 lg:gap-8 mb-10 lg:mb-12 w-full max-w-lg mx-auto lg:mx-0">
+                       <div className="p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] bg-slate-50 shadow-soft border border-black/5 flex flex-col items-center lg:items-start group hover:bg-primary transition-colors hover:border-primary duration-500">
                           <p className="text-4xl font-black text-primary mb-2 group-hover:text-white transition-colors">95%</p>
                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white/70 transition-colors">Response Speed</p>
                        </div>
@@ -249,15 +249,15 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-32 bg-slate-950 text-white overflow-hidden relative">
+      <section id="testimonials" className="py-20 lg:py-32 bg-slate-950 text-white overflow-hidden relative">
          <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--primary)_0%,_transparent_50%)]" />
          </div>
          
-         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-24 animate-slide-up">
-               <h3 className="text-4xl lg:text-6xl font-black tracking-tight mb-6">Trusted by the community</h3>
-               <p className="text-slate-400 text-xl font-medium">Voices from the clinical frontline and growing families</p>
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-16 lg:mb-24 animate-slide-up">
+               <h3 className="text-3xl md:text-4xl lg:text-6xl font-black tracking-tight mb-4 lg:mb-6">Trusted by the community</h3>
+               <p className="text-slate-400 text-lg lg:text-xl font-medium px-4">Voices from the clinical frontline and growing families</p>
             </div>
 
             <div className="overflow-hidden" ref={emblaRef}>
@@ -287,28 +287,28 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 relative overflow-hidden bg-white">
-         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="relative rounded-[4rem] bg-gradient-to-br from-primary via-primary to-blue-600 p-12 lg:p-28 overflow-hidden shadow-premium text-center">
+      <section className="py-20 lg:py-32 relative overflow-hidden bg-white">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative rounded-[3rem] lg:rounded-[4rem] bg-gradient-to-br from-primary via-primary to-blue-600 p-8 py-16 lg:p-28 overflow-hidden shadow-premium text-center">
                <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
                   <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[size:40px_40px]" />
                </div>
                
                <div className="relative z-10 animate-slide-up">
-                  <h2 className="text-4xl lg:text-7xl font-black text-white tracking-tight leading-[1] mb-10">
-                     Start Your Safe Motherhood <br /> Journey Today
+                  <h2 className="text-3xl md:text-4xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6 lg:mb-10">
+                     Start Your Safe Motherhood <br className="hidden sm:block" /> Journey Today
                   </h2>
-                  <p className="text-white/80 text-xl lg:text-2xl font-medium mb-14 max-w-2xl mx-auto leading-relaxed">
+                  <p className="text-white/80 text-lg md:text-xl lg:text-2xl font-medium mb-10 lg:mb-14 max-w-2xl mx-auto leading-relaxed">
                      Join thousands of families and practitioners who have transformed maternal care with SafeMother's clinical network.
                   </p>
-                  <div className="flex flex-wrap justify-center gap-6">
-                     <Link to="/register">
-                        <Button className="h-20 px-12 rounded-[2.25rem] bg-white text-primary text-2xl font-black hover:bg-slate-50 shadow-2xl transition-all hover:scale-105 active:scale-95 group">
+                  <div className="flex flex-col sm:flex-row justify-center gap-4 lg:gap-6">
+                     <Link to="/register" className="w-full sm:w-auto">
+                        <Button className="w-full sm:w-auto h-16 lg:h-20 px-8 lg:px-12 rounded-[2rem] lg:rounded-[2.25rem] bg-white text-primary text-xl lg:text-2xl font-black hover:bg-slate-50 shadow-2xl transition-all hover:scale-105 active:scale-95 group">
                            Register Now
-                           <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                           <ArrowRight className="ml-3 h-5 w-5 lg:h-6 lg:w-6 transition-transform group-hover:translate-x-1" />
                         </Button>
                      </Link>
-                     <Button className="h-20 px-12 rounded-[2.25rem] border-2 border-white/30 bg-transparent text-white text-2xl font-black hover:bg-white/10 shadow-2xl transition-all">
+                     <Button className="w-full sm:w-auto h-16 lg:h-20 px-8 lg:px-12 rounded-[2rem] lg:rounded-[2.25rem] border-2 border-white/30 bg-transparent text-white text-xl lg:text-2xl font-black hover:bg-white/10 shadow-2xl transition-all">
                         Contact Sales
                      </Button>
                   </div>
@@ -318,10 +318,10 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-24 border-t bg-slate-50/30">
-         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-20 mb-20">
-               <div className="col-span-2">
+      <footer className="py-16 lg:py-24 border-t bg-slate-50/30">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-20 mb-16 lg:mb-20">
+               <div className="sm:col-span-2">
                   <Link to="/" className="flex items-center gap-4 mb-10">
                     <div className="h-14 w-14 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-premium bg-white">
                        <img src="/logo.jpeg" alt="Logo" className="h-full w-full object-cover" />
