@@ -13,13 +13,15 @@ dotenv.config();
 
 const app = express();
 
+app.set('trust proxy', 1); // Necessary for rate limiting behind Vercel edge/proxies
+
 // Set security HTTP headers
 app.use(helmet());
 
 // Rate limiting (max 100 requests per 10 mins per IP)
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, 
-    max: 100,
+    limit: 100,
     message: 'Too many requests from this IP, please try again after 10 minutes'
 });
 app.use('/api', limiter);
