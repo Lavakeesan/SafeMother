@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -40,8 +41,18 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  hasProfilePhoto?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -59,7 +70,7 @@ export default function AdminUsersPage() {
   // Edit/Delete States
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Form State
@@ -95,7 +106,7 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: User) => {
     setSelectedUser(user);
     setFormData({
       name: user.name,
@@ -342,6 +353,9 @@ export default function AdminUsersPage() {
               </div>
               System User Intake
             </DialogTitle>
+            <DialogDescription>
+              Create a new user account by providing their legal name, email, and assigning a system role.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -415,6 +429,9 @@ export default function AdminUsersPage() {
         <DialogContent className="sm:max-w-md rounded-3xl p-8 border-none shadow-2xl">
           <DialogHeader className="mb-4">
             <DialogTitle className="text-2xl font-black tracking-tight">Modify User Credentials</DialogTitle>
+            <DialogDescription>
+              Update the user's name, email identity, or system authority level.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-6">
             <div className="space-y-2">

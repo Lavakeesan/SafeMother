@@ -93,9 +93,60 @@ const cardHover = {
   }
 };
 
+interface Patient {
+  _id: string;
+  name: string;
+  email: string;
+  address?: string;
+  contact_number?: string;
+  profile_photo?: string;
+  delivery_date?: string;
+  medical_history?: string;
+  risk_level?: string;
+  midwife_id?: {
+    user_id?: {
+      name?: string;
+    };
+  };
+}
+
+interface User {
+  _id: string;
+  name: string;
+  role: string;
+  email: string;
+}
+
+interface Doctor {
+  _id: string;
+  name: string;
+}
+
+interface Alert {
+  _id: string;
+  message: string;
+  sender: string;
+  alertDate: string;
+  alertType: string;
+  status: string;
+}
+
+interface Report {
+    _id: string;
+    report_photo?: string;
+    report_date: string;
+    weight?: string;
+    blood_pressure?: string;
+    sugar_level?: string;
+    bmi?: string;
+    midwife?: {
+        name: string;
+    };
+}
+
 export default function PatientDashboard() {
-  const [patient, setPatient] = useState<any>(null);
-  const [user, setUser] = useState<any>(null);
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [now, setNow] = useState(new Date());
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
   const [emergencyMessage, setEmergencyMessage] = useState("");
@@ -107,7 +158,7 @@ export default function PatientDashboard() {
   const isAlertMode = location.pathname.includes('/alert');
   const isReportsMode = location.pathname.includes('/reports');
 
-  const [reports, setReports] = useState<any[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [isReportsLoading, setIsReportsLoading] = useState(false);
 
   // Profile Modal State
@@ -168,7 +219,7 @@ export default function PatientDashboard() {
     fetchAssignedDoctors();
   }, [navigate]);
 
-  const [assignedDoctors, setAssignedDoctors] = useState<any[]>([]);
+  const [assignedDoctors, setAssignedDoctors] = useState<Doctor[]>([]);
   const fetchAssignedDoctors = async () => {
     try {
       const resp = await fetch(`${API_BASE_URL}/api/patients/appointments`, {
@@ -177,7 +228,7 @@ export default function PatientDashboard() {
       const appointments = await resp.json();
       if (Array.isArray(appointments)) {
         const doctorMap = new Map();
-        appointments.forEach((app: any) => {
+        appointments.forEach((app: { doctor?: Doctor }) => {
           if (app.doctor) doctorMap.set(app.doctor._id, app.doctor);
         });
         setAssignedDoctors(Array.from(doctorMap.values()));
@@ -186,7 +237,7 @@ export default function PatientDashboard() {
       console.error(err);
     }
   };
-  const [patientAlerts, setPatientAlerts] = useState<any[]>([]);
+  const [patientAlerts, setPatientAlerts] = useState<Alert[]>([]);
 
   const fetchPatientAlerts = async (patientId: string) => {
     try {
@@ -195,7 +246,7 @@ export default function PatientDashboard() {
       });
       if (response.ok) {
         const data = await response.json();
-        const sortedData = data.sort((a: any, b: any) => new Date(b.alertDate).getTime() - new Date(a.alertDate).getTime());
+        const sortedData = data.sort((a: Alert, b: Alert) => new Date(b.alertDate).getTime() - new Date(a.alertDate).getTime());
         setPatientAlerts(sortedData);
       }
     } catch (err) {
@@ -347,8 +398,9 @@ export default function PatientDashboard() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to send alert");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send message. Please try calling triage instead.");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to send alert";
+      toast.error(message || "Failed to send message. Please try calling triage instead.");
     } finally {
       setIsSending(false);
     }
@@ -382,8 +434,9 @@ export default function PatientDashboard() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to send SMS");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send SMS. Please try again later.");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to send SMS";
+      toast.error(message || "Failed to send SMS. Please try again later.");
     } finally {
       setIsSendingSMS(false);
     }

@@ -241,6 +241,10 @@ export function Header({ title, subtitle, showSearch = false, showRegisterPatien
         {/* Profile Details Modal */}
         <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
           <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+            <DialogHeader className="sr-only">
+              <DialogTitle>Profile Details</DialogTitle>
+              <DialogDescription>Detailed view of your professional clinical profile and credentials.</DialogDescription>
+            </DialogHeader>
             <div className="bg-primary p-8 text-white relative">
               <div className="absolute top-4 right-4 bg-white/20 p-2 rounded-full backdrop-blur-md">
                 <ShieldCheck className="h-5 w-5 text-white" />

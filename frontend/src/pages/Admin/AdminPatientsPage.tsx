@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -42,8 +43,25 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface Patient {
+  _id: string;
+  name: string;
+  mrn?: string;
+  risk_level?: string;
+  age?: number | string;
+  address?: string;
+  contact_number?: string;
+  medical_history?: string;
+  delivery_date?: string;
+  midwife_id?: {
+    _id?: string;
+    name?: string;
+    hospital_name?: string;
+  };
+}
+
 export default function AdminPatientsPage() {
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
@@ -51,7 +69,7 @@ export default function AdminPatientsPage() {
   // Edit/Delete States
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Form State
@@ -86,7 +104,7 @@ export default function AdminPatientsPage() {
     fetchPatients();
   }, []);
 
-  const handleEdit = (patient: any) => {
+  const handleEdit = (patient: Patient) => {
     setSelectedPatient(patient);
     setFormData({
       name: patient.name,
@@ -287,6 +305,9 @@ export default function AdminPatientsPage() {
         <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-10 border-none shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
           <DialogHeader className="mb-8">
             <DialogTitle className="text-3xl font-black tracking-tight">Modify Clinical Profile</DialogTitle>
+            <DialogDescription>
+              Update the patient's medical record, contact details, and clinical risk level.
+            </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-x-8 gap-y-6">
             <div className="space-y-2">

@@ -26,19 +26,49 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface MedicalReport {
+    _id: string;
+    original_name: string;
+    uploaded_at: string;
+}
+
+interface Patient {
+    _id: string;
+    name: string;
+    email?: string;
+    mrn: string;
+    age: number;
+    gestationWeeks?: number;
+    phoneNumber?: string;
+    contact_number?: string;
+    address?: string;
+    risk_level?: string;
+    delivery_date?: string;
+    createdAt?: string;
+    medical_history?: string;
+    medical_reports?: MedicalReport[];
+}
+
+interface User {
+    _id: string;
+    name: string;
+    role: string;
+    email: string;
+}
+
 export default function MidwifePatientsPage() {
     const navigate = useNavigate();
-    const [patients, setPatients] = useState<any[]>([]);
-    const [filteredPatients, setFilteredPatients] = useState<any[]>([]);
+    const [patients, setPatients] = useState<Patient[]>([]);
+    const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
-    const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
+    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [emergencyTarget, setEmergencyTarget] = useState<any | null>(null);
+    const [emergencyTarget, setEmergencyTarget] = useState<Patient | null>(null);
     const [emergencyMessage, setEmergencyMessage] = useState("");
     const [isSendingAlert, setIsSendingAlert] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -341,7 +371,7 @@ export default function MidwifePatientsPage() {
                                                     </p>
                                                     {patient.medical_reports && patient.medical_reports.length > 0 ? (
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                                                            {patient.medical_reports.map((report: any, index: number) => (
+                                                            {patient.medical_reports.map((report: MedicalReport, index: number) => (
                                                                 <a 
                                                                     key={index}
                                                                     href={`${API_BASE_URL}/api/reports/view/${patient._id}/${report._id}`}

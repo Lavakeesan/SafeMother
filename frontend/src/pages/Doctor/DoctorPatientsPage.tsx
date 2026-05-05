@@ -39,22 +39,44 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { duration: 0.4 } }
 };
 
+interface Patient {
+  _id: string;
+  name: string;
+  mrn?: string;
+  risk_level?: string;
+  age?: number | string;
+  medical_history?: string;
+  createdAt: string;
+}
+
+interface Consultation {
+  _id: string;
+  appointmentDate: string;
+  purpose: string;
+  advice?: string;
+  status: string;
+}
+
+interface PatientDetails extends Patient {
+  consultations: Consultation[];
+}
+
 export default function DoctorPatientsPage() {
   const navigate = useNavigate();
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
   // Detail Modal States
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
-  const [patientDetails, setPatientDetails] = useState<any>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isFetchingDetails, setIsFetchingDetails] = useState(false);
 
   // Advice States
   const [isAdviceModalOpen, setIsAdviceModalOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<Consultation | null>(null);
   const [adviceText, setAdviceText] = useState("");
   const [isSubmittingAdvice, setIsSubmittingAdvice] = useState(false);
 
@@ -101,13 +123,13 @@ export default function DoctorPatientsPage() {
     }
   };
 
-  const handleOpenDetails = (patient: any) => {
+  const handleOpenDetails = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsDetailModalOpen(true);
     fetchDetails(patient._id);
   };
 
-  const handleOpenAdvice = (appointment: any) => {
+  const handleOpenAdvice = (appointment: Consultation) => {
     setSelectedAppointment(appointment);
     setIsAdviceModalOpen(true);
     setAdviceText(appointment.advice || "");
@@ -313,6 +335,12 @@ export default function DoctorPatientsPage() {
       {/* Patient Detail Modal */}
       <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
         <DialogContent className="sm:max-w-4xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl max-h-[90vh] flex flex-col">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Patient Clinical Detail View</DialogTitle>
+            <DialogDescription>
+              Comprehensive clinical profile, medical history, and consultation timeline for the selected patient.
+            </DialogDescription>
+          </DialogHeader>
            {/* Top Profile Banner */}
            <div className={`p-10 text-white relative flex items-center gap-6 ${
               selectedPatient?.risk_level === 'High' ? 'bg-emergency' : 'bg-primary'
@@ -374,7 +402,7 @@ export default function DoctorPatientsPage() {
                                 <Info className="h-8 w-8 mx-auto mb-2 opacity-30" />
                                 <p className="font-bold">No historical consultations detected.</p>
                              </div>
-                          ) : patientDetails?.consultations.map((consult: any) => (
+                          ) : patientDetails?.consultations.map((consult: Consultation) => (
                              <div key={consult._id} className="p-6 bg-muted/30 rounded-2xl border border-muted flex items-center justify-between group hover:bg-muted/50 transition-all">
                                 <div>
                                    <p className="text-xs font-black uppercase text-muted-foreground tracking-widest">{new Date(consult.appointmentDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>

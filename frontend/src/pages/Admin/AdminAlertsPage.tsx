@@ -21,21 +21,32 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface Alert {
+  _id: string;
+  message: string;
+  status: string;
+  type?: string;
+  createdAt: string;
+  patient_id?: {
+    name?: string;
+  };
+}
+
 export default function AdminAlertsPage() {
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Edit modal state
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingAlert, setEditingAlert] = useState<any>(null);
+  const [editingAlert, setEditingAlert] = useState<Alert | null>(null);
   const [editMessage, setEditMessage] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   // Delete confirm state
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [deletingAlert, setDeletingAlert] = useState<any>(null);
+  const [deletingAlert, setDeletingAlert] = useState<Alert | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchAlerts = async () => {
@@ -64,7 +75,7 @@ export default function AdminAlertsPage() {
   );
 
   // ─── Update ───────────────────────────────────────────────────────────────
-  const openEdit = (alert: any) => {
+  const openEdit = (alert: Alert) => {
     setEditingAlert(alert);
     setEditMessage(alert.message);
     setEditStatus(alert.status);
@@ -72,7 +83,7 @@ export default function AdminAlertsPage() {
   };
 
   const handleUpdate = async () => {
-    if (!editMessage.trim()) return toast.error("Message cannot be empty");
+    if (!editingAlert || !editMessage.trim()) return toast.error("Invalid alert or empty message");
     setIsSaving(true);
     try {
       const res = await fetch(
@@ -102,12 +113,13 @@ export default function AdminAlertsPage() {
   };
 
   // ─── Delete ───────────────────────────────────────────────────────────────
-  const openDelete = (alert: any) => {
+  const openDelete = (alert: Alert) => {
     setDeletingAlert(alert);
     setIsDeleteOpen(true);
   };
 
   const handleDelete = async () => {
+    if (!deletingAlert) return;
     setIsDeleting(true);
     try {
       const res = await fetch(
