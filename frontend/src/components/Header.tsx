@@ -1,4 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
+
+// Removed unused Link import if not used later.
 import { Bell, MessageSquare, Search, Plus, User, Settings, LogOut, ShieldCheck, Camera, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,25 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  hasProfilePhoto?: boolean;
+}
+
+interface Profile {
+  email?: string;
+  profile?: {
+    contact_number?: string;
+    assigned_area?: string;
+    qualification?: string;
+    experience_years?: string | number;
+    hospital_name?: string;
+  };
+}
+
 interface HeaderProps {
   title: string;
   subtitle?: string;
@@ -30,13 +51,12 @@ interface HeaderProps {
   showRegisterPatient?: boolean;
   onRegisterPatient?: () => void;
 }
-
 export function Header({ title, subtitle, showSearch = false, showRegisterPatient = false, onRegisterPatient }: HeaderProps) {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<Profile | null>(null);
   const [isFetchingProfile, setIsFetchingProfile] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
