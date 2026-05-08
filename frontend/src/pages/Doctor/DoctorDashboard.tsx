@@ -31,10 +31,28 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
+interface DoctorStats {
+  totalConsultations: number;
+  pendingConsultations: number;
+  completedConsultations: number;
+  highRiskAlerts: number;
+}
+
+interface Consultation {
+  _id: string;
+  patient?: {
+    name: string;
+    mrn?: string;
+  };
+  purpose?: string;
+  status: string;
+  appointmentDate: string;
+}
+
 export default function DoctorDashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState<any>(null);
-  const [recentConsultations, setRecentConsultations] = useState<any[]>([]);
+  const [stats, setStats] = useState<DoctorStats | null>(null);
+  const [recentConsultations, setRecentConsultations] = useState<Consultation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

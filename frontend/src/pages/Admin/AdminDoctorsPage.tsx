@@ -42,8 +42,18 @@ const CARD_GRADIENTS = [
   "from-rose-500 to-pink-700",
 ];
 
+interface Doctor {
+  _id: string;
+  name: string;
+  email?: string;
+  specialization?: string;
+  hospital_name?: string;
+  experience_years?: string | number;
+  status?: string;
+}
+
 export default function AdminDoctorsPage() {
-  const [doctors, setDoctors] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -77,7 +87,7 @@ export default function AdminDoctorsPage() {
       (d.email && d.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const toggleStatus = async (doctor: any) => {
+  const toggleStatus = async (doctor: Doctor) => {
     const newStatus = doctor.status === "Active" ? "Deactivated" : "Active";
     try {
       const response = await fetch(`${API_BASE_URL}/api/doctor/${doctor._id}/status`, {

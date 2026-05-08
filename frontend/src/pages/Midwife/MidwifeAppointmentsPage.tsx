@@ -35,11 +35,32 @@ import { Badge } from "@/components/ui/badge";
 import { API_BASE_URL } from "@/config";
 
 
+interface Patient {
+  _id: string;
+  name: string;
+  mrn?: string;
+}
+
+interface Doctor {
+  _id: string;
+  name: string;
+  specialization?: string;
+}
+
+interface Appointment {
+  _id: string;
+  patient?: Patient;
+  doctor?: Doctor;
+  appointmentDate: string;
+  purpose?: string;
+  status: string;
+}
+
 export default function MidwifeAppointmentsPage() {
   const navigate = useNavigate();
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [patients, setPatients] = useState<any[]>([]);
-  const [doctors, setDoctors] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 

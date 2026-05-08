@@ -9,9 +9,24 @@ import {
   Info, Plus, Calendar, Stethoscope, User, ChevronLeft
 } from "lucide-react";
 
+interface Patient {
+  _id: string;
+  name: string;
+  email?: string;
+  age?: string | number;
+  address?: string;
+  contactNumber?: string;
+  medicalHistory?: string;
+  riskLevel?: string;
+  gestationWeeks?: number;
+  nextVisit?: string;
+  mrn?: string;
+  status?: string;
+}
+
 export default function PatientProfilePage() {
   const { id } = useParams();
-  const [patient, setPatient] = useState<any>(null);
+  const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

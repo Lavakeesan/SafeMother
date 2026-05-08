@@ -41,8 +41,22 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
 };
 
+interface Midwife {
+  _id: string;
+  name: string;
+  email?: string;
+  status?: string;
+  hospital_name?: string;
+  assigned_area?: string;
+  experience_years?: string | number;
+  hasProfilePhoto?: boolean;
+  user_id?: {
+    _id: string;
+  } | string;
+}
+
 export default function AdminMidwifesPage() {
-  const [midwifes, setMidwifes] = useState<any[]>([]);
+  const [midwifes, setMidwifes] = useState<Midwife[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -80,7 +94,7 @@ export default function AdminMidwifesPage() {
     fetchMidwifes();
   }, []);
 
-  const toggleStatus = async (midwife: any) => {
+  const toggleStatus = async (midwife: Midwife) => {
     const newStatus = midwife.status === "Active" ? "Deactivated" : "Active";
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/midwifes/${midwife._id}/status`, {

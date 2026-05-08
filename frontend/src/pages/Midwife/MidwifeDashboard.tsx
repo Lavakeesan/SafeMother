@@ -39,12 +39,63 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
+interface Patient {
+  _id: string;
+  name: string;
+  email?: string;
+  mrn?: string;
+  age?: string | number;
+  address?: string;
+  contact_number?: string;
+  medical_history?: string;
+  delivery_date?: string;
+  risk_level?: string;
+  user_id?: string;
+}
+
+interface User {
+  _id: string;
+  name: string;
+  role: string;
+}
+
+interface Alert {
+  _id: string;
+  sender: string;
+  message: string;
+  alertDate: string;
+  patient?: {
+    name: string;
+    mrn: string;
+  };
+}
+
+interface Report {
+  _id: string;
+  patient?: {
+    name: string;
+    mrn: string;
+  };
+  weight: number;
+  blood_pressure: string;
+  sugar_level: string;
+  bmi: number;
+  report_photo?: string;
+  report_date: string;
+}
+
+interface Doctor {
+  _id: string;
+  name: string;
+  specialization?: string;
+}
+
 export default function MidwifeDashboard() {
   const navigate = useNavigate();
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   // Form State - Using snake_case to match DB
   const [formData, setFormData] = useState({
@@ -63,14 +114,14 @@ export default function MidwifeDashboard() {
   // Alert State
   const location = useLocation();
   const isAlertsMode = location.pathname.includes('/calendar'); // /midwife/calendar is used for Medical Alerts
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [selectedPatientForAlert, setSelectedPatientForAlert] = useState("");
   const [alertMessageText, setAlertMessageText] = useState("");
   const [isSendingAlert, setIsSendingAlert] = useState(false);
 
   // Clinical Reports State
   const isReportsMode = location.pathname.includes('/reports');
-  const [reports, setReports] = useState<any[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [selectedPatientForReport, setSelectedPatientForReport] = useState("");
   const [reportWeight, setReportWeight] = useState("");
   const [reportSugar, setReportSugar] = useState("");
@@ -81,14 +132,14 @@ export default function MidwifeDashboard() {
   
   const [isEmergencySMSModalOpen, setIsEmergencySMSModalOpen] = useState(false);
   const [emergencySMSMessage, setEmergencySMSMessage] = useState("");
-  const [selectedPatientForSMS, setSelectedPatientForSMS] = useState<any>(null);
+  const [selectedPatientForSMS, setSelectedPatientForSMS] = useState<Patient | null>(null);
   const [isSendingSMS, setIsSendingSMS] = useState(false);
 
   // Appointment State
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
-  const [doctors, setDoctors] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctorId, setSelectedDoctorId] = useState("");
-  const [selectedPatientForAppointment, setSelectedPatientForAppointment] = useState<any>(null);
+  const [selectedPatientForAppointment, setSelectedPatientForAppointment] = useState<Patient | null>(null);
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
   const [appointmentPurpose, setAppointmentPurpose] = useState("");
@@ -364,8 +415,9 @@ export default function MidwifeDashboard() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to send SMS");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send SMS. Please check gateway connection.");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message || "Failed to send SMS. Please check gateway connection.");
     } finally {
       setIsSendingSMS(false);
     }

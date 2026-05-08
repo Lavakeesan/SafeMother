@@ -9,11 +9,15 @@ dotenv.config();
 
 const app = express();
 
-// Connect to DB once at startup
-connectDB().then(() => {
-  console.log('Database connected');
-}).catch(err => {
-  console.error('Failed to connect DB:', err);
+// Middleware to ensure DB connection for serverless environment
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error('Database connection middleware error:', err);
+        res.status(500).json({ message: 'Internal Server Error: Database Connection Failed' });
+    }
 });
 
 app.use(express.json({ limit: '5mb' }));

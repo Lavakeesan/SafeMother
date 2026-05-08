@@ -19,8 +19,33 @@ import { API_BASE_URL } from "@/config";
 const RISK_COLORS = ['#10b981', '#f59e0b', '#ef4444']; // Low, Medium, High
 const ROLE_COLORS = ['#6366f1', '#14b8a6', '#f43f5e', '#8b5cf6']; // Admin, Midwife, Patient, Doctor
 
+interface DashboardStats {
+  totalPatients: number;
+  totalMidwives: number;
+  totalAppointments: number;
+  totalAlerts: number;
+  riskBreakdown: {
+    low: number;
+    medium: number;
+    high: number;
+  };
+  userDistribution: Array<{
+    _id: string;
+    count: number;
+  }>;
+  registrationTrends: Array<{
+    month: string;
+    count: number;
+  }>;
+}
+
+interface UserRoleDataItem {
+  name: string;
+  value: number;
+}
+
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +73,7 @@ export default function AdminDashboard() {
     { name: 'High Risk', value: stats.riskBreakdown.high },
   ] : [];
 
-  const userRoleData = stats?.userDistribution?.map((item: any) => ({
+  const userRoleData: UserRoleDataItem[] = stats?.userDistribution?.map((item) => ({
     name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
     value: item.count
   })) || [];
@@ -205,7 +230,7 @@ export default function AdminDashboard() {
                          paddingAngle={10}
                          dataKey="value"
                        >
-                         {userRoleData.map((entry: any, index: number) => (
+                         {userRoleData.map((entry: UserRoleDataItem, index: number) => (
                            <Cell key={`cell-${index}`} fill={ROLE_COLORS[index % ROLE_COLORS.length]} />
                          ))}
                        </Pie>
@@ -216,7 +241,7 @@ export default function AdminDashboard() {
                    </ResponsiveContainer>
                    
                    <div className="w-full grid grid-cols-2 gap-3 pt-6">
-                      {userRoleData.map((item: any, idx: number) => (
+                      {userRoleData.map((item: UserRoleDataItem, idx: number) => (
                          <div key={item.name} className="flex flex-col p-3 rounded-2xl bg-gray-50 border border-gray-100">
                             <div className="flex items-center gap-2 mb-1">
                                <div className="w-2 h-2 rounded-full" style={{backgroundColor: ROLE_COLORS[idx % ROLE_COLORS.length]}} />
@@ -261,7 +286,16 @@ export default function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value, icon: Icon, trend, trendType, color, bg, shadow }: any) {
+function StatCard({ title, value, icon: Icon, trend, trendType, color, bg, shadow }: {
+  title: string;
+  value: number;
+  icon: React.ElementType;
+  trend: string;
+  trendType: string;
+  color: string;
+  bg: string;
+  shadow: string;
+}) {
   return (
     <motion.div
        whileHover={{ y: -5 }}
@@ -289,7 +323,13 @@ function StatCard({ title, value, icon: Icon, trend, trendType, color, bg, shado
   );
 }
 
-function StatusCard({ icon: Icon, title, subtitle, color, bg }: any) {
+function StatusCard({ icon: Icon, title, subtitle, color, bg }: {
+  icon: React.ElementType;
+  title: string;
+  subtitle: string;
+  color: string;
+  bg: string;
+}) {
    return (
       <Card className="border border-gray-100 shadow-xl shadow-gray-200/40 bg-white rounded-[2rem] overflow-hidden group">
          <CardContent className="p-7 flex items-center gap-5">

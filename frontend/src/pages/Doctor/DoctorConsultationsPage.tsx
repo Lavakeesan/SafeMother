@@ -33,16 +33,28 @@ import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/config";
 
 
+interface Consultation {
+  _id: string;
+  patient?: {
+    _id: string;
+    name: string;
+  };
+  purpose: string;
+  advice?: string;
+  status: string;
+  appointmentDate: string;
+}
+
 export default function DoctorConsultationsPage() {
   const navigate = useNavigate();
-  const [consultations, setConsultations] = useState<any[]>([]);
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
   // Finalize Action State
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
-  const [selectedConsultation, setSelectedConsultation] = useState<any>(null);
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
   const [medicalAdvice, setMedicalAdvice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -82,6 +94,7 @@ export default function DoctorConsultationsPage() {
 
     setIsSubmitting(true);
     try {
+      if (!selectedConsultation) return;
       const response = await fetch(`${API_BASE_URL}/api/doctor/advice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

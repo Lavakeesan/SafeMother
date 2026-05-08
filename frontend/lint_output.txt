@@ -1,0 +1,106 @@
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/badge.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/button.tsx
+  47:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/command.tsx
+  24:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/form.tsx
+  129:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/sidebar.tsx
+  636:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/sonner.tsx
+  27:19  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/textarea.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/components/ui/toggle.tsx
+  37:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Admin/AdminAppointmentsPage.tsx
+   26:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Admin/AdminDashboard.tsx
+   23:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  208:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  219:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  264:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  292:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Admin/AdminDoctorsPage.tsx
+  46:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Admin/AdminGuidelinesPage.tsx
+  26:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Admin/AdminMidwifesPage.tsx
+  45:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Doctor/DoctorChatPage.tsx
+  29:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  30:58  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  31:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  54:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Doctor/DoctorConsultationsPage.tsx
+  38:54  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  45:68  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  61:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Doctor/DoctorDashboard.tsx
+  36:38  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  37:66  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  52:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Doctor/DoctorPatientsPage.tsx
+  95:6  warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Midwife/MidwifeAppointmentsPage.tsx
+  40:52  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  41:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  42:42  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  67:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Midwife/MidwifeDashboard.tsx
+   44:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   47:36  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   66:40  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   73:42  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   84:70  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   89:42  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   91:86  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  144:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  367:21  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Midwife/MidwifePatientsPage.tsx
+  138:8  warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Patient/PatientChatPage.tsx
+  26:42  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  27:56  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  28:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  49:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  80:37  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+/Users/ananthavasanlavakeesan/Documents/projects/mithula/SafeMother/frontend/src/pages/Patient/PatientProfilePage.tsx
+  14:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 57 problems (42 errors, 15 warnings)
+

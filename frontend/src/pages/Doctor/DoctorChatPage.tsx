@@ -24,11 +24,26 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
 
 
+interface Patient {
+  _id: string;
+  name: string;
+  user_id: string;
+  specialization?: string;
+}
+
+interface Message {
+  sender: string;
+  receiverId: string;
+  message: string;
+  createdAt: string;
+  read?: boolean;
+}
+
 export default function DoctorChatPage() {
   const navigate = useNavigate();
-  const [patients, setPatients] = useState<any[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);

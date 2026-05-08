@@ -22,13 +22,20 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface Guideline {
+  _id: string;
+  title: string;
+  description: string;
+  updatedAt: string;
+}
+
 export default function AdminGuidelinesPage() {
-  const [guidelines, setGuidelines] = useState<any[]>([]);
+  const [guidelines, setGuidelines] = useState<Guideline[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingGuideline, setEditingGuideline] = useState<any>(null);
+  const [editingGuideline, setEditingGuideline] = useState<Guideline | null>(null);
   const [formData, setFormData] = useState({ title: "", description: "" });
 
   const fetchGuidelines = async () => {

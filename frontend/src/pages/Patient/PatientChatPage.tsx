@@ -21,11 +21,27 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
 
 
+interface Doctor {
+  _id: string;
+  name: string;
+  user_id: string;
+  specialization?: string;
+  lastMessage?: string;
+}
+
+interface Message {
+  sender: string;
+  receiverId: string;
+  message: string;
+  createdAt: string;
+  read?: boolean;
+}
+
 export default function PatientChatPage() {
   const navigate = useNavigate();
-  const [doctors, setDoctors] = useState<any[]>([]);
-  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -77,7 +93,7 @@ export default function PatientChatPage() {
        if (Array.isArray(appointments)) {
          // Extract unique doctors
          const doctorMap = new Map();
-         appointments.forEach((app: any) => {
+         appointments.forEach((app: { doctor?: Doctor }) => {
            if (app.doctor && app.doctor.user_id) {
              doctorMap.set(app.doctor.user_id, {
                ...app.doctor,

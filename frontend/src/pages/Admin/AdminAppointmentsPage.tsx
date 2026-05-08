@@ -22,15 +22,32 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/config";
 
 
+interface Appointment {
+  _id: string;
+  patient?: {
+    _id: string;
+    name: string;
+    mrn?: string;
+  };
+  midwife?: {
+    _id: string;
+    name: string;
+    hospital_name?: string;
+  };
+  appointmentDate: string;
+  status: string;
+  purpose?: string;
+}
+
 export default function AdminAppointmentsPage() {
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
   // Edit modal state
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingApt, setEditingApt] = useState<any>(null);
+  const [editingApt, setEditingApt] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [editPurpose, setEditPurpose] = useState("");
@@ -38,7 +55,7 @@ export default function AdminAppointmentsPage() {
 
   // Delete confirm state
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [deletingApt, setDeletingApt] = useState<any>(null);
+  const [deletingApt, setDeletingApt] = useState<Appointment | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchAppointments = async () => {
@@ -69,7 +86,7 @@ export default function AdminAppointmentsPage() {
   });
 
   // ─── Update ───────────────────────────────────────────────────────────────
-  const openEdit = (apt: any) => {
+  const openEdit = (apt: Appointment) => {
     setEditingApt(apt);
     // Format date for datetime-local input
     const date = new Date(apt.appointmentDate);
@@ -81,7 +98,7 @@ export default function AdminAppointmentsPage() {
   };
 
   const handleUpdate = async () => {
-    if (!editDate) return toast.error("Please select a date and time");
+    if (!editDate || !editingApt) return toast.error("Please select a date and time");
     setIsSaving(true);
     try {
       const res = await fetch(
@@ -118,12 +135,13 @@ export default function AdminAppointmentsPage() {
   };
 
   // ─── Delete ───────────────────────────────────────────────────────────────
-  const openDelete = (apt: any) => {
+  const openDelete = (apt: Appointment) => {
     setDeletingApt(apt);
     setIsDeleteOpen(true);
   };
 
   const handleDelete = async () => {
+    if (!deletingApt) return;
     setIsDeleting(true);
     try {
       const res = await fetch(
