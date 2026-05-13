@@ -25,12 +25,7 @@ const connectDB = async () => {
         // In serverless, we sometimes want to keep bufferCommands true (default) 
         // to handle slight connection delays gracefully, or manage it strictly via middleware.
         // Removing bufferCommands: false allows Mongoose to wait a few milliseconds if needed.
-        const opts = {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        };
-
-        cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
+        cached.promise = mongoose.connect(process.env.MONGO_URI).then((mongoose) => {
             console.log(`MongoDB Connected: ${mongoose.connection.host}`);
             return mongoose;
         });

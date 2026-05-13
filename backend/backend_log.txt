@@ -1,0 +1,10 @@
+
+> backend@1.0.0 start
+> node index.js
+
+[dotenv@17.2.3] injecting env (11) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+Server running on port 5001
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    63  100    63    0     0  22043      0 --:--:-- --:--:-- --:--:-- 31500
+{"message":"Internal Server Error: Database Connection Failed"}

@@ -96,13 +96,14 @@ const cardHover = {
 interface Patient {
   _id: string;
   name: string;
-  email: string;
+  email?: string;
   address?: string;
   contact_number?: string;
   profile_photo?: string;
   delivery_date?: string;
   medical_history?: string;
   risk_level?: string;
+  mrn?: string;
   midwife_id?: {
     user_id?: {
       name?: string;
