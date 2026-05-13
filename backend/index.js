@@ -30,6 +30,7 @@ const allowedOrigins = [
     'http://localhost:5173',
     'https://safe-mother-two.vercel.app',
     'https://safe-mother-74td.vercel.app',
+    'https://safe-mother-sigma.vercel.app',
     process.env.FRONTEND_URL,
 ];
 
